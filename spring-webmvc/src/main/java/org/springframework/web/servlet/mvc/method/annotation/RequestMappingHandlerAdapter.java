@@ -105,7 +105,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 					AnnotatedElementUtils.hasAnnotation(method, ModelAttribute.class));
 
 	/**
-	 *
+	 * 自定义的参数解析器
 	 */
 	@Nullable
 	private List<HandlerMethodArgumentResolver> customArgumentResolvers;

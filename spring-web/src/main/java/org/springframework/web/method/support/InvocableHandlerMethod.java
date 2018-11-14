@@ -165,7 +165,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 			MethodParameter parameter = parameters[i];
 			// 给参数注入参数名解析类（默认是kotlin、反射等）
 			parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
-			// 给args赋值
+			// 给args赋值，如果默认传入的参数已经类型匹配
 			args[i] = resolveProvidedArgument(parameter, providedArgs);
 			// 不是空，说明直接匹配则下一个参数
 			if (args[i] != null) {
