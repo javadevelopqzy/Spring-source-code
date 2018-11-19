@@ -536,10 +536,10 @@ public class DispatcherServlet extends FrameworkServlet {
 		// HttpRequestHandlerAdapter：处理HttpRequestHandler的DispatcherServlet
 		// SimpleControllerHandlerAdapter：处理Controller类的适配器与BeanNameUrlHandlerMapping搭配
 		// RequestMappingHandlerAdapter：在3.1之后替代了AnnotationMethodHandlerAdapter，与RequestMappingHandlerMapping搭配使用
-		/** AnnotationMethodHandlerAdapter通过RequestMapping注释表示的HTTP路径，HTTP方法和请求参数来适配处理方法。
-		 * 通过RequestParam注释绑定请求参数。 还支持ModelAttribute注释，用于向视图公开模型属性值，
-		 * 以及用于绑定器初始化方法的InitBinder和用于特定属性的自动会话管理的SessionAttributes。
-		 * 可以通过各种bean属性自定义此适配器。 常见的用例是通过自定义WebBindingInitializer应用共享绑定器初始化逻辑。
+		/* AnnotationMethodHandlerAdapter通过RequestMapping注释表示的HTTP路径，HTTP方法和请求参数来适配处理方法。
+		  通过RequestParam注释绑定请求参数。 还支持ModelAttribute注释，用于向视图公开模型属性值，
+		  以及用于绑定器初始化方法的InitBinder和用于特定属性的自动会话管理的SessionAttributes。
+		  可以通过各种bean属性自定义此适配器。 常见的用例是通过自定义WebBindingInitializer应用共享绑定器初始化逻辑。
 		 */
 		initHandlerAdapters(context);
 		// 初始化异常处理器（HandlerExceptionResolver接口的实现类）集合，可设置DispatcherServlet是否初始化获取全部

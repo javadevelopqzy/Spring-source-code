@@ -16,20 +16,15 @@
 
 package org.springframework.web.method.annotation;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionAttributeStore;
-import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.WebRequest;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages controller-specific session attributes declared via
@@ -46,14 +41,29 @@ import org.springframework.web.context.request.WebRequest;
  * @author Juergen Hoeller
  * @since 3.1
  */
+/**
+ * 每个controller类的注解@SessionAttributes的解析、缓存类<br/>
+ * 一个controller类对应一个SessionAttributesHandler
+ */
 public class SessionAttributesHandler {
-
+	/**
+	 * SessionAttributes注解的存储所有属性名
+	 */
 	private final Set<String> attributeNames = new HashSet<>();
 
+	/**
+	 * SessionAttributes注解的存储所有types属性
+	 */
 	private final Set<Class<?>> attributeTypes = new HashSet<>();
 
+	/**
+	 * 存储所有属性名
+	 */
 	private final Set<String> knownAttributeNames = Collections.newSetFromMap(new ConcurrentHashMap<>(4));
 
+	/**
+	 * SessionAttributeStore对象，该对象管理了session存储的属性值
+	 */
 	private final SessionAttributeStore sessionAttributeStore;
 
 
@@ -63,6 +73,9 @@ public class SessionAttributesHandler {
 	 * on the given type.
 	 * @param handlerType the controller type
 	 * @param sessionAttributeStore used for session access
+	 */
+	/**
+	 * 如果controller类有@SessionAttributes注解，则保存再此类
 	 */
 	public SessionAttributesHandler(Class<?> handlerType, SessionAttributeStore sessionAttributeStore) {
 		Assert.notNull(sessionAttributeStore, "SessionAttributeStore may not be null");
@@ -81,6 +94,9 @@ public class SessionAttributesHandler {
 	 * Whether the controller represented by this instance has declared any
 	 * session attributes through an {@link SessionAttributes} annotation.
 	 */
+	/**
+	 * 判断是否有@SessionAttributes注解
+	 */
 	public boolean hasSessionAttributes() {
 		return (!this.attributeNames.isEmpty() || !this.attributeTypes.isEmpty());
 	}
@@ -93,6 +109,12 @@ public class SessionAttributesHandler {
 	 * {@link #cleanupAttributes(WebRequest)}.
 	 * @param attributeName the attribute name to check
 	 * @param attributeType the type for the attribute
+	 */
+	/**
+	 * 判断此controller类是否配置了attributeName属性或配置了attributeType类
+	 * @param attributeName
+	 * @param attributeType
+	 * @return
 	 */
 	public boolean isHandlerSessionAttribute(String attributeName, Class<?> attributeType) {
 		Assert.notNull(attributeName, "Attribute name must not be null");
@@ -111,6 +133,9 @@ public class SessionAttributesHandler {
 	 * @param request the current request
 	 * @param attributes candidate attributes for session storage
 	 */
+	/**
+	 * 存储attributes属性
+	 */
 	public void storeAttributes(WebRequest request, Map<String, ?> attributes) {
 		attributes.forEach((name, value) -> {
 			if (value != null && isHandlerSessionAttribute(name, value.getClass())) {
@@ -125,6 +150,9 @@ public class SessionAttributesHandler {
 	 * in the model that matched by type.
 	 * @param request the current request
 	 * @return a map with handler session attributes, possibly empty
+	 */
+	/**
+	 * 获取controller类配置注解的属性map
 	 */
 	public Map<String, Object> retrieveAttributes(WebRequest request) {
 		Map<String, Object> attributes = new HashMap<>();
@@ -142,6 +170,9 @@ public class SessionAttributesHandler {
 	 * by name in {@code @SessionAttributes} or attributes previously stored
 	 * in the model that matched by type.
 	 * @param request the current request
+	 */
+	/**
+	 * 清除controller类配置注解的属性map
 	 */
 	public void cleanupAttributes(WebRequest request) {
 		for (String attributeName : this.knownAttributeNames) {

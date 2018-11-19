@@ -795,12 +795,19 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		List<HandlerMethodReturnValueHandler> handlers = new ArrayList<>();
 
 		// Single-purpose return value types
+		// ModelAndView类的返回值解析器
 		handlers.add(new ModelAndViewMethodReturnValueHandler());
+		// Model的类返回值解析器
 		handlers.add(new ModelMethodProcessor());
+		// View的类返回值解析器
 		handlers.add(new ViewMethodReturnValueHandler());
+		// Reactive、ResponseBodyEmitter的类返回值解析器
 		handlers.add(new ResponseBodyEmitterReturnValueHandler(getMessageConverters(),
 				this.reactiveAdapterRegistry, this.taskExecutor, this.contentNegotiationManager));
+
+		//
 		handlers.add(new StreamingResponseBodyReturnValueHandler());
+		//
 		handlers.add(new HttpEntityMethodProcessor(getMessageConverters(),
 				this.contentNegotiationManager, this.requestResponseBodyAdvice));
 		handlers.add(new HttpHeadersReturnValueHandler());
@@ -814,6 +821,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				this.contentNegotiationManager, this.requestResponseBodyAdvice));
 
 		// Multi-purpose return value types
+		//
 		handlers.add(new ViewNameMethodReturnValueHandler());
 		handlers.add(new MapMethodProcessor());
 
@@ -1038,7 +1046,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		}
 		List<InvocableHandlerMethod> attrMethods = new ArrayList<>();
 		// Global methods first
-		// 从共享的类（配置了@ControllerAdvice的bean）中找出配置了@ModelAttribute的方法，一并执行
+		// 从共享的类（配置了@ControllerAdvice的bean）中找出配置了@ModelAttribute的方法，并添加到attrMethods中
 		this.modelAttributeAdviceCache.forEach((clazz, methodSet) -> {
 			if (clazz.isApplicableToBeanType(handlerType)) {
 				Object bean = clazz.resolveBean();
@@ -1142,6 +1150,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	                                     ModelFactory modelFactory, NativeWebRequest webRequest) throws Exception {
 
 		modelFactory.updateModel(webRequest, mavContainer);
+		// request在handler里面已经处理，不返回mav对象了
 		if (mavContainer.isRequestHandled()) {
 			return null;
 		}

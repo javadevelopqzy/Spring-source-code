@@ -982,10 +982,11 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 
 		long startTime = System.currentTimeMillis();
 		Throwable failureCause = null;
-
+		// 获取springMVC中定义的Locale上下文对象的
 		LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();
 		LocaleContext localeContext = buildLocaleContext(request);
 
+		// 获取springMVC中封装的request API类
 		RequestAttributes previousAttributes = RequestContextHolder.getRequestAttributes();
 		ServletRequestAttributes requestAttributes = buildRequestAttributes(request, response, previousAttributes);
 
