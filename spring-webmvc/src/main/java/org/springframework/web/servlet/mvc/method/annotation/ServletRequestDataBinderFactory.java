@@ -31,6 +31,10 @@ import org.springframework.web.method.support.InvocableHandlerMethod;
  * @author Rossen Stoyanchev
  * @since 3.1
  */
+
+/**
+ * 基于父类重写createBinderInstance方法，创建ExtendedServletRequestDataBinder对象，创建ExtendedServletRequestDataBinder实例其余逻辑不变
+ */
 public class ServletRequestDataBinderFactory extends InitBinderDataBinderFactory {
 
 	/**

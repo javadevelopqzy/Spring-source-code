@@ -179,6 +179,9 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	 */
 	private final Map<Class<?>, SessionAttributesHandler> sessionAttributesHandlerCache = new ConcurrentHashMap<>(64);
 
+	/**
+	 * 缓存有@InitBinder注解的方法
+	 */
 	private final Map<Class<?>, Set<Method>> initBinderCache = new ConcurrentHashMap<>(64);
 
 	/**
@@ -1080,21 +1083,23 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	}
 
 	/**
-	 * 获取DataBinder工厂类，默认目前是ServletRequestDataBinderFactory类
+	 * 获取DataBinderFactory，默认目前是ServletRequestDataBinderFactory类
 	 */
 	private WebDataBinderFactory getDataBinderFactory(HandlerMethod handlerMethod) throws Exception {
 		Class<?> handlerType = handlerMethod.getBeanType();
+		// 判断有@InitBinder注解的方法是否已经缓存，没缓存则缓存进来
 		Set<Method> methods = this.initBinderCache.get(handlerType);
 		if (methods == null) {
 			// 查找此controller中配置有@InitBinder注解的方法
 			methods = MethodIntrospector.selectMethods(handlerType, INIT_BINDER_METHODS);
-			// 把@InitBinder注解的方法集合放到map中，key值为controller的class对象
+			// 把@InitBinder注解的方法集合缓存到map中，key值为controller的class对象
 			this.initBinderCache.put(handlerType, methods);
 		}
 		// 把所有@InitBinder封装成InvocableHandlerMethod对象
 		List<InvocableHandlerMethod> initBinderMethods = new ArrayList<>();
 		// Global methods first
 		// 从共享的类中找出配置了@InitBinder的方法，一并执行
+		// initBinderAdviceCache在初始化时已经缓存好
 		this.initBinderAdviceCache.forEach((clazz, methodSet) -> {
 			if (clazz.isApplicableToBeanType(handlerType)) {
 				Object bean = clazz.resolveBean();
@@ -1103,9 +1108,10 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				}
 			}
 		});
-		// 遍历本类配置了@InitBinder的方法
+		// 遍历本类配置了@InitBinder的方法，合并到新集合中
 		for (Method method : methods) {
 			Object bean = handlerMethod.getBean();
+			// 创建InvocableHandlerMethod包装类
 			initBinderMethods.add(createInitBinderMethod(bean, method));
 		}
 		return createDataBinderFactory(initBinderMethods);
@@ -1123,7 +1129,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		}
 		// 设置默认的数据绑定对象工厂
 		binderMethod.setDataBinderFactory(new DefaultDataBinderFactory(this.webBindingInitializer));
-		// 设置方法参数名解析对象（默认是使用）
+		// 设置方法参数名解析对象（默认是使用kotlin、反射、以及LocalVariableTable）
 		binderMethod.setParameterNameDiscoverer(this.parameterNameDiscoverer);
 		return binderMethod;
 	}

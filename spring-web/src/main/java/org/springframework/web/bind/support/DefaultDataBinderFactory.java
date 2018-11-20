@@ -27,6 +27,10 @@ import org.springframework.web.context.request.NativeWebRequest;
  * @author Rossen Stoyanchev
  * @since 3.1
  */
+
+/**
+ * 默认的WebDataBinder工厂类，实现了根据对象，对象名，请求对象创建WebRequestDataBinder
+ */
 public class DefaultDataBinderFactory implements WebDataBinderFactory {
 
 	@Nullable
@@ -48,6 +52,9 @@ public class DefaultDataBinderFactory implements WebDataBinderFactory {
 	 * initialize it through a {@link WebBindingInitializer}.
 	 * @throws Exception in case of invalid state or arguments
 	 */
+	/**
+	 * 创建一个WebDataBinder对象，并提供扩展，在创建完成之后执行某些操作
+	 */
 	@Override
 	@SuppressWarnings("deprecation")
 	public final WebDataBinder createBinder(
@@ -57,6 +64,7 @@ public class DefaultDataBinderFactory implements WebDataBinderFactory {
 		if (this.initializer != null) {
 			this.initializer.initBinder(dataBinder, webRequest);
 		}
+		// 预留子类实现
 		initBinder(dataBinder, webRequest);
 		return dataBinder;
 	}
@@ -68,6 +76,9 @@ public class DefaultDataBinderFactory implements WebDataBinderFactory {
 	 * @param objectName the binding target object name
 	 * @param webRequest the current request
 	 * @throws Exception in case of invalid state or arguments
+	 */
+	/**
+	 * 创建一个WebRequestDataBinder的实例
 	 */
 	protected WebDataBinder createBinderInstance(
 			@Nullable Object target, String objectName, NativeWebRequest webRequest) throws Exception {

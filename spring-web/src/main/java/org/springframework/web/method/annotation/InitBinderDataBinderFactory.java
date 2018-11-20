@@ -36,8 +36,14 @@ import org.springframework.web.method.support.InvocableHandlerMethod;
  * @author Rossen Stoyanchev
  * @since 3.1
  */
+/**
+ * 基于父类实现创建WebDataBinder之后调用controller中配置@InitBinder注解的方法
+ */
 public class InitBinderDataBinderFactory extends DefaultDataBinderFactory {
 
+	/**
+	 * 存储所有的@InitBinder注解的方法
+	 */
 	private final List<InvocableHandlerMethod> binderMethods;
 
 
@@ -47,7 +53,7 @@ public class InitBinderDataBinderFactory extends DefaultDataBinderFactory {
 	 * @param initializer for global data binder initialization
 	 */
 	public InitBinderDataBinderFactory(@Nullable List<InvocableHandlerMethod> binderMethods,
-			@Nullable WebBindingInitializer initializer) {
+	                                   @Nullable WebBindingInitializer initializer) {
 
 		super(initializer);
 		this.binderMethods = (binderMethods != null ? binderMethods : Collections.emptyList());
@@ -61,10 +67,14 @@ public class InitBinderDataBinderFactory extends DefaultDataBinderFactory {
 	 * @throws Exception if one of the invoked @{@link InitBinder} methods fails
 	 * @see #isBinderMethodApplicable
 	 */
+	/**
+	 * 实现父类的方法，实现WebDataBinder创建之后调用所有@InitBinder注解的方法
+	 */
 	@Override
 	public void initBinder(WebDataBinder dataBinder, NativeWebRequest request) throws Exception {
 		for (InvocableHandlerMethod binderMethod : this.binderMethods) {
 			if (isBinderMethodApplicable(binderMethod, dataBinder)) {
+				// 执行目标方法
 				Object returnValue = binderMethod.invokeForRequest(request, null, dataBinder);
 				if (returnValue != null) {
 					throw new IllegalStateException(
@@ -78,6 +88,9 @@ public class InitBinderDataBinderFactory extends DefaultDataBinderFactory {
 	 * Determine whether the given {@code @InitBinder} method should be used
 	 * to initialize the given {@link WebDataBinder} instance. By default we
 	 * check the specified attribute names in the annotation value, if any.
+	 */
+	/**
+	 * 判断是否是@InitBinder的方法，且@InitBinder有设置value的情况下，value包含请求参数
 	 */
 	protected boolean isBinderMethodApplicable(HandlerMethod initBinderMethod, WebDataBinder dataBinder) {
 		InitBinder ann = initBinderMethod.getMethodAnnotation(InitBinder.class);
