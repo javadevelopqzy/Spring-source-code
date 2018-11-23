@@ -964,6 +964,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	@Override
 	protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// 请求日志记录
 		logRequest(request);
 
 		// Keep a snapshot of the request attributes in case of an include,

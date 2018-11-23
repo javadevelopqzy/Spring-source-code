@@ -982,20 +982,26 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 
 		long startTime = System.currentTimeMillis();
 		Throwable failureCause = null;
-		// 获取springMVC中定义的Locale上下文对象的
+		// 从ThreadLocal获取spring MVC中定义的LocaleContext上下文对象
 		LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();
+		// 创建LocaleContext对象
 		LocaleContext localeContext = buildLocaleContext(request);
 
-		// 获取springMVC中封装的request API类
+		// 从ThreadLocal获取spring MVC中封装的request API类ServletRequestAttributes
 		RequestAttributes previousAttributes = RequestContextHolder.getRequestAttributes();
+		// 创建ServletRequestAttributes对象
 		ServletRequestAttributes requestAttributes = buildRequestAttributes(request, response, previousAttributes);
 
+		// 获取WebAsyncManager类对象，如果没有则创建一个
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+		// 注册异步处理的拦截器
 		asyncManager.registerCallableInterceptor(FrameworkServlet.class.getName(), new RequestBindingInterceptor());
 
+		// 把localeContext和requestAttributes放入ThreadLocal中
 		initContextHolders(request, localeContext, requestAttributes);
 
 		try {
+			// 抽象方法
 			doService(request, response);
 		}
 		catch (ServletException | IOException ex) {
@@ -1009,10 +1015,13 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 
 		finally {
 			resetContextHolders(request, previousLocaleContext, previousAttributes);
+			// 点进去看方法注释可知，执行请求销毁的回调，更新被处理过的session属性
 			if (requestAttributes != null) {
 				requestAttributes.requestCompleted();
 			}
+			// 打印日志
 			logResult(request, response, failureCause, asyncManager);
+			// 推送事件
 			publishRequestHandledEvent(request, response, startTime, failureCause);
 		}
 	}
@@ -1052,6 +1061,9 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		}
 	}
 
+	/**
+	 * 把localeContext和requestAttributes放入ThreadLocal中
+	 */
 	private void initContextHolders(HttpServletRequest request,
 			@Nullable LocaleContext localeContext, @Nullable RequestAttributes requestAttributes) {
 
