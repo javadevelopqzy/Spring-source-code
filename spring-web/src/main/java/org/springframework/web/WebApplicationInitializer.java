@@ -174,6 +174,9 @@ import javax.servlet.ServletException;
  * @see org.springframework.web.servlet.support.AbstractDispatcherServletInitializer
  * @see org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer
  */
+/**
+ * 基于servlet3.0的实现面向开发者接口，可实现此接口进行配置servlet
+ */
 public interface WebApplicationInitializer {
 
 	/**

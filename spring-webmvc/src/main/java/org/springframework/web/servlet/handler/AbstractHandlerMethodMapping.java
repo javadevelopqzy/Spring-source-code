@@ -316,7 +316,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * @return the created HandlerMethod
 	 */
 	/**
-	 * 根据handler（默认是bean的名称）和method创建method的包装HandlerMethod
+	 * 根据handler（默认是bean的名称）和method创建method的包装类HandlerMethod
 	 */
 	protected HandlerMethod createHandlerMethod(Object handler, Method method) {
 		HandlerMethod handlerMethod;
