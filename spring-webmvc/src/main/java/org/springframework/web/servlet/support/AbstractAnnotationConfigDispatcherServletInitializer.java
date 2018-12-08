@@ -41,6 +41,10 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * @author Chris Beams
  * @since 3.2
  */
+
+/**
+ * 基于spring注解的配置实现，如果spring是通过全注解配置，而非XML配置，可以继承此类
+ */
 public abstract class AbstractAnnotationConfigDispatcherServletInitializer
 		extends AbstractDispatcherServletInitializer {
 

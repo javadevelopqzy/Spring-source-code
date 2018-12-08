@@ -39,6 +39,10 @@ import org.springframework.web.WebApplicationInitializer;
  * @author Juergen Hoeller
  * @since 3.2
  */
+
+/**
+ * 实现spring监听器ContextLoaderListener的添加
+ */
 public abstract class AbstractContextLoaderInitializer implements WebApplicationInitializer {
 
 	/** Logger available to subclasses. */
@@ -79,6 +83,9 @@ public abstract class AbstractContextLoaderInitializer implements WebApplication
 	 * @return the root application context, or {@code null} if a root context is not
 	 * desired
 	 * @see org.springframework.web.servlet.support.AbstractDispatcherServletInitializer
+	 */
+	/**
+	 * 需要子类实现，创建spring上下文对象
 	 */
 	@Nullable
 	protected abstract WebApplicationContext createRootApplicationContext();

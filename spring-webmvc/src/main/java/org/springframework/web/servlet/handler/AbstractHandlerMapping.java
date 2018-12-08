@@ -447,7 +447,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	public final HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 		// 获取内部的handler，此方法需要子类实现
 		Object handler = getHandlerInternal(request);
-		// 没有获取到，则获取默认的（一般没调set方法也为空，除非有配置）
+		// 没有获取到，则获取默认的（不配置情况下为空，可以配置）
 		if (handler == null) {
 			handler = getDefaultHandler();
 		}

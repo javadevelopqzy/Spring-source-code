@@ -49,6 +49,10 @@ import org.springframework.web.servlet.FrameworkServlet;
  * @author Stephane Nicoll
  * @since 3.2
  */
+
+/**
+ * 子类（实现监听器）的基础上，加上DispatcherServlet注册逻辑，需要子类实现映射路径和spring上下文的创建
+ */
 public abstract class AbstractDispatcherServletInitializer extends AbstractContextLoaderInitializer {
 
 	/**
