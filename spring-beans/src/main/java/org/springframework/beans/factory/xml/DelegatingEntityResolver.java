@@ -85,6 +85,7 @@ public class DelegatingEntityResolver implements EntityResolver {
 				return this.dtdResolver.resolveEntity(publicId, systemId);
 			}
 			else if (systemId.endsWith(XSD_SUFFIX)) {
+				// 调用加载META-INF/Spring.schemas文件进行解析
 				return this.schemaResolver.resolveEntity(publicId, systemId);
 			}
 		}

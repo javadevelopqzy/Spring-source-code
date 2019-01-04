@@ -280,7 +280,7 @@ public class ContextLoader {
 		try {
 			// Store context in local instance variable, to guarantee that
 			// it is available on ServletContext shutdown.
-			// 本地变量存储保证servlet关闭的时候，它还可以使用
+			// 本地变量存储保证servlet容器关闭的时候，它还可以使用
 			// 如果没有手动设置，创建一个
 			if (this.context == null) {
 				this.context = createWebApplicationContext(servletContext);
@@ -337,6 +337,7 @@ public class ContextLoader {
 	 * @return the root WebApplicationContext
 	 * @see ConfigurableWebApplicationContext
 	 */
+	// 查找ApplicationContext的配置，并且实例化
 	protected WebApplicationContext createWebApplicationContext(ServletContext sc) {
 		Class<?> contextClass = determineContextClass(sc);
 		if (!ConfigurableWebApplicationContext.class.isAssignableFrom(contextClass)) {
@@ -354,6 +355,9 @@ public class ContextLoader {
 	 * @see #CONTEXT_CLASS_PARAM
 	 * @see org.springframework.web.context.support.XmlWebApplicationContext
 	 */
+	// 查找WebApplicationContext的Class流程：
+	// （1）查找参数ServletContext的initParameter参数key=contextClass的
+	// （2）若查找不到，读默认配置，加载org.springframework.web.context.ContextLoader类下的ContextLoader.properties
 	protected Class<?> determineContextClass(ServletContext servletContext) {
 		String contextClassName = servletContext.getInitParameter(CONTEXT_CLASS_PARAM);
 		if (contextClassName != null) {
@@ -366,6 +370,8 @@ public class ContextLoader {
 			}
 		}
 		else {
+			// 查找默认配置，加载org.springframework.web.context.ContextLoader类下的ContextLoader.properties
+			// 并且读取class名的字符串：org.springframework.web.context.support.XmlWebApplicationContext
 			contextClassName = defaultStrategies.getProperty(WebApplicationContext.class.getName());
 			try {
 				return ClassUtils.forName(contextClassName, ContextLoader.class.getClassLoader());
