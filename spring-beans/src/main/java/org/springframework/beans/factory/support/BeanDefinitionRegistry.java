@@ -45,7 +45,7 @@ import org.springframework.core.AliasRegistry;
  * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader
  * @see PropertiesBeanDefinitionReader
  */
-// 定义对bean的各种增删改操作
+// 定义对bean的各种增删改操作，类似于bean的注册中心
 public interface BeanDefinitionRegistry extends AliasRegistry {
 
 	/**
