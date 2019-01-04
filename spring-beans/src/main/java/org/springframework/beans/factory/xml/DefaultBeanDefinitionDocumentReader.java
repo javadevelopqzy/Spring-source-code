@@ -178,7 +178,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				Node node = nl.item(i);
 				if (node instanceof Element) {
 					Element ele = (Element) node;
-					// 默认的命名空间，即不带前缀的，如：<bean>，<import>等
+					// 默认的命名空间，即除了<description>之外不带前缀的，如：<bean>，<import>等
 					if (delegate.isDefaultNamespace(ele)) {
 						parseDefaultElement(ele, delegate);
 					}
