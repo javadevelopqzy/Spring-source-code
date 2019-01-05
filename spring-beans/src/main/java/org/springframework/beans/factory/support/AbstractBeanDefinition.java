@@ -136,35 +136,74 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 */
 	public static final String INFER_METHOD = "(inferred)";
 
-
 	@Nullable
 	private volatile Object beanClass;
 
+	/**
+	 * bean的作用范围
+	 */
 	@Nullable
 	private String scope = SCOPE_DEFAULT;
 
+	/**
+	 * 是否是抽象的
+	 */
 	private boolean abstractFlag = false;
 
+	/**
+	 * 是否懒加载
+	 */
 	private boolean lazyInit = false;
 
+	/**
+	 * 自动注入的模式
+	 */
 	private int autowireMode = AUTOWIRE_NO;
 
+	/**
+	 * 依赖检查标记，3.0之后已经弃用
+	 */
 	private int dependencyCheck = DEPENDENCY_CHECK_NONE;
 
+	/**
+	 * 记录dependsOn，即加载此bean，需要先加载哪些bean
+	 */
 	@Nullable
 	private String[] dependsOn;
 
+	/**
+	 * bean标签的autowire-candidate属性，如果设为false表示该bean不能当做其他bean的注入对象，
+	 * 但是该bean的属性依然可以通过其他bean注入
+	 */
 	private boolean autowireCandidate = true;
 
+	/**
+	 * 当此bean被其他bean注入同时出现多个候选bean时，primary=true的bean会优先
+	 */
 	private boolean primary = false;
 
+	/**
+	 * 存储qualifier标签的记录
+	 */
 	private final Map<String, AutowireCandidateQualifier> qualifiers = new LinkedHashMap<>();
 
 	@Nullable
 	private Supplier<?> instanceSupplier;
 
+	/**
+	 * 是否允许访问非公开的构造器
+	 */
 	private boolean nonPublicAccessAllowed = true;
 
+	/**
+	 * 宽松的构造器解析模式，如果设为false，如下情况报出异常： <br>
+	 * interface A {} <br>
+	 * class B im A {} <br>
+	 * class Bean { <br>
+	 *     Bean(A a){} <br>
+	 *     Bean(B b){} <br>
+	 * }
+	 */
 	private boolean lenientConstructorResolution = true;
 
 	@Nullable
@@ -173,32 +212,68 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	@Nullable
 	private String factoryMethodName;
 
+	/**
+	 * 字标签：constructor-arg的包装类
+	 */
 	@Nullable
 	private ConstructorArgumentValues constructorArgumentValues;
 
+	/**
+	 * 字标签：property的包装类
+	 */
 	@Nullable
 	private MutablePropertyValues propertyValues;
 
+	/**
+	 * 字标签：replaced-method、lookup-method的包装类
+	 */
 	@Nullable
 	private MethodOverrides methodOverrides;
 
+	/**
+	 * init-method属性值
+	 */
 	@Nullable
 	private String initMethodName;
 
+	/**
+	 * destroy-method属性值
+	 */
 	@Nullable
 	private String destroyMethodName;
 
+	/**
+	 * 是否执行init-method
+	 */
 	private boolean enforceInitMethod = true;
 
+	/**
+	 * 是否执行destroy-method
+	 */
 	private boolean enforceDestroyMethod = true;
 
+	/**
+	 * 此bean是用户自定义的，还是spring内部的
+	 */
 	private boolean synthetic = false;
 
+	/**
+	 * 定义此bean的应用。
+	 * ROLE_APPLICATION：用户；
+	 * ROLE_INFRASTRUCTURE：spring程序；
+	 * ROLE_SUPPORT：某些复杂配置的一部分
+	 */
 	private int role = BeanDefinition.ROLE_APPLICATION;
 
+	/**
+	 * description标签的描述信息
+	 */
 	@Nullable
 	private String description;
 
+	/**
+	 * 定义这个bean的资源
+	 */
 	@Nullable
 	private Resource resource;
 
@@ -1052,6 +1127,8 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * Validate this bean definition.
 	 * @throws BeanDefinitionValidationException in case of validation failure
 	 */
+	// 校验methodOverrides和工厂方法是否并存
+	// 或者methodOverrides配置了，但是方法根本不存在
 	public void validate() throws BeanDefinitionValidationException {
 		if (hasMethodOverrides() && getFactoryMethodName() != null) {
 			throw new BeanDefinitionValidationException(
