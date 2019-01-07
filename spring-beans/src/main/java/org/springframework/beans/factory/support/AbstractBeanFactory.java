@@ -151,6 +151,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
 	/** Indicates whether any InstantiationAwareBeanPostProcessors have been registered. */
+	// 标识是否已经有BeanPostProcessors的实例
 	private boolean hasInstantiationAwareBeanPostProcessors;
 
 	/** Indicates whether any DestructionAwareBeanPostProcessors have been registered. */
@@ -340,8 +341,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				// 如果是单例的，则实例化当前bean
 				if (mbd.isSingleton()) {
 					// 根据传入的ObjectFactory创建Bean，并缓存
+					// 到这里说明已经注册完成了
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
+							// 真正创建bean对象的逻辑
 							return createBean(beanName, mbd, args);
 						}
 						catch (BeansException ex) {
@@ -1397,9 +1400,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	protected Class<?> resolveBeanClass(final RootBeanDefinition mbd, String beanName, final Class<?>... typesToMatch)
 			throws CannotLoadBeanClassException {
 		try {
+			// 如果有配置class，直接使用
 			if (mbd.hasBeanClass()) {
 				return mbd.getBeanClass();
 			}
+			// 权限检查
 			if (System.getSecurityManager() != null) {
 				return AccessController.doPrivileged((PrivilegedExceptionAction<Class<?>>) () ->
 					doResolveBeanClass(mbd, typesToMatch), getAccessControlContext());
@@ -1646,7 +1651,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @param mbd the merged bean definition
 	 * @return the object to expose for the bean
 	 */
-	// 获取bean的实际对象
+	// 根据传入的beanName获取相应的对象，如果传&开头，返回factory，否则返回bean
+	// 如果bean是单例则缓存，如果是工厂也缓存
 	// beanInstance：按照名称获取的bean对象
 	// name：原始传入的bean名称，可能是&name，或者别名
 	// beanName：实际bean的名称
@@ -1654,7 +1660,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			Object beanInstance, String name, String beanName, @Nullable RootBeanDefinition mbd) {
 
 		// Don't let calling code try to dereference the factory if the bean isn't a factory.
-		// 如果是&name，则beanInstance必须实现FactoryBean接口，否则报错
+		// 验证，如果是&name，则beanInstance必须实现FactoryBean接口，否则报错
 		if (BeanFactoryUtils.isFactoryDereference(name)) {
 			if (beanInstance instanceof NullBean) {
 				return beanInstance;
@@ -1672,17 +1678,22 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			return beanInstance;
 		}
 
+		// 到这里了，说明是FactoryBean
 		Object object = null;
 		if (mbd == null) {
+			// 从缓存中获取
 			object = getCachedObjectForFactoryBean(beanName);
 		}
 		if (object == null) {
 			// Return bean instance from factory.
 			FactoryBean<?> factory = (FactoryBean<?>) beanInstance;
 			// Caches object obtained from FactoryBean if it is a singleton.
+			// 判断此beanName是否有对应的BeanDefinition
 			if (mbd == null && containsBeanDefinition(beanName)) {
+				// 把GenericBeanDefinition合并BeanDefinition
 				mbd = getMergedLocalBeanDefinition(beanName);
 			}
+			// 判断是不是spring内部的bean
 			boolean synthetic = (mbd != null && mbd.isSynthetic());
 			object = getObjectFromFactoryBean(factory, beanName, !synthetic);
 		}
