@@ -1350,9 +1350,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * or {@code null} if none (-> use constructor argument values from bean definition)
 	 * @return a BeanWrapper for the new instance
 	 */
+	// 使用构造函数创建bean
 	protected BeanWrapper autowireConstructor(
 			String beanName, RootBeanDefinition mbd, @Nullable Constructor<?>[] ctors, @Nullable Object[] explicitArgs) {
-
+		// 创建ConstructorResolver对象，并使用内部方法构建
 		return new ConstructorResolver(this).autowireConstructor(beanName, mbd, ctors, explicitArgs);
 	}
 

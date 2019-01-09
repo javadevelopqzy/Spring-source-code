@@ -36,6 +36,10 @@ package org.springframework.core;
  * @see LocalVariableTableParameterNameDiscoverer
  * @see KotlinReflectionParameterNameDiscoverer
  */
+// 基于策略类PrioritizedParameterNameDiscoverer上增加三种策略：
+// KotlinReflectionParameterNameDiscoverer：kotlin方式解析方法参数
+// StandardReflectionParameterNameDiscoverer：标准的java反射解析方法参数
+// LocalVariableTableParameterNameDiscoverer：
 public class DefaultParameterNameDiscoverer extends PrioritizedParameterNameDiscoverer {
 
 	public DefaultParameterNameDiscoverer() {

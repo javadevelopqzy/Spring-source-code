@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-    <bean name="bean1" class="mycase.cycle.Bean1" >
-        <property name="bean2" ref="bean2" />
-    </bean>
-    <bean name="bean2" class="mycase.cycle.Bean2" >
-        <property name="bean3" ref="bean3" />
-    </bean>
-	<bean name="bean3" class="mycase.cycle.Bean3" >
-		<property name="bean1" ref="bean1" />
+	<bean name="bean1" class="mycase.cycle.Bean1">
+		<property name="bean2" ref="bean2"/>
+	</bean>
+	<bean name="bean2" class="mycase.cycle.Bean2">
+		<property name="bean3" ref="bean3"/>
+	</bean>
+	<bean name="bean3" class="mycase.cycle.Bean3">
+		<property name="bean1" ref="bean1"/>
+	</bean>
+
+	<bean name="fac" class="mycase.factory.FactoryBeanTest2"/>
+
+	<bean name="factory" factory-bean="fac" factory-method="getObject"/>
+
+	<bean class="mycase.factory.FactoryBeanTest">
+		<constructor-arg name="abc" value="123"/>
 	</bean>
 </beans>

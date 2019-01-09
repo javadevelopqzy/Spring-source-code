@@ -16,52 +16,21 @@
 
 package org.springframework.beans.factory.support;
 
-import java.beans.ConstructorProperties;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
-
-import org.springframework.beans.BeanMetadataElement;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.TypeConverter;
-import org.springframework.beans.TypeMismatchException;
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.BeanDefinitionStoreException;
-import org.springframework.beans.factory.InjectionPoint;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
-import org.springframework.beans.factory.UnsatisfiedDependencyException;
+import org.springframework.beans.*;
+import org.springframework.beans.factory.*;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
 import org.springframework.beans.factory.config.DependencyDescriptor;
-import org.springframework.core.CollectionFactory;
-import org.springframework.core.GenericTypeResolver;
-import org.springframework.core.MethodParameter;
-import org.springframework.core.NamedThreadLocal;
-import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.core.*;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.MethodInvoker;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.*;
+
+import java.beans.ConstructorProperties;
+import java.lang.reflect.*;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.*;
 
 /**
  * Delegate for resolving constructors and factory methods.
@@ -113,6 +82,9 @@ class ConstructorResolver {
 	 * or {@code null} if none (-> use constructor argument values from bean definition)
 	 * @return a BeanWrapper for the new instance
 	 */
+	// 使用构造函数自动注入
+	// explicitArgs是通过getBean方法获取bean时传入的参数，如：getBean(User.class, "aaa")，
+	// 如果参数和构造函数正好匹配spring会通过参数先构造此bean
 	public BeanWrapper autowireConstructor(String beanName, RootBeanDefinition mbd,
 			@Nullable Constructor<?>[] chosenCtors, @Nullable Object[] explicitArgs) {
 
@@ -123,13 +95,17 @@ class ConstructorResolver {
 		ArgumentsHolder argsHolderToUse = null;
 		Object[] argsToUse = null;
 
+		// 如果有通过getBean传入的参数，直接使用
 		if (explicitArgs != null) {
 			argsToUse = explicitArgs;
 		}
+		// 没有参数传入，从缓存中读取
 		else {
 			Object[] argsToResolve = null;
 			synchronized (mbd.constructorArgumentLock) {
+				// 从缓存中读取
 				constructorToUse = (Constructor<?>) mbd.resolvedConstructorOrFactoryMethod;
+				// 读取到则直接使用
 				if (constructorToUse != null && mbd.constructorArgumentsResolved) {
 					// Found a cached constructor...
 					argsToUse = mbd.resolvedConstructorArguments;
@@ -138,17 +114,22 @@ class ConstructorResolver {
 					}
 				}
 			}
+			// 如果构造函数或工厂方法缓存中存在，直接从把配置参数转换成所需参数
+			// 如：配置了"1"，实际参数为Integer，则进行类型转换
 			if (argsToResolve != null) {
 				argsToUse = resolvePreparedArguments(beanName, mbd, bw, constructorToUse, argsToResolve, true);
 			}
 		}
 
+		// 没有缓存的处理
 		if (constructorToUse == null || argsToUse == null) {
 			// Take specified constructors, if any.
+			// 没有指定的传入构造函数，直接从beanClass中读取构造函数
 			Constructor<?>[] candidates = chosenCtors;
 			if (candidates == null) {
 				Class<?> beanClass = mbd.getBeanClass();
 				try {
+					// 如果允许访问公开构造器，使用Declared否则使用Constructors
 					candidates = (mbd.isNonPublicAccessAllowed() ?
 							beanClass.getDeclaredConstructors() : beanClass.getConstructors());
 				}
@@ -159,8 +140,10 @@ class ConstructorResolver {
 				}
 			}
 
+			// 只有一个构造函数，并且没有传入指定参数，也没有配置<constructor-arg>标签，很有可能是空参的默认构造函数
 			if (candidates.length == 1 && explicitArgs == null && !mbd.hasConstructorArgumentValues()) {
 				Constructor<?> uniqueCandidate = candidates[0];
+				// 如果没有参数，说明就是默认构造函数，直接缓存起来并且实例化
 				if (uniqueCandidate.getParameterCount() == 0) {
 					synchronized (mbd.constructorArgumentLock) {
 						mbd.resolvedConstructorOrFactoryMethod = uniqueCandidate;
@@ -173,6 +156,7 @@ class ConstructorResolver {
 			}
 
 			// Need to resolve the constructor.
+			// 下面是解析带参构造函数
 			boolean autowiring = (chosenCtors != null ||
 					mbd.getResolvedAutowireMode() == RootBeanDefinition.AUTOWIRE_CONSTRUCTOR);
 			ConstructorArgumentValues resolvedValues = null;
@@ -182,11 +166,14 @@ class ConstructorResolver {
 				minNrOfArgs = explicitArgs.length;
 			}
 			else {
+				// 提取配置配置<constructor-arg>标签的构造参数
 				ConstructorArgumentValues cargs = mbd.getConstructorArgumentValues();
 				resolvedValues = new ConstructorArgumentValues();
+				// 解析构造参数的个数
 				minNrOfArgs = resolveConstructorArguments(beanName, mbd, bw, cargs, resolvedValues);
 			}
 
+			// 对构造函数集合排序：public优先，按照参数数量降序
 			AutowireUtils.sortConstructors(candidates);
 			int minTypeDiffWeight = Integer.MAX_VALUE;
 			Set<Constructor<?>> ambiguousConstructors = null;
@@ -195,6 +182,7 @@ class ConstructorResolver {
 			for (Constructor<?> candidate : candidates) {
 				Class<?>[] paramTypes = candidate.getParameterTypes();
 
+				// 当前循环到的构造函数参数已经比期望的小，说明已经找不到了，因为后面的参数只会越来越小
 				if (constructorToUse != null && argsToUse.length > paramTypes.length) {
 					// Already found greedy constructor that can be satisfied ->
 					// do not look any further, there are only less greedy constructors left.

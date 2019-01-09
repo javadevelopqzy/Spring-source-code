@@ -16,14 +16,6 @@
 
 package org.springframework.beans.factory.support;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Supplier;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -31,6 +23,14 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * A root bean definition represents the merged bean definition that backs
@@ -78,6 +78,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	final Object constructorArgumentLock = new Object();
 
 	/** Package-visible field for caching the resolved constructor or factory method. */
+	// 缓存构造函数或Factory方法
 	@Nullable
 	Executable resolvedConstructorOrFactoryMethod;
 
@@ -89,6 +90,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	Object[] resolvedConstructorArguments;
 
 	/** Package-visible field for caching partly prepared constructor arguments. */
+	// 缓存构造函数的属性，其实是spring在类型上的包装类
 	@Nullable
 	Object[] preparedConstructorArguments;
 

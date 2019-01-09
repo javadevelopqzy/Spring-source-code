@@ -16,10 +16,10 @@
 
 package org.springframework.core;
 
+import org.springframework.lang.Nullable;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Interface to discover parameter names for methods and constructors.
@@ -33,6 +33,7 @@ import org.springframework.lang.Nullable;
  * @author Adrian Colyer
  * @since 2.0
  */
+// 基础接口参入method对象，返回参数名的方法
 public interface ParameterNameDiscoverer {
 
 	/**
@@ -41,6 +42,9 @@ public interface ParameterNameDiscoverer {
 	 * @param method method to find parameter names for
 	 * @return an array of parameter names if the names can be resolved,
 	 * or {@code null} if they cannot
+	 */
+	/**
+	 * 根据method对象返回方法的所有参数名
 	 */
 	@Nullable
 	String[] getParameterNames(Method method);
@@ -51,6 +55,9 @@ public interface ParameterNameDiscoverer {
 	 * @param ctor constructor to find parameter names for
 	 * @return an array of parameter names if the names can be resolved,
 	 * or {@code null} if they cannot
+	 */
+	/**
+	 * 根据构造函数对象返回构造函数所有的参数名
 	 */
 	@Nullable
 	String[] getParameterNames(Constructor<?> ctor);
