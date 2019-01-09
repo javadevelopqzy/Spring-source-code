@@ -213,19 +213,19 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	private String factoryMethodName;
 
 	/**
-	 * 字标签：constructor-arg的包装类
+	 * 子标签：constructor-arg的包装类
 	 */
 	@Nullable
 	private ConstructorArgumentValues constructorArgumentValues;
 
 	/**
-	 * 字标签：property的包装类
+	 * 子标签：property的包装类
 	 */
 	@Nullable
 	private MutablePropertyValues propertyValues;
 
 	/**
-	 * 字标签：replaced-method、lookup-method的包装类
+	 * 子标签：replaced-method、lookup-method的包装类
 	 */
 	@Nullable
 	private MethodOverrides methodOverrides;
@@ -863,6 +863,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	/**
 	 * Return a factory method, if any.
 	 */
+	// 返回工厂方法名称，如果存在
 	@Override
 	@Nullable
 	public String getFactoryMethodName() {

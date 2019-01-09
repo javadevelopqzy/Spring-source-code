@@ -1,4 +1,4 @@
-package org.springframework;
+package mycase.cycle;
 
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;

@@ -971,7 +971,7 @@ public class BeanDefinitionParserDelegate {
 	 * Also used for constructor arguments, "propertyName" being null in this case.
 	 */
 	// 解析<property>或<constructor-arg>标签对应的值
-	// 没有字标签在当前方法解析完，有子标签使用parsePropertySubElement解析
+	// 没有子标签在当前方法解析完，有子标签使用parsePropertySubElement解析
 	@Nullable
 	public Object parsePropertyValue(Element ele, BeanDefinition bd, @Nullable String propertyName) {
 		String elementName = (propertyName != null ?
@@ -988,7 +988,7 @@ public class BeanDefinitionParserDelegate {
 			if (node instanceof Element && !nodeNameEquals(node, DESCRIPTION_ELEMENT) &&
 					!nodeNameEquals(node, META_ELEMENT)) {
 				// Child element is what we're looking for.
-				// 字标签除了<meta>、<description>之外，多余1个报错
+				// 子标签除了<meta>、<description>之外，多余1个报错
 				if (subElement != null) {
 					error(elementName + " must not contain more than one sub-element", ele);
 				}

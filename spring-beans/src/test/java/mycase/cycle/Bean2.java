@@ -1,4 +1,4 @@
-package org.springframework;
+package mycase.cycle;
 
 public class Bean2 {
 

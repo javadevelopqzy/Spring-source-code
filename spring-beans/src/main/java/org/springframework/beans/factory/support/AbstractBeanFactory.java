@@ -1400,16 +1400,18 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	protected Class<?> resolveBeanClass(final RootBeanDefinition mbd, String beanName, final Class<?>... typesToMatch)
 			throws CannotLoadBeanClassException {
 		try {
-			// 如果有配置class，直接使用
+			// 如果配置的class instanceof Class，直接使用
 			if (mbd.hasBeanClass()) {
 				return mbd.getBeanClass();
 			}
-			// 权限检查
+			// 做判断是否需要做权限检查
 			if (System.getSecurityManager() != null) {
 				return AccessController.doPrivileged((PrivilegedExceptionAction<Class<?>>) () ->
+						// 解析beanClass
 					doResolveBeanClass(mbd, typesToMatch), getAccessControlContext());
 			}
 			else {
+				// 解析beanClass
 				return doResolveBeanClass(mbd, typesToMatch);
 			}
 		}
@@ -1429,6 +1431,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	private Class<?> doResolveBeanClass(RootBeanDefinition mbd, Class<?>... typesToMatch)
 			throws ClassNotFoundException {
 
+		// 获取实际的classLoader
 		ClassLoader beanClassLoader = getBeanClassLoader();
 		ClassLoader classLoaderToUse = beanClassLoader;
 		if (!ObjectUtils.isEmpty(typesToMatch)) {
@@ -1445,6 +1448,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 			}
 		}
+		// 到这里说明beanClass不是Class实例，转换为String
 		String className = mbd.getBeanClassName();
 		if (className != null) {
 			Object evaluated = evaluateBeanDefinitionString(className, mbd);

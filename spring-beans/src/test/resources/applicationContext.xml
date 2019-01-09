@@ -4,13 +4,13 @@
        xsi:schemaLocation="
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-    <bean name="bean1" class="org.springframework.Bean1" >
+    <bean name="bean1" class="mycase.cycle.Bean1" >
         <property name="bean2" ref="bean2" />
     </bean>
-    <bean name="bean2" class="org.springframework.Bean2" >
+    <bean name="bean2" class="mycase.cycle.Bean2" >
         <property name="bean3" ref="bean3" />
     </bean>
-	<bean name="bean3" class="org.springframework.Bean3" >
+	<bean name="bean3" class="mycase.cycle.Bean3" >
 		<property name="bean1" ref="bean1" />
 	</bean>
 </beans>
