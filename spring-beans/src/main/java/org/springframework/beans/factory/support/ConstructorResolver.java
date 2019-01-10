@@ -192,16 +192,20 @@ class ConstructorResolver {
 					continue;
 				}
 
+				// 没有传入构造参数，解析构造参数
 				ArgumentsHolder argsHolder;
 				if (resolvedValues != null) {
 					try {
+						// 判断构造函数是否有注解@ConstructorProperties，如果有取配置的参数名
 						String[] paramNames = ConstructorPropertiesChecker.evaluate(candidate, paramTypes.length);
 						if (paramNames == null) {
+							// 如果没有，使用反射的参数解析策略
 							ParameterNameDiscoverer pnd = this.beanFactory.getParameterNameDiscoverer();
 							if (pnd != null) {
 								paramNames = pnd.getParameterNames(candidate);
 							}
 						}
+						// 创建参数包装类：内含有参数名，参数转换类
 						argsHolder = createArgumentArray(beanName, mbd, resolvedValues, bw, paramTypes, paramNames,
 								getUserDeclaredConstructor(candidate), autowiring, candidates.length == 1);
 					}
@@ -217,6 +221,7 @@ class ConstructorResolver {
 						continue;
 					}
 				}
+				// 有传入构造参数，使用传入构造参数构造argsHolder类
 				else {
 					// Explicit arguments given -> arguments length must match exactly.
 					if (paramTypes.length != explicitArgs.length) {
@@ -225,9 +230,11 @@ class ConstructorResolver {
 					argsHolder = new ArgumentsHolder(explicitArgs);
 				}
 
+				// 判断是否有不确定的构造函数，如：不同构造函数的参数为父子关系
 				int typeDiffWeight = (mbd.isLenientConstructorResolution() ?
 						argsHolder.getTypeDifferenceWeight(paramTypes) : argsHolder.getAssignabilityWeight(paramTypes));
 				// Choose this constructor if it represents the closest match.
+				// ￥￥￥￥￥￥￥￥
 				if (typeDiffWeight < minTypeDiffWeight) {
 					constructorToUse = candidate;
 					argsHolderToUse = argsHolder;
@@ -264,10 +271,12 @@ class ConstructorResolver {
 			}
 
 			if (explicitArgs == null) {
+				// 把解析出来的构造函数加入缓存中
 				argsHolderToUse.storeCache(mbd, constructorToUse);
 			}
 		}
 
+		// 把构造的实例加入beanWrapper中
 		bw.setBeanInstance(instantiate(beanName, mbd, constructorToUse, argsToUse));
 		return bw;
 	}
@@ -924,6 +933,7 @@ class ConstructorResolver {
 			return Integer.MAX_VALUE - 1024;
 		}
 
+		// 把解析出来的构造函数加入缓存中
 		public void storeCache(RootBeanDefinition mbd, Executable constructorOrFactoryMethod) {
 			synchronized (mbd.constructorArgumentLock) {
 				mbd.resolvedConstructorOrFactoryMethod = constructorOrFactoryMethod;

@@ -9,7 +9,7 @@ public class Main {
 	public static void main(String[] args) {
 		ClassPathResource resource = new ClassPathResource("applicationContext.xml");
 		XmlBeanFactory xmlBeanFactory = new XmlBeanFactory(resource);
-		Object bean1 = xmlBeanFactory.getBean(FactoryBeanTest.class);
+		Object bean1 = xmlBeanFactory.getBean(FactoryBeanTest.class, "haha", 100);
 		System.out.println(bean1);
 	}
 }
