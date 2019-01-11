@@ -2,6 +2,9 @@ package mycase.factory;
 
 public class FactoryBeanTest {
 
+	public FactoryBeanTest(Object abc) {
+	}
+
 	public FactoryBeanTest(String abc) {
 		System.out.println(abc);
 	}

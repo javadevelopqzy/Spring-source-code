@@ -170,6 +170,7 @@ class ConstructorResolver {
 				ConstructorArgumentValues cargs = mbd.getConstructorArgumentValues();
 				resolvedValues = new ConstructorArgumentValues();
 				// 解析构造参数的个数
+				//
 				minNrOfArgs = resolveConstructorArguments(beanName, mbd, bw, cargs, resolvedValues);
 			}
 
@@ -205,7 +206,7 @@ class ConstructorResolver {
 								paramNames = pnd.getParameterNames(candidate);
 							}
 						}
-						// 创建参数包装类：内含有参数名，参数转换类
+						// 进行参数类型转换，创建参数包装类：内含有参数名，参数转换类
 						argsHolder = createArgumentArray(beanName, mbd, resolvedValues, bw, paramTypes, paramNames,
 								getUserDeclaredConstructor(candidate), autowiring, candidates.length == 1);
 					}
@@ -231,6 +232,9 @@ class ConstructorResolver {
 				}
 
 				// 判断是否有不确定的构造函数，如：不同构造函数的参数为父子关系
+				// 如：
+				//	public FactoryBeanTest(Object abc) {}
+				//	public FactoryBeanTest(String abc) {}
 				int typeDiffWeight = (mbd.isLenientConstructorResolution() ?
 						argsHolder.getTypeDifferenceWeight(paramTypes) : argsHolder.getAssignabilityWeight(paramTypes));
 				// Choose this constructor if it represents the closest match.

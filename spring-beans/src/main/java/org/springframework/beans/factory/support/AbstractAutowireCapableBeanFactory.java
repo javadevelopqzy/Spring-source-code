@@ -614,10 +614,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// 暴露bean的后续处理
 		if (earlySingletonExposure) {
 			// 传入false，如果存在循环依赖说明earlySingletonObjects已经包含此bean，从该集合获取
-			// 如果不存在循环依赖，earlySingletonObjects中没有此bean，earlySingletonReference = null
+			// 如果不存在循环依赖，earlySingletonObjects中没有此bean，此处为空
 			Object earlySingletonReference = getSingleton(beanName, false);
 			if (earlySingletonReference != null) {
-				// 如果exposedObject有被增强，则不等于bean
+				// exposedObject是增强后的bean，
+				// 如果此处==bean说明，bean没有被增强
 				if (exposedObject == bean) {
 					exposedObject = earlySingletonReference;
 				}
@@ -1303,10 +1304,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			final BeanFactory parent = this;
 			if (System.getSecurityManager() != null) {
 				beanInstance = AccessController.doPrivileged((PrivilegedAction<Object>) () ->
+						// 使用默认构造函数实例化bean
 						getInstantiationStrategy().instantiate(mbd, beanName, parent),
 						getAccessControlContext());
 			}
 			else {
+				// 使用默认构造函数实例化bean
 				beanInstance = getInstantiationStrategy().instantiate(mbd, beanName, parent);
 			}
 			BeanWrapper bw = new BeanWrapperImpl(beanInstance);
