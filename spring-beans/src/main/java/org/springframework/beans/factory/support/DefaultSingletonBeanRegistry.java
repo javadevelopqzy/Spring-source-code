@@ -65,6 +65,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 	/** Cache of singleton factories: bean name to ObjectFactory. */
 	// 缓存beanName对应的ObjectFactory，bean创建完成之后会从此集合移除，这是一个临时工
+	// 缓存ObjectFactory的实现：有代理处理代理调用，没有则直接返回bean
 	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
 
 	/** Cache of early singleton objects: bean name to bean instance. */
@@ -185,7 +186,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
 		// 从已经实例化的容器中取
 		Object singletonObject = this.singletonObjects.get(beanName);
-		// 如果没有获取到，并且bean正在创建
+		// 如果没有获取到，并且bean正在创建，尝试从临时工中获取
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
 			synchronized (this.singletonObjects) {
 				singletonObject = this.earlySingletonObjects.get(beanName);
@@ -307,6 +308,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		}
 	}
 
+	// 判断此bean是否已经注册
 	@Override
 	public boolean containsSingleton(String beanName) {
 		return this.singletonObjects.containsKey(beanName);

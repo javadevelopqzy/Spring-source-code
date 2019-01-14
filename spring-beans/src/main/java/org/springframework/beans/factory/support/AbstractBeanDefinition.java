@@ -16,14 +16,6 @@
 
 package org.springframework.beans.factory.support;
 
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-
 import org.springframework.beans.BeanMetadataAttributeAccessor;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -36,6 +28,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Constructor;
+import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * Base class for concrete, full-fledged {@link BeanDefinition} classes,
@@ -1156,7 +1152,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 			synchronized (overrides) {
 				// 遍历所有需要覆盖的方法
 				for (MethodOverride mo : overrides) {
-					// 方法覆盖的校验
+					// 方法的校验和参数标记
 					prepareMethodOverride(mo);
 				}
 			}
@@ -1170,7 +1166,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * @param mo the MethodOverride object to validate
 	 * @throws BeanDefinitionValidationException in case of validation failure
 	 */
-	// 方法的校验和标记
+	// 方法的校验和参数标记
 	protected void prepareMethodOverride(MethodOverride mo) throws BeanDefinitionValidationException {
 		// 获取方法的个数
 		int count = ClassUtils.getMethodCountForName(getBeanClass(), mo.getMethodName());
