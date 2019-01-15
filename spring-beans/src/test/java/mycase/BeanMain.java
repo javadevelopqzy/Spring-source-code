@@ -4,7 +4,7 @@ import mycase.factory.FactoryBeanTest;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 
-public class Main {
+public class BeanMain {
 
 	public static void main(String[] args) {
 		ClassPathResource resource = new ClassPathResource("applicationContext.xml");

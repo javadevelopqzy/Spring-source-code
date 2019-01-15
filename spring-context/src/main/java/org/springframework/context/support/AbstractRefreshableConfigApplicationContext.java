@@ -73,11 +73,14 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	 * Set the config locations for this application context.
 	 * <p>If not set, the implementation may use a default as appropriate.
 	 */
+	// 解析传入路径，并保存到configLocations数组中
 	public void setConfigLocations(@Nullable String... locations) {
 		if (locations != null) {
 			Assert.noNullElements(locations, "Config locations must not be null");
 			this.configLocations = new String[locations.length];
 			for (int i = 0; i < locations.length; i++) {
+				// 解析传入路径，并保存到configLocations数组中
+				// 如果路径包含系统变量如：${path}，会从系统变量中解析路径
 				this.configLocations[i] = resolvePath(locations[i]).trim();
 			}
 		}
