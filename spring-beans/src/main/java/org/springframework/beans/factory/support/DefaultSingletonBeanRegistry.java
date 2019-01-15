@@ -95,6 +95,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	private boolean singletonsCurrentlyInDestruction = false;
 
 	/** Disposable bean instances: bean name to disposable instance. */
+	// 缓存DisposableBean
 	private final Map<String, Object> disposableBeans = new LinkedHashMap<>();
 
 	/** Map between containing bean names: bean name to Set of bean names that the bean contains. */
@@ -397,6 +398,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @param beanName the name of the bean
 	 * @param bean the bean instance
 	 */
+	// 缓存DisposableBean，value是包装类：DisposableBeanAdapter
 	public void registerDisposableBean(String beanName, DisposableBean bean) {
 		synchronized (this.disposableBeans) {
 			this.disposableBeans.put(beanName, bean);
