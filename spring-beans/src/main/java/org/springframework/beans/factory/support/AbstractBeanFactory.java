@@ -151,6 +151,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	// Implementation of BeanFactory interface
 	//---------------------------------------------------------------------
 
+	// 根据bean名称获取bean
 	@Override
 	public Object getBean(String name) throws BeansException {
 		// 根据bean名称获取bean
@@ -386,13 +387,16 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		return (T) bean;
 	}
 
+	// 判断此bean是否已经注册（是否有bean实例或者BeanDefinition）
 	@Override
 	public boolean containsBean(String name) {
+		// 转换bean名称，即把前面的&去掉
 		String beanName = transformedBeanName(name);
 		if (containsSingleton(beanName) || containsBeanDefinition(beanName)) {
 			return (!BeanFactoryUtils.isFactoryDereference(name) || isFactoryBean(name));
 		}
 		// Not found -> check parent.
+		// 子BeanFactory没有找到，找父的BeanFactory
 		BeanFactory parentBeanFactory = getParentBeanFactory();
 		return (parentBeanFactory != null && parentBeanFactory.containsBean(originalBeanName(name)));
 	}
@@ -870,6 +874,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @see #addBeanPostProcessor
 	 * @see org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor
 	 */
+	// 标识是否已经有InstantiationAwareBeanPostProcessor的实例
 	protected boolean hasInstantiationAwareBeanPostProcessors() {
 		return this.hasInstantiationAwareBeanPostProcessors;
 	}
@@ -1112,7 +1117,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @param name the user-specified name
 	 * @return the transformed bean name
 	 */
-	// 转换bean名称，因为传入的name可能是alias，或者factoryBean
+	// 转换bean名称，即把前面的&去掉，因为传入的name可能是alias，或者factoryBean
 	protected String transformedBeanName(String name) {
 		// transformedBeanName：去除name前面的&
 		// canonicalName：name如果是别名则通过映射找到真正bean

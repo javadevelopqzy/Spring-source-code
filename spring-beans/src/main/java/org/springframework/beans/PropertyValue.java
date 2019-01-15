@@ -49,6 +49,7 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 
 	private boolean optional = false;
 
+	// 标识，此属性是否已经被转换为实际的类型，因为从配置文件读取的都是String
 	private boolean converted = false;
 
 	@Nullable
@@ -164,6 +165,7 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 	 * Return whether this holder contains a converted value already ({@code true}),
 	 * or whether the value still needs to be converted ({@code false}).
 	 */
+	// 标识，此属性是否已经被转换为实际的类型，因为从配置文件读取的都是String
 	public synchronized boolean isConverted() {
 		return this.converted;
 	}
