@@ -64,13 +64,16 @@ import org.springframework.lang.Nullable;
  */
 public abstract class AbstractRefreshableApplicationContext extends AbstractApplicationContext {
 
+	// 相同name的bean是否允许覆盖
 	@Nullable
 	private Boolean allowBeanDefinitionOverriding;
 
+	// 是否允许循环依赖
 	@Nullable
 	private Boolean allowCircularReferences;
 
 	/** Bean factory for this context. */
+	// bean的核心：DefaultListableBeanFactory
 	@Nullable
 	private DefaultListableBeanFactory beanFactory;
 
@@ -120,17 +123,24 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * bean factory, shutting down the previous bean factory (if any) and
 	 * initializing a fresh bean factory for the next phase of the context's lifecycle.
 	 */
+	// 初始化beanFactory，读取XML，并加载
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
+		// 判断是否已经存在beanFactory，如果已经存在则需要销毁
 		if (hasBeanFactory()) {
 			destroyBeans();
 			closeBeanFactory();
 		}
 		try {
+			// 创建DefaultListableBeanFactory对象
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
+			// 设置唯一的ID
 			beanFactory.setSerializationId(getId());
+			// 设置：（1）是否允许循环依赖（2）相同name的bean是否可以覆盖。默认都是true
 			customizeBeanFactory(beanFactory);
+			// 加载xml，回到XML的读取、加载逻辑
 			loadBeanDefinitions(beanFactory);
+			// beanFactory赋值
 			synchronized (this.beanFactoryMonitor) {
 				this.beanFactory = beanFactory;
 			}
@@ -164,6 +174,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * Determine whether this context currently holds a bean factory,
 	 * i.e. has been refreshed at least once and not been closed yet.
 	 */
+	// 判断是否已经存在beanFactory
 	protected final boolean hasBeanFactory() {
 		synchronized (this.beanFactoryMonitor) {
 			return (this.beanFactory != null);
@@ -203,6 +214,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowCircularReferences
 	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowRawInjectionDespiteWrapping
 	 */
+	// 创建DefaultListableBeanFactory对象，并尝试获取它的父对象，并进行赋值
 	protected DefaultListableBeanFactory createBeanFactory() {
 		return new DefaultListableBeanFactory(getInternalParentBeanFactory());
 	}
@@ -221,10 +233,13 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * @see DefaultListableBeanFactory#setAllowRawInjectionDespiteWrapping
 	 * @see DefaultListableBeanFactory#setAllowEagerClassLoading
 	 */
+	// 设置，相同name的bean是否允许覆盖
 	protected void customizeBeanFactory(DefaultListableBeanFactory beanFactory) {
+		// 相同name的bean是否允许覆盖
 		if (this.allowBeanDefinitionOverriding != null) {
 			beanFactory.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
 		}
+		// 是否允许循环依赖
 		if (this.allowCircularReferences != null) {
 			beanFactory.setAllowCircularReferences(this.allowCircularReferences);
 		}
