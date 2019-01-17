@@ -12,6 +12,7 @@
 	</bean>
 	<bean name="bean3" class="mycase.cycle.Bean3">
 		<property name="bean1" ref="bean1"/>
+		<property name="date" value="2018-01-05" />
 	</bean>
 
 	<bean name="fac" class="mycase.factory.FactoryBeanTest2"/>
@@ -20,5 +21,14 @@
 
 	<bean class="mycase.factory.FactoryBeanTest">
 		<constructor-arg name="abc" value="123"/>
+	</bean>
+
+	<!-- 实现自定义的日期转换器 -->
+	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+		<property name="customEditors">
+			<map>
+				<entry key="java.util.Date" value="mycase.propertyedit.DatePropertyEditor" />
+			</map>
+		</property>
 	</bean>
 </beans>

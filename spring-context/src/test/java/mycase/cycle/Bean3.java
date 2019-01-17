@@ -1,8 +1,12 @@
 package mycase.cycle;
 
+import java.util.*;
+
 public class Bean3 {
 
 	Bean1 bean1;
+
+	Date date;
 
 	public void str() {
 		bean1.str();
@@ -16,4 +20,11 @@ public class Bean3 {
 		this.bean1 = bean1;
 	}
 
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
 }
