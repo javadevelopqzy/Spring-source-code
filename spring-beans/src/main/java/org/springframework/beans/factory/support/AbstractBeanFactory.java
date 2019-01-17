@@ -86,10 +86,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	private BeanExpressionResolver beanExpressionResolver;
 
 	/** Spring ConversionService to use instead of PropertyEditors. */
+	// Spring中代替内省PropertyEditors的类型转换的接口
 	@Nullable
 	private ConversionService conversionService;
 
 	/** Custom PropertyEditorRegistrars to apply to the beans of this factory. */
+	// 缓存自定义的PropertyEditorRegistrars（PropertyEditor的注册中心）
 	private final Set<PropertyEditorRegistrar> propertyEditorRegistrars = new LinkedHashSet<>(4);
 
 	/** Custom PropertyEditors to apply to the beans of this factory. */
@@ -1146,8 +1148,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * Can be overridden in subclasses.
 	 * @param bw the BeanWrapper to initialize
 	 */
+	// 初始化beanWrapper的类型转换器PropertyEditor
 	protected void initBeanWrapper(BeanWrapper bw) {
 		bw.setConversionService(getConversionService());
+		// 初始化beanWrapper的类型转换器PropertyEditor
 		registerCustomEditors(bw);
 	}
 
@@ -1159,6 +1163,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * and factory method type conversion.
 	 * @param registry the PropertyEditorRegistry to initialize
 	 */
+	// 初始化指定的PropertyEditorRegistry
 	protected void registerCustomEditors(PropertyEditorRegistry registry) {
 		PropertyEditorRegistrySupport registrySupport =
 				(registry instanceof PropertyEditorRegistrySupport ? (PropertyEditorRegistrySupport) registry : null);

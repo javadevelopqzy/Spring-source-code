@@ -1317,6 +1317,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				beanInstance = getInstantiationStrategy().instantiate(mbd, beanName, parent);
 			}
 			BeanWrapper bw = new BeanWrapperImpl(beanInstance);
+			// 初始化beanWrapper的类型转换器PropertyEditor
 			initBeanWrapper(bw);
 			return bw;
 		}
