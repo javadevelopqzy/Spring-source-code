@@ -28,12 +28,17 @@ import org.springframework.util.Assert;
  * @see BeanDefinition#getPropertyValues()
  * @see org.springframework.beans.factory.BeanFactory#getBean
  */
+// 包装bean的引用属性类，如：<property name="a" ref="bean1">
+// 则会创建一个此类对象，beanName="bean1"
 public class RuntimeBeanReference implements BeanReference {
 
+	// 原始bean所依赖的beanName（可能是id，name，别名等）
 	private final String beanName;
 
+	// 标记<ref>节点是否有配置parent属性
 	private final boolean toParent;
 
+	// <meta>标签的内容，很少用到
 	@Nullable
 	private Object source;
 
@@ -72,6 +77,7 @@ public class RuntimeBeanReference implements BeanReference {
 	 * Return whether this is an explicit reference to a bean
 	 * in the parent factory.
 	 */
+	// 是否配置了parent属性
 	public boolean isToParent() {
 		return this.toParent;
 	}
@@ -80,6 +86,7 @@ public class RuntimeBeanReference implements BeanReference {
 	 * Set the configuration source {@code Object} for this metadata element.
 	 * <p>The exact type of the object will depend on the configuration mechanism used.
 	 */
+	// <meta>标签的内容，很少用到
 	public void setSource(@Nullable Object source) {
 		this.source = source;
 	}

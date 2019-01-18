@@ -42,16 +42,30 @@ import org.springframework.util.ObjectUtils;
 @SuppressWarnings("serial")
 public class PropertyValue extends BeanMetadataAttributeAccessor implements Serializable {
 
+	// 属性的name（key）
 	private final String name;
 
+	// 属性值未转换前的value
+	// Spring定义了多种封装类型，此值可能是以下对象：
+	// （1）BeanDefinitionHolder对象：<property>配置中有其他命名空间的XML节点
+	// （2）RuntimeBeanReference对象：<property>配置了<ref>，bean依赖的另一个bean配置了<ref>时
+	// （3）RuntimeBeanNameReference对象：<property>配置了<idref>标签，bean依赖的另一个bean配置了<idref>时
+	// （4）TypedStringValue对象：<property>配置了value属性，先存在此包装类，实际类型未知
+	// （5）ManagedArray对象：<property>配置了array标签，保存此包装类
+	// （6）ManagedList对象：<property>配置了list标签，保存此包装类
+	// （7）ManagedSet对象：<property>配置了set标签，保存此包装类
+	// （8）ManagedMap对象：<property>配置了map标签，保存此包装类
+	// （9）ManagedProperties对象：<property>配置了prop标签，保存此包装类
 	@Nullable
 	private final Object value;
 
+	// 标识，是否是可选属性，如果是可选的，找不到此property的value时，将会忽略
 	private boolean optional = false;
 
 	// 标识，此属性是否已经被转换为实际的类型，因为从配置文件读取的都是String
 	private boolean converted = false;
 
+	// 转换后的值，如果原始值不需要转换则为空
 	@Nullable
 	private Object convertedValue;
 
@@ -157,6 +171,7 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 	 * when no corresponding property exists on the target class.
 	 * @since 3.0
 	 */
+	// 判断是否是可选的，如果是可选的，找不到此property的value时，将会忽略
 	public boolean isOptional() {
 		return this.optional;
 	}
@@ -166,6 +181,7 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 	 * or whether the value still needs to be converted ({@code false}).
 	 */
 	// 标识，此属性是否已经被转换为实际的类型，因为从配置文件读取的都是String
+	// 当转换成功后设置为true
 	public synchronized boolean isConverted() {
 		return this.converted;
 	}
@@ -174,6 +190,7 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 	 * Set the converted value of the constructor argument,
 	 * after processed type conversion.
 	 */
+	// 设置转换后的值
 	public synchronized void setConvertedValue(@Nullable Object value) {
 		this.converted = true;
 		this.convertedValue = value;

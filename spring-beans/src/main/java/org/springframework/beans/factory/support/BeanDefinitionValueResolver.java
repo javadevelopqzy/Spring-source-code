@@ -101,6 +101,7 @@ class BeanDefinitionValueResolver {
 	 * @param value the value object to resolve
 	 * @return the resolved object
 	 */
+	// 传入的PropertyValue
 	@Nullable
 	public Object resolveValueIfNecessary(Object argName, @Nullable Object value) {
 		// We must check each value to see whether it requires a runtime reference

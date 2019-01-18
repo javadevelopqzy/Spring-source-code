@@ -605,7 +605,7 @@ public class BeanDefinitionParserDelegate {
 		}
 		bd.setLazyInit(TRUE_VALUE.equals(lazyInit));
 
-		// 处理autowire属性
+		// 处理autowire属性，默认为default
 		String autowire = ele.getAttribute(AUTOWIRE_ATTRIBUTE);
 		bd.setAutowireMode(getAutowireMode(autowire));
 
@@ -698,6 +698,9 @@ public class BeanDefinitionParserDelegate {
 		}
 	}
 
+	// 根据attValue配置，获取该bean的autowireMode
+	// 支持配置：byName，byType，constructor，autodetect
+	// 一般是不会配置，默认为default
 	@SuppressWarnings("deprecation")
 	public int getAutowireMode(String attValue) {
 		String att = attValue;
@@ -1030,7 +1033,7 @@ public class BeanDefinitionParserDelegate {
 		else if (subElement != null) {
 			return parsePropertySubElement(subElement, bd);
 		}
-		// 否则报错
+		// 否则记录错误信息
 		else {
 			// Neither child element nor "ref" or "value" attribute found.
 			error(elementName + " must specify a ref or value", ele);
@@ -1054,6 +1057,7 @@ public class BeanDefinitionParserDelegate {
 	// 解析<property>或<constructor-arg>标签的子标签
 	@Nullable
 	public Object parsePropertySubElement(Element ele, @Nullable BeanDefinition bd, @Nullable String defaultValueType) {
+		// 不是默认的命名空间，调用具体的命名空间对应类解析节点
 		if (!isDefaultNamespace(ele)) {
 			return parseNestedCustomElement(ele, bd);
 		}
@@ -1071,11 +1075,12 @@ public class BeanDefinitionParserDelegate {
 			// A generic reference to any name of any bean.
 			String refName = ele.getAttribute(BEAN_REF_ATTRIBUTE);
 			boolean toParent = false;
-			// 如果bean属性不存在，则解析parent
+			// 如果bean属性不存在，则解析parent属性
 			if (!StringUtils.hasLength(refName)) {
 				// A reference to the id of another bean in a parent context.
 				refName = ele.getAttribute(PARENT_REF_ATTRIBUTE);
 				toParent = true;
+				// parent属性也没有，报错
 				if (!StringUtils.hasLength(refName)) {
 					error("'bean' or 'parent' is required for <ref> element", ele);
 					return null;
@@ -1136,6 +1141,7 @@ public class BeanDefinitionParserDelegate {
 	/**
 	 * Return a typed String value Object for the given 'idref' element.
 	 */
+	// 解析<idref>标签，生成一个依赖类
 	@Nullable
 	public Object parseIdRefElement(Element ele) {
 		// A generic reference to any name of any bean.

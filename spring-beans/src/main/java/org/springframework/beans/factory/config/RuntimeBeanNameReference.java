@@ -29,8 +29,10 @@ import org.springframework.util.Assert;
  * @see BeanDefinition#getPropertyValues()
  * @see org.springframework.beans.factory.BeanFactory#getBean
  */
+// 配置了<idref>标签会生成一个此类对象，指定的引用依赖是另一个bean的name
 public class RuntimeBeanNameReference implements BeanReference {
 
+	// 所依赖bean的name
 	private final String beanName;
 
 	@Nullable
