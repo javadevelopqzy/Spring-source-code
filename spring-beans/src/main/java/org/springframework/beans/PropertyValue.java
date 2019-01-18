@@ -16,11 +16,11 @@
 
 package org.springframework.beans;
 
-import java.io.Serializable;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+
+import java.io.Serializable;
 
 /**
  * Object to hold information and value for an individual bean property.
@@ -45,7 +45,7 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 	// 属性的name（key）
 	private final String name;
 
-	// 属性值未转换前的value
+	// 属性未转换前的value
 	// Spring定义了多种封装类型，此值可能是以下对象：
 	// （1）BeanDefinitionHolder对象：<property>配置中有其他命名空间的XML节点
 	// （2）RuntimeBeanReference对象：<property>配置了<ref>，bean依赖的另一个bean配置了<ref>时
@@ -137,6 +137,7 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 	 * It is the responsibility of the BeanWrapper implementation to
 	 * perform type conversion.
 	 */
+	// 属性未转换前的value
 	@Nullable
 	public Object getValue() {
 		return this.value;

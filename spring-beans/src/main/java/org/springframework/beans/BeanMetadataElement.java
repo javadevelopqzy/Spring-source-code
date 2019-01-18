@@ -25,6 +25,7 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 2.0
  */
+// 实现此接口可以获得<meta>的信息
 public interface BeanMetadataElement {
 
 	/**

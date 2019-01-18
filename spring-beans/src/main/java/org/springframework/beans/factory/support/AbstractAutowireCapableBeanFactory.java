@@ -1751,6 +1751,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				String propertyName = pv.getName();
 				Object originalValue = pv.getValue();
 				// 解析为实际的类型，可能属性配置的是<map>、<list>等，这里解析成对应对象
+				// 把property原始封装类型（RuntimeBeanNameReference）解析为实际的类型
 				Object resolvedValue = valueResolver.resolveValueIfNecessary(pv, originalValue);
 				Object convertedValue = resolvedValue;
 				boolean convertible = bw.isWritableProperty(propertyName) &&
