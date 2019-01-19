@@ -35,14 +35,19 @@ import org.springframework.util.ObjectUtils;
  * @see BeanDefinition#getPropertyValues
  * @see org.springframework.beans.MutablePropertyValues#addPropertyValue
  */
+// String类型的<property>，实际类型可能需要解析
+// 如：<property value="2018-05-01"> 对应的属性可能是Date类型，需要转换
 public class TypedStringValue implements BeanMetadataElement {
 
+	// 属性的原始字符串
 	@Nullable
 	private String value;
 
+	// <value>的type属性，如果解析xml时能通过Class.forName构造出来则，此对象是class，否则是String
 	@Nullable
 	private volatile Object targetType;
 
+	// meta属性
 	@Nullable
 	private Object source;
 

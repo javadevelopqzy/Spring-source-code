@@ -9,14 +9,16 @@
 	</bean>
 	<bean name="bean2" class="mycase.cycle.Bean2">
 		<property name="bean3">
-			<ref bean="bean3" />
+			<ref bean="bean3"/>
 		</property>
 	</bean>
 	<bean name="bean3" class="mycase.cycle.Bean3">
-		<property name="date" value="2018-01-05"/>
+		<property name="date">
+			<value type="java.util.Date">2018-01-05</value>
+		</property>
 	</bean>
 
-	<bean name="fac" class="mycase.factory.FactoryBeanTest2" />
+	<bean name="fac" class="mycase.factory.FactoryBeanTest2"/>
 
 	<bean name="factory" factory-bean="fac" factory-method="getObject"/>
 
@@ -24,11 +26,20 @@
 		<constructor-arg name="abc" value="123"/>
 	</bean>
 
+	<bean name="containListBean" class="mycase.property.bean.ContainListBean">
+		<property name="list">
+			<array>
+				<value>123</value>
+				<value>456a</value>
+			</array>
+		</property>
+	</bean>
+
 	<!-- 实现自定义的日期转换器 -->
 	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
 		<property name="customEditors">
 			<map>
-				<entry key="java.util.Date" value="mycase.propertyedit.DatePropertyEditor"/>
+				<entry key="java.util.Date" value="mycase.property.edit.DatePropertyEditor"/>
 			</map>
 		</property>
 	</bean>

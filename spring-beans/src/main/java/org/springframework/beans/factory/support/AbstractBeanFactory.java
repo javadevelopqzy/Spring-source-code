@@ -1686,6 +1686,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * an inner bean created with this name.
 	 * @param beanName the name to check
 	 */
+	// 判断bean是否已经被使用：（1）存在别名（2）已经被加载（3）已经被其他bean依赖
 	public boolean isBeanNameInUse(String beanName) {
 		return isAlias(beanName) || containsLocalBean(beanName) || hasDependentBean(beanName);
 	}

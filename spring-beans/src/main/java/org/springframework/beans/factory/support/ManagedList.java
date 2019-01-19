@@ -33,12 +33,15 @@ import org.springframework.lang.Nullable;
  * @since 27.05.2003
  * @param <E> the element type
  */
+// <property>字标签<list>的包装类
+//
 @SuppressWarnings("serial")
 public class ManagedList<E> extends ArrayList<E> implements Mergeable, BeanMetadataElement {
 
 	@Nullable
 	private Object source;
 
+	// <list>标签的value-type属性
 	@Nullable
 	private String elementTypeName;
 
@@ -70,6 +73,7 @@ public class ManagedList<E> extends ArrayList<E> implements Mergeable, BeanMetad
 	/**
 	 * Set the default element type name (class name) to be used for this list.
 	 */
+	// <list>标签的value-type属性
 	public void setElementTypeName(String elementTypeName) {
 		this.elementTypeName = elementTypeName;
 	}
@@ -77,6 +81,7 @@ public class ManagedList<E> extends ArrayList<E> implements Mergeable, BeanMetad
 	/**
 	 * Return the default element type name (class name) to be used for this list.
 	 */
+	// <list>标签的value-type属性
 	@Nullable
 	public String getElementTypeName() {
 		return this.elementTypeName;
@@ -95,6 +100,7 @@ public class ManagedList<E> extends ArrayList<E> implements Mergeable, BeanMetad
 		return this.mergeEnabled;
 	}
 
+	// 合并两个集合
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<E> merge(@Nullable Object parent) {

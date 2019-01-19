@@ -1,4 +1,4 @@
-package mycase.propertyedit;
+package mycase.property.edit;
 
 import java.lang.reflect.*;
 

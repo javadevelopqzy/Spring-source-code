@@ -41,12 +41,15 @@ import org.springframework.util.StringUtils;
  * @author Rob Harrop
  * @since 13 May 2001
  */
-// PropertyValues的实现，包含bean的所有属性（properties）的类
+// PropertyValues的实现，包含bean的所有属性（property）的类
+// 每个beanDefinition包含一个此类对象
 @SuppressWarnings("serial")
 public class MutablePropertyValues implements PropertyValues, Serializable {
 
+	// 所有的property属性
 	private final List<PropertyValue> propertyValueList;
 
+	// 记录正在处理的属性名
 	@Nullable
 	private Set<String> processedProperties;
 

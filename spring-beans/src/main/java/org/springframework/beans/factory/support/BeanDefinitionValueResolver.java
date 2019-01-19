@@ -45,14 +45,19 @@ import java.util.*;
  * @since 1.2
  * @see AbstractAutowireCapableBeanFactory
  */
+// BeanDefinition的属性解析类
+// beanFactory会在解析每个beanDefinition的property时创建一个此类，用于解析property，？？并设置到bean对象中？？
 class BeanDefinitionValueResolver {
 
+	// 加载BeanDefinition的beanFactory
 	private final AbstractBeanFactory beanFactory;
 
+	// bean的名称
 	private final String beanName;
 
 	private final BeanDefinition beanDefinition;
 
+	// 属性类型转换类，这里是beanWrapper
 	private final TypeConverter typeConverter;
 
 
@@ -96,12 +101,12 @@ class BeanDefinitionValueResolver {
 	public Object resolveValueIfNecessary(Object argName, @Nullable Object value) {
 		// We must check each value to see whether it requires a runtime reference
 		// to another bean to be resolved.
-		// 解析RuntimeBeanReference，通过beanName依赖bean
-		// ￥￥￥￥￥￥
+		// 解析RuntimeBeanReference，通过beanName依赖bean，并返回
 		if (value instanceof RuntimeBeanReference) {
 			RuntimeBeanReference ref = (RuntimeBeanReference) value;
 			return resolveReference(argName, ref);
 		}
+		// <idref>类型的依赖，直接返回beanName字符串
 		else if (value instanceof RuntimeBeanNameReference) {
 			String refName = ((RuntimeBeanNameReference) value).getBeanName();
 			refName = String.valueOf(doEvaluate(refName));
@@ -111,11 +116,14 @@ class BeanDefinitionValueResolver {
 			}
 			return refName;
 		}
+		// 对于<property>嵌入非命名空间标签的元素进行解析
 		else if (value instanceof BeanDefinitionHolder) {
 			// Resolve BeanDefinitionHolder: contains BeanDefinition with name and aliases.
 			BeanDefinitionHolder bdHolder = (BeanDefinitionHolder) value;
+			// 根据beanDefinition和beanName解析bean
 			return resolveInnerBean(argName, bdHolder.getBeanName(), bdHolder.getBeanDefinition());
 		}
+		// 内部bean解析
 		else if (value instanceof BeanDefinition) {
 			// Resolve plain BeanDefinition, without contained name: use dummy name.
 			BeanDefinition bd = (BeanDefinition) value;
@@ -123,12 +131,16 @@ class BeanDefinitionValueResolver {
 					ObjectUtils.getIdentityHexString(bd);
 			return resolveInnerBean(argName, innerBeanName, bd);
 		}
+		// 对于<array>节点加载后的封装对象ManagedArray解析
 		else if (value instanceof ManagedArray) {
 			// May need to resolve contained runtime references.
 			ManagedArray array = (ManagedArray) value;
 			Class<?> elementType = array.resolvedElementType;
+			// 进行类型转换
 			if (elementType == null) {
+				// 获取<list>标签的value-type属性
 				String elementTypeName = array.getElementTypeName();
+				// 有指定类型，获取指定的类型class
 				if (StringUtils.hasText(elementTypeName)) {
 					try {
 						elementType = ClassUtils.forName(elementTypeName, this.beanFactory.getBeanClassLoader());
@@ -145,28 +157,39 @@ class BeanDefinitionValueResolver {
 					elementType = Object.class;
 				}
 			}
+			// 解析<array>配置的元素，并生成数组对象
 			return resolveManagedArray(argName, (List<?>) value, elementType);
 		}
+		// 对于<list>节点加载后的封装对象ManagedList解析，
+		// 其实就是new一个ArrayList，然后解析元素放进去
 		else if (value instanceof ManagedList) {
 			// May need to resolve contained runtime references.
 			return resolveManagedList(argName, (List<?>) value);
 		}
+		// 对于<set>节点加载后的封装对象ManagedSet解析，
+		// 其实就是new一个LinkedHashSet，然后解析元素放进去
 		else if (value instanceof ManagedSet) {
 			// May need to resolve contained runtime references.
 			return resolveManagedSet(argName, (Set<?>) value);
 		}
+		// 对于<map>节点加载后的封装对象ManagedMap解析，
+		// 其实就是new一个LinkedHashMap，然后解析key，value放进去
 		else if (value instanceof ManagedMap) {
 			// May need to resolve contained runtime references.
 			return resolveManagedMap(argName, (Map<?, ?>) value);
 		}
+		// 对于<map>节点加载后的封装对象ManagedProperties解析，
+		// 其实就是new一个Properties，然后把key，value放进去
 		else if (value instanceof ManagedProperties) {
 			Properties original = (Properties) value;
 			Properties copy = new Properties();
 			original.forEach((propKey, propValue) -> {
 				if (propKey instanceof TypedStringValue) {
+					// 判断是否包含SpEL表达式，如果包含解析出对应的内容
 					propKey = evaluate((TypedStringValue) propKey);
 				}
 				if (propValue instanceof TypedStringValue) {
+					// 判断是否包含SpEL表达式，如果包含解析出对应的内容
 					propValue = evaluate((TypedStringValue) propValue);
 				}
 				if (propKey == null || propValue == null) {
@@ -178,13 +201,17 @@ class BeanDefinitionValueResolver {
 			});
 			return copy;
 		}
+		// 解析所有配置字符串的属性：TypedStringValue类型
 		else if (value instanceof TypedStringValue) {
 			// Convert value to target type here.
 			TypedStringValue typedStringValue = (TypedStringValue) value;
+			// 判断是否包含SpEL表达式，如果包含解析出对应的内容
 			Object valueObject = evaluate(typedStringValue);
 			try {
+				// 如果<value>有配置type属性，则获取实际的类型
 				Class<?> resolvedTargetType = resolveTargetType(typedStringValue);
 				if (resolvedTargetType != null) {
+					// 根据属性配置，把字符串转换成对应的对象
 					return this.typeConverter.convertIfNecessary(valueObject, resolvedTargetType);
 				}
 				else {
@@ -211,6 +238,7 @@ class BeanDefinitionValueResolver {
 	 * @param value the candidate value (may be an expression)
 	 * @return the resolved value
 	 */
+	// 判断是否包含SpEL表达式，如果包含解析出对应的内容
 	@Nullable
 	protected Object evaluate(TypedStringValue value) {
 		Object result = doEvaluate(value.getValue());
@@ -282,28 +310,37 @@ class BeanDefinitionValueResolver {
 	 * @param innerBd the bean definition for the inner bean
 	 * @return the resolved inner bean instance
 	 */
+	// 解析、并初始化当前bean内部包含的bean
+	// innerBeanName、innerBd是内部bean的，而非当前bean
 	@Nullable
 	private Object resolveInnerBean(Object argName, String innerBeanName, BeanDefinition innerBd) {
 		RootBeanDefinition mbd = null;
 		try {
+			// 合并为RootBeanDefinition
 			mbd = this.beanFactory.getMergedBeanDefinition(innerBeanName, innerBd, this.beanDefinition);
 			// Check given bean name whether it is unique. If not already unique,
 			// add counter - increasing the counter until the name is unique.
 			String actualInnerBeanName = innerBeanName;
-			if (mbd.isSingleton()) {
+			// 单例bean，给bean重新命名，规则：beanName + '#' + N（从1开始的整数）
+ 			if (mbd.isSingleton()) {
 				actualInnerBeanName = adaptInnerBeanName(innerBeanName);
 			}
+			// 缓存两个bean的依赖关系
 			this.beanFactory.registerContainedBean(actualInnerBeanName, this.beanName);
 			// Guarantee initialization of beans that the inner bean depends on.
+			// 如果bean有depend-on，先加载它依赖的bean
 			String[] dependsOn = mbd.getDependsOn();
 			if (dependsOn != null) {
 				for (String dependsOnBean : dependsOn) {
+					// 缓存依赖关系，并初始化dependsOnBean
 					this.beanFactory.registerDependentBean(dependsOnBean, actualInnerBeanName);
 					this.beanFactory.getBean(dependsOnBean);
 				}
 			}
 			// Actually create the inner bean instance now...
+			// 正式初始化bean对象
 			Object innerBean = this.beanFactory.createBean(actualInnerBeanName, mbd, null);
+			// factoryBean的处理
 			if (innerBean instanceof FactoryBean) {
 				boolean synthetic = mbd.isSynthetic();
 				innerBean = this.beanFactory.getObjectFromFactoryBean(
@@ -329,11 +366,15 @@ class BeanDefinitionValueResolver {
 	 * @param innerBeanName the original name for the inner bean
 	 * @return the adapted name for the inner bean
 	 */
+	// 给bean命名，如果之前已经有bean与innerBeanName相同
+	// 则innerBeanName = innerBeanName + # + N，直到名称唯一才返回
 	private String adaptInnerBeanName(String innerBeanName) {
 		String actualInnerBeanName = innerBeanName;
 		int counter = 0;
+		// 判断名称是否有冲突
 		while (this.beanFactory.isBeanNameInUse(actualInnerBeanName)) {
 			counter++;
+			// 有冲突，重新命名innerBeanName = innerBeanName + # + N
 			actualInnerBeanName = innerBeanName + BeanFactoryUtils.GENERATED_BEAN_NAME_SEPARATOR + counter;
 		}
 		return actualInnerBeanName;
@@ -384,10 +425,12 @@ class BeanDefinitionValueResolver {
 	/**
 	 * For each element in the managed array, resolve reference if necessary.
 	 */
+	// 解析<array>配置的元素，并生成数组对象
 	private Object resolveManagedArray(Object argName, List<?> ml, Class<?> elementType) {
 		Object resolved = Array.newInstance(elementType, ml.size());
 		for (int i = 0; i < ml.size(); i++) {
 			Array.set(resolved, i,
+					// 递归解析<array>配置的元素实际类型
 					resolveValueIfNecessary(new KeyedArgName(argName, i), ml.get(i)));
 		}
 		return resolved;
@@ -396,6 +439,8 @@ class BeanDefinitionValueResolver {
 	/**
 	 * For each element in the managed list, resolve reference if necessary.
 	 */
+	// 对于<list>节点加载后的封装对象ManagedList解析，
+	// 其实就是new一个ArrayList，然后解析元素放进去
 	private List<?> resolveManagedList(Object argName, List<?> ml) {
 		List<Object> resolved = new ArrayList<>(ml.size());
 		for (int i = 0; i < ml.size(); i++) {
@@ -408,6 +453,8 @@ class BeanDefinitionValueResolver {
 	/**
 	 * For each element in the managed set, resolve reference if necessary.
 	 */
+	// 对于<set>节点加载后的封装对象ManagedSet解析，
+	// 其实就是new一个LinkedHashSet，然后解析元素放进去
 	private Set<?> resolveManagedSet(Object argName, Set<?> ms) {
 		Set<Object> resolved = new LinkedHashSet<>(ms.size());
 		int i = 0;
@@ -421,6 +468,8 @@ class BeanDefinitionValueResolver {
 	/**
 	 * For each element in the managed map, resolve reference if necessary.
 	 */
+	// 对于<map>节点加载后的封装对象ManagedMap解析，
+	// 其实就是new一个LinkedHashMap，然后解析key，value放进去
 	private Map<?, ?> resolveManagedMap(Object argName, Map<?, ?> mm) {
 		Map<Object, Object> resolved = new LinkedHashMap<>(mm.size());
 		mm.forEach((key, value) -> {

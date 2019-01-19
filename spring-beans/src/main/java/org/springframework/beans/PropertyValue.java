@@ -39,6 +39,7 @@ import java.io.Serializable;
  * @see PropertyValues
  * @see BeanWrapper
  */
+// bean的property属性，每一个此类对象对应bean注入的一个property
 @SuppressWarnings("serial")
 public class PropertyValue extends BeanMetadataAttributeAccessor implements Serializable {
 

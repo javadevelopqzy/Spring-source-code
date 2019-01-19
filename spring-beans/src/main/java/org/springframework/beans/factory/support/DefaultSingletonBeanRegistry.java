@@ -95,10 +95,11 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	private boolean singletonsCurrentlyInDestruction = false;
 
 	/** Disposable bean instances: bean name to disposable instance. */
-	// 缓存DisposableBean
+	// 缓存所有DisposableBean：beanName -> bean
 	private final Map<String, Object> disposableBeans = new LinkedHashMap<>();
 
 	/** Map between containing bean names: bean name to Set of bean names that the bean contains. */
+	// 缓存某个bean包含多个bean的集合，￥￥￥￥
 	private final Map<String, Set<String>> containedBeanMap = new ConcurrentHashMap<>(16);
 
 	/** Map between dependent bean names: bean name to Set of dependent bean names. */
@@ -414,6 +415,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @param containingBeanName the name of the containing (outer) bean
 	 * @see #registerDependentBean
 	 */
+	// 缓存bean的包含关系
+	// containedBeanName：被包含的bean（内部的bean）
 	public void registerContainedBean(String containedBeanName, String containingBeanName) {
 		synchronized (this.containedBeanMap) {
 			Set<String> containedBeans =
@@ -422,6 +425,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				return;
 			}
 		}
+		// 如果已经存在包含关系，则添加为依赖关系：被包含的bean依赖包含bean
 		registerDependentBean(containedBeanName, containingBeanName);
 	}
 
@@ -431,7 +435,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @param beanName the name of the bean
 	 * @param dependentBeanName the name of the dependent bean
 	 */
-	// 缓存bean的依赖，beanName:bean依赖集合
+	// 缓存bean的依赖，beanName:依赖的beanName集合
 	public void registerDependentBean(String beanName, String dependentBeanName) {
 		// 获取实际的beanName，name如果是别名则通过映射找到真正bean
 		String canonicalName = canonicalName(beanName);

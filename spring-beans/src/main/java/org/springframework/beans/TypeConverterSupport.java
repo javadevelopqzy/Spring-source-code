@@ -34,10 +34,12 @@ import org.springframework.util.Assert;
  */
 public abstract class TypeConverterSupport extends PropertyEditorRegistrySupport implements TypeConverter {
 
+	// 属性转换的委托类
 	@Nullable
 	TypeConverterDelegate typeConverterDelegate;
 
 
+	// 根据属性配置，把字符串转换成对应的对象
 	@Override
 	@Nullable
 	public <T> T convertIfNecessary(@Nullable Object value, @Nullable Class<T> requiredType) throws TypeMismatchException {
@@ -60,6 +62,7 @@ public abstract class TypeConverterSupport extends PropertyEditorRegistrySupport
 		return doConvert(value, requiredType, null, field);
 	}
 
+	// 把原始值value转换成对应的类型
 	@Nullable
 	private <T> T doConvert(@Nullable Object value,@Nullable Class<T> requiredType,
 			@Nullable MethodParameter methodParam, @Nullable Field field) throws TypeMismatchException {
