@@ -522,7 +522,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
-			// 对beanFactory的功能进行填充，如：@Qualifier，@Autowired注解的支持
+			// 对beanFactory的功能进行填充
 			prepareBeanFactory(beanFactory);
 
 			try {
@@ -643,6 +643,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
 		// 初始化beanFactory，读取XML，并加载XML，并没有初始化bean对象
 		refreshBeanFactory();
+		// 获取factory
 		return getBeanFactory();
 	}
 
