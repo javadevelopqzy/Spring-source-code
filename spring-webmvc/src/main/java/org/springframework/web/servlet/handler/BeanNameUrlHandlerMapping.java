@@ -16,10 +16,10 @@
 
 package org.springframework.web.servlet.handler;
 
+import org.springframework.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.util.StringUtils;
 
 /**
  * Implementation of the {@link org.springframework.web.servlet.HandlerMapping}
@@ -48,6 +48,8 @@ import org.springframework.util.StringUtils;
  * @author Juergen Hoeller
  * @see SimpleUrlHandlerMapping
  */
+// 把Spring容器中name属性作为URL映射，解析请求映射到对应的方法中
+// 注意：此类返回的handler是spring容器中的bean对象
 public class BeanNameUrlHandlerMapping extends AbstractDetectingUrlHandlerMapping {
 
 	/**

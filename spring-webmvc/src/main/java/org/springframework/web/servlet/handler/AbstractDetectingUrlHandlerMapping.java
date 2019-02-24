@@ -31,6 +31,8 @@ import org.springframework.util.ObjectUtils;
  * @since 2.5
  * @see #determineUrlsForHandler
  */
+// 重写了initApplicationContext，增加初始化注册url的逻辑：查找所有的bean，名称作为key，bean作为value存到map中
+// 此负责获取所有的bean，至于是否存入map需要子类实现determineUrlsForHandler方法，并做实际处理
 public abstract class AbstractDetectingUrlHandlerMapping extends AbstractUrlHandlerMapping {
 
 	private boolean detectHandlersInAncestorContexts = false;

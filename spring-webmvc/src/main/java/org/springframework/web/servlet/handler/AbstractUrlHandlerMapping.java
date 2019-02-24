@@ -16,21 +16,16 @@
 
 package org.springframework.web.servlet.handler;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.HandlerExecutionChain;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /**
  * Abstract base class for URL-mapped {@link org.springframework.web.servlet.HandlerMapping}
@@ -51,6 +46,10 @@ import org.springframework.web.servlet.HandlerExecutionChain;
  * @author Arjen Poutsma
  * @since 16.04.2003
  */
+// 扩展了父类的getHandlerInternal方法，此方法把请求URI当做key，查找对应的handler。
+// 真正解析方法是：lookupHandler，此方法依次根据URI判断是否完全匹配，不完全匹配再判断是否通配
+// 提供validateHandler方法给子类重写，以便对获取到的handler校验
+// 增加了registerHandler方法，服务启动时把配置的url和handler缓存到handlerMap对象中，便于之后获取，该方法在父类中调用
 public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping implements MatchableHandlerMapping {
 
 	@Nullable
@@ -60,6 +59,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 
 	private boolean lazyInitHandlers = false;
 
+	/** 缓存URI对应的handler，key=URI，value=bean对象 */
 	private final Map<String, Object> handlerMap = new LinkedHashMap<>();
 
 
@@ -111,11 +111,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 		this.lazyInitHandlers = lazyInitHandlers;
 	}
 
-	/**
-	 * 根据request对象，查找对应的handler对象
-	 * @param request current HTTP request
-	 * @return the handler instance, or {@code null} if none found
-	 */
+	// 根据request对象，查找对应的handler对象
 	@Override
 	@Nullable
 	protected Object getHandlerInternal(HttpServletRequest request) throws Exception {
@@ -123,7 +119,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
 		// 根据URI获取对应的handler（spring的bean对象）
 		Object handler = lookupHandler(lookupPath, request);
-		// 没有获取到
+		// 没有获取到handler，
 		if (handler == null) {
 			// We need to care for the default handler directly, since we need to
 			// expose the PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE for it as well.
@@ -163,9 +159,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	 * @see #exposePathWithinMapping
 	 * @see org.springframework.util.AntPathMatcher
 	 */
-	/**
-	 * 根据请求进来的URI获取对应的handler
-	 */
+	// 根据请求进来的URI获取对应的handler
 	@Nullable
 	protected Object lookupHandler(String urlPath, HttpServletRequest request) throws Exception {
 		// Direct match?
@@ -260,12 +254,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	 * @param request current HTTP request
 	 * @throws Exception if validation failed
 	 */
-	/**
-	 * 可自定义规则验证handler，此处预留给子类重写
-	 * @param handler
-	 * @param request
-	 * @throws Exception
-	 */
+	// 可自定义规则验证handler，此处预留给子类重写
 	protected void validateHandler(Object handler, HttpServletRequest request) throws Exception {
 	}
 
@@ -280,14 +269,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	 * @param uriTemplateVariables the URI template variables, can be {@code null} if no variables found
 	 * @return the final handler object
 	 */
-	/**
-	 * 以HandlerExecutionChain的形式构造handler对象，并返回HandlerExecutionChain
-	 * @param rawHandler 真正处理的handler
-	 * @param bestMatchingPattern 完全匹配路径
-	 * @param pathWithinMapping 包含路径
-	 * @param uriTemplateVariables url包含的变量
-	 * @return
-	 */
+	// 以HandlerExecutionChain的形式构造handler对象，并返回HandlerExecutionChain
 	protected Object buildPathExposingHandler(Object rawHandler, String bestMatchingPattern,
 			String pathWithinMapping, @Nullable Map<String, String> uriTemplateVariables) {
 

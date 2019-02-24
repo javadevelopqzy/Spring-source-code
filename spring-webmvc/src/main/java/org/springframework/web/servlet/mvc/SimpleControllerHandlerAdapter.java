@@ -16,12 +16,12 @@
 
 package org.springframework.web.servlet.mvc;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Adapter to use the plain {@link Controller} workflow interface with
@@ -37,6 +37,8 @@ import org.springframework.web.servlet.ModelAndView;
  * @see LastModified
  * @see HttpRequestHandlerAdapter
  */
+// 仅实现HandlerAdapter接口，配合BeanNameUrlHandlerMapping使用，直接调用实现Controller接口的bean对象handle方法处理
+// 如果bean实现了LastModified，则会调用该接口的方法处理响应头
 public class SimpleControllerHandlerAdapter implements HandlerAdapter {
 
 	@Override
@@ -44,6 +46,7 @@ public class SimpleControllerHandlerAdapter implements HandlerAdapter {
 		return (handler instanceof Controller);
 	}
 
+	// 直接调用Controller的handleRequest方法
 	@Override
 	@Nullable
 	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
