@@ -1,9 +1,6 @@
 package mycase;
 
-import mycase.cycle.*;
-import mycase.factory.FactoryBeanTest;
-import mycase.property.bean.*;
-
+import mycase.property.bean.ContainListBean;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ContextMain {

@@ -114,7 +114,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	private AutowireCandidateResolver autowireCandidateResolver = new SimpleAutowireCandidateResolver();
 
 	/** Map from dependency type to corresponding autowired value. */
-	// 缓存依赖bean的特殊解析规则
+	// 缓存依赖bean的特殊解析规则，指定某类型的属性，使用特定的对象注入
+	// 如：User.class，使用String对象注入则可以存入此集合
 	private final Map<Class<?>, Object> resolvableDependencies = new ConcurrentHashMap<>(16);
 
 	/** Map of bean definition objects, keyed by bean name. */

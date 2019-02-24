@@ -16,19 +16,18 @@
 
 package org.springframework.core.io.support;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DefaultPropertiesPersister;
 import org.springframework.util.PropertiesPersister;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.Properties;
 
 /**
  * Base class for JavaBean-style components that need to load properties
@@ -46,6 +45,7 @@ public abstract class PropertiesLoaderSupport {
 	@Nullable
 	protected Properties[] localProperties;
 
+	// 设置当应用程序本地的配置文件和Spring的原始配置文件冲突时，是否覆盖
 	protected boolean localOverride = false;
 
 	@Nullable

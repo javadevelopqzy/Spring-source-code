@@ -522,7 +522,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
-			// 对beanFactory的功能进行填充
+			// 对beanFactory的功能进行填充，￥￥￥￥￥
 			prepareBeanFactory(beanFactory);
 
 			try {
@@ -594,6 +594,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * active flag as well as performing any initialization of property sources.
 	 */
 	// 准备上下文环境
+	// 读取servletContext的init-param、环境变量的校验等
 	protected void prepareRefresh() {
 		this.startupDate = System.currentTimeMillis();
 		// 设置标记
@@ -652,7 +653,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * such as the context's ClassLoader and post-processors.
 	 * @param beanFactory the BeanFactory to configure
 	 */
-	// 对beanFactory的功能进行填充，如：@Qualifier，@Autowired注解的支持
+	// 对beanFactory的功能进行填充
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		// Tell the internal bean factory to use the context's class loader etc.
 		// 设置当前的classLoader为beanFactory的classLoader
@@ -665,7 +666,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Configure the bean factory with context callbacks.
 		// 增加一个BeanPostProcessor，便于对实现ResourceLoaderAware、ApplicationContextAware等接口的bean进行后续调用
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
-		// 依赖增加忽略接口
+		// 依赖增加忽略接口 ￥￥￥￥￥
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
 		beanFactory.ignoreDependencyInterface(EmbeddedValueResolverAware.class);
 		beanFactory.ignoreDependencyInterface(ResourceLoaderAware.class);
@@ -676,13 +677,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// BeanFactory interface not registered as resolvable type in a plain factory.
 		// MessageSource registered (and found for autowiring) as a bean.
 		// 设置几个类的自动装配解析规则
+		// 如：BeanFactory.class, beanFactory表示当某个bean需要注入类型BeanFactory.class时，则取beanFactory对象注入
 		beanFactory.registerResolvableDependency(BeanFactory.class, beanFactory);
 		beanFactory.registerResolvableDependency(ResourceLoader.class, this);
 		beanFactory.registerResolvableDependency(ApplicationEventPublisher.class, this);
 		beanFactory.registerResolvableDependency(ApplicationContext.class, this);
 
 		// Register early post-processor for detecting inner beans as ApplicationListeners.
-		// 添加时间发现的BeanPostProcessor实现
+		// 添加时间监听器的BeanPostProcessor实现
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found.

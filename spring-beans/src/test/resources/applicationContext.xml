@@ -20,5 +20,8 @@
 
 	<bean class="mycase.factory.FactoryBeanTest">
 		<constructor-arg name="abc" value="123"/>
+		<property name="abc" value="bbc" />
 	</bean>
+
+	<bean class="mycase.proxy.CustomBeanFactoryPostProcessor" />
 </beans>

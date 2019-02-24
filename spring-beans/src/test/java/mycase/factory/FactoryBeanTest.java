@@ -2,6 +2,8 @@ package mycase.factory;
 
 public class FactoryBeanTest {
 
+	String abc;
+
 	public FactoryBeanTest(Object abc) {
 	}
 
@@ -15,5 +17,13 @@ public class FactoryBeanTest {
 
 	public FactoryBeanTest(String abc, Integer a, Double qwe) {
 
+	}
+
+	public String getAbc() {
+		return abc;
+	}
+
+	public void setAbc(String abc) {
+		this.abc = abc;
 	}
 }
