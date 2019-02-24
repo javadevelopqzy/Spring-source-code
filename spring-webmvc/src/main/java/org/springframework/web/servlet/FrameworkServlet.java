@@ -523,6 +523,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		long startTime = System.currentTimeMillis();
 
 		try {
+			// 初始化Spring MVC的ApplicationContext对象
 			this.webApplicationContext = initWebApplicationContext();
 			initFrameworkServlet();
 		}
@@ -553,11 +554,14 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @see #setContextClass
 	 * @see #setContextConfigLocation
 	 */
+	// 初始化Spring MVC的ApplicationContext对象
 	protected WebApplicationContext initWebApplicationContext() {
+		// 这里获取到ContextLoaderListener创建的上下文：XmlWebApplicationContext
 		WebApplicationContext rootContext =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		WebApplicationContext wac = null;
 
+		// 如果应用程序已经配置了Spring MVC的ApplicationContext对象，直接使用
 		if (this.webApplicationContext != null) {
 			// A context instance was injected at construction time -> use it
 			wac = this.webApplicationContext;
@@ -575,6 +579,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 				}
 			}
 		}
+		// 用户没有配置，从servletContext中查找
 		if (wac == null) {
 			// No context instance was injected at construction time -> see if one
 			// has been registered in the servlet context. If one exists, it is assumed
@@ -582,8 +587,10 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			// user has performed any initialization such as setting the context id
 			wac = findWebApplicationContext();
 		}
+		// 上述找不到，创建一个
 		if (wac == null) {
 			// No context instance is defined for this servlet -> create a local one
+			// 根据rootContext，创建Spring MVC的ApplicationContext对象
 			wac = createWebApplicationContext(rootContext);
 		}
 
@@ -642,6 +649,8 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @return the WebApplicationContext for this servlet
 	 * @see org.springframework.web.context.support.XmlWebApplicationContext
 	 */
+	// 根据rootContext，创建Spring MVC的ApplicationContext对象
+	// 默认创建XmlWebApplicationContext实例
 	protected WebApplicationContext createWebApplicationContext(@Nullable ApplicationContext parent) {
 		Class<?> contextClass = getContextClass();
 		if (!ConfigurableWebApplicationContext.class.isAssignableFrom(contextClass)) {
@@ -650,11 +659,16 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 					"': custom WebApplicationContext class [" + contextClass.getName() +
 					"] is not of type ConfigurableWebApplicationContext");
 		}
+		// 实例化
 		ConfigurableWebApplicationContext wac =
 				(ConfigurableWebApplicationContext) BeanUtils.instantiateClass(contextClass);
 
 		wac.setEnvironment(getEnvironment());
+		// 设置parent
 		wac.setParent(parent);
+		// 读取XmlWebApplicationContext的配置
+		// 如果有配置contextConfigLocation，则使用配置的，否则使用默认的
+		// 默认读取/WEB-INF/{namespace}.xml文件
 		String configLocation = getContextConfigLocation();
 		if (configLocation != null) {
 			wac.setConfigLocation(configLocation);
@@ -706,6 +720,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @see org.springframework.web.context.support.XmlWebApplicationContext
 	 * @see #createWebApplicationContext(ApplicationContext)
 	 */
+	// 根据rootContext，创建Spring MVC的ApplicationContext对象
 	protected WebApplicationContext createWebApplicationContext(@Nullable WebApplicationContext parent) {
 		return createWebApplicationContext((ApplicationContext) parent);
 	}
