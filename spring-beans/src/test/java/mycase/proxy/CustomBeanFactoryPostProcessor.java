@@ -1,16 +1,14 @@
 package mycase.proxy;
 
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinitionVisitor;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.util.StringValueResolver;
+import java.util.*;
 
-import java.util.Set;
+import org.jetbrains.annotations.*;
+import org.springframework.beans.*;
+import org.springframework.beans.factory.config.*;
+import org.springframework.core.*;
+import org.springframework.util.*;
 
-public class CustomBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+public class CustomBeanFactoryPostProcessor implements BeanFactoryPostProcessor, Ordered {
 
 	Set<String> set;
 
@@ -35,4 +33,8 @@ public class CustomBeanFactoryPostProcessor implements BeanFactoryPostProcessor 
 	}
 
 
+	@Override
+	public int getOrder() {
+		return 0;
+	}
 }

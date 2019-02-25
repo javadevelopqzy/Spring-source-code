@@ -16,16 +16,14 @@
 
 package org.springframework.beans.factory.config;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.core.Ordered;
-import org.springframework.core.PriorityOrdered;
-import org.springframework.core.io.support.PropertiesLoaderSupport;
-import org.springframework.util.ObjectUtils;
+import java.io.*;
+import java.util.*;
 
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Properties;
+import org.springframework.beans.*;
+import org.springframework.beans.factory.*;
+import org.springframework.core.*;
+import org.springframework.core.io.support.*;
+import org.springframework.util.*;
 
 /**
  * Allows for configuration of individual bean property values from a property resource,
@@ -77,13 +75,15 @@ public abstract class PropertyResourceConfigurer extends PropertiesLoaderSupport
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		try {
-			// 合并读取的所有配置文件
+			// 合并读取的所有配置文件，到Properties属性中
 			Properties mergedProps = mergeProperties();
 
 			// Convert the merged properties, if necessary.
+			// 遍历所有读取到的属性，对属性值进行转换，默认是空实现
 			convertProperties(mergedProps);
 
 			// Let the subclass process the properties.
+			// 装载对应的bean属性
 			processProperties(beanFactory, mergedProps);
 		}
 		catch (IOException ex) {
@@ -99,12 +99,15 @@ public abstract class PropertyResourceConfigurer extends PropertiesLoaderSupport
 	 * @param props the Properties to convert
 	 * @see #processProperties
 	 */
+	// 遍历所有读取到的属性，对属性值进行转换，默认是空实现
+	// 用法。如：需要对某个属性进行加密可以继承此类，覆盖convertPropertyValue方法进行自定义转换
 	protected void convertProperties(Properties props) {
 		Enumeration<?> propertyNames = props.propertyNames();
 		while (propertyNames.hasMoreElements()) {
 			String propertyName = (String) propertyNames.nextElement();
 			String propertyValue = props.getProperty(propertyName);
 			String convertedValue = convertProperty(propertyName, propertyValue);
+			// 转换后的属性和转换前的属性都不为null，则覆盖旧属性
 			if (!ObjectUtils.nullSafeEquals(propertyValue, convertedValue)) {
 				props.setProperty(propertyName, convertedValue);
 			}

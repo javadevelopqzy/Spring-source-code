@@ -215,6 +215,7 @@ public abstract class PlaceholderConfigurerSupport extends PropertyResourceConfi
 
 		BeanDefinitionVisitor visitor = new BeanDefinitionVisitor(valueResolver);
 
+		// 遍历所有bean，增加值转换逻辑
 		String[] beanNames = beanFactoryToProcess.getBeanDefinitionNames();
 		for (String curName : beanNames) {
 			// Check that we're not parsing our own bean definition,

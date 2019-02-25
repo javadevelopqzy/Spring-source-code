@@ -219,15 +219,18 @@ public class PropertyPlaceholderConfigurer extends PlaceholderConfigurerSupport 
 	 * Visit each bean definition in the given bean factory and attempt to replace ${...} property
 	 * placeholders with values from the given properties.
 	 */
+	// 装载对应的bean属性
 	@Override
 	protected void processProperties(ConfigurableListableBeanFactory beanFactoryToProcess, Properties props)
 			throws BeansException {
 
+		// 属性值替换的类
 		StringValueResolver valueResolver = new PlaceholderResolvingStringValueResolver(props);
+		// 给所有依赖配置文件的bean注入配置的属性
 		doProcessProperties(beanFactoryToProcess, valueResolver);
 	}
 
-
+	// 值替换的实际处理类
 	private class PlaceholderResolvingStringValueResolver implements StringValueResolver {
 
 		private final PropertyPlaceholderHelper helper;
@@ -240,9 +243,11 @@ public class PropertyPlaceholderConfigurer extends PlaceholderConfigurerSupport 
 			this.resolver = new PropertyPlaceholderConfigurerResolver(props);
 		}
 
+		// 根据旧值转换为新值
 		@Override
 		@Nullable
 		public String resolveStringValue(String strVal) throws BeansException {
+			// 判断属性值是否含有'${}'，如果有解析出新值
 			String resolved = this.helper.replacePlaceholders(strVal, this.resolver);
 			if (trimValues) {
 				resolved = resolved.trim();

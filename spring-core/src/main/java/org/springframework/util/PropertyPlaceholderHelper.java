@@ -49,9 +49,10 @@ public class PropertyPlaceholderHelper {
 		wellKnownSimplePrefixes.put(")", "(");
 	}
 
-
+	// properties属性变量的前缀，默认为${
 	private final String placeholderPrefix;
 
+	// properties属性变量的后缀，默认为}
 	private final String placeholderSuffix;
 
 	private final String simplePrefix;

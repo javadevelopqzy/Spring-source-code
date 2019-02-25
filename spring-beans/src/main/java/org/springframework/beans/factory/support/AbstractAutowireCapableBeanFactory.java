@@ -147,7 +147,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * Class objects. By default, only the BeanFactory interface is ignored.
 	 */
 	// 忽略被依赖对象实现接口
-	// 如：A依赖B，B实现此集合接口中的任意一个，初始化A之后不会立即初始化B
+	// 如：A类需要注入B类型，B实现此集合接口中的任意一个，初始化A之后不会立即初始化B
 	private final Set<Class<?>> ignoredDependencyInterfaces = new HashSet<>();
 
 	/**
