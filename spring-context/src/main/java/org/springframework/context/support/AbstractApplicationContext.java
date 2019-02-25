@@ -516,10 +516,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
 			// 准备上下文环境
+			// 读取servletContext的init-param、环境变量的校验等
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
-			// 初始化beanFactory，复用beanFactory的功能，并读取、加载XML
+			// 初始化beanFactory，复用beanFactory的功能，并读取、加载XML，创建BeanDefinition
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
@@ -532,11 +533,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
-				// 调用所有beanFactoryPostProcessors
+				// 实例化，并调用所有BeanDefinitionRegistryPostProcessor和BeanFactoryPostProcessor
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
-				// 注册拦截bean和创建bean的处理，并没有实例化bean对象
+				// 注册拦截bean和创建bean的处理（查找所有BeanPostProcessor并汇总到beanFactory中），并没有实例化bean对象
+				// 实现BeanPostProcessor的bean已经在这里完成实例化操作
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
@@ -641,7 +643,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #refreshBeanFactory()
 	 * @see #getBeanFactory()
 	 */
-	// 初始化beanFactory，复用beanFactory的功能，并读取、加载XML
+	// 初始化beanFactory，复用beanFactory的功能，并读取、加载XML，创建BeanDefinition
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
 		// 初始化beanFactory，读取XML，并加载XML，并没有初始化bean对象
 		refreshBeanFactory();
@@ -726,7 +728,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * respecting explicit order if given.
 	 * <p>Must be called before singleton instantiation.
 	 */
-	// 调用所有beanFactoryPostProcessors
+	// 调用所有BeanDefinitionRegistryPostProcessor和BeanFactoryPostProcessor
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
@@ -743,7 +745,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * respecting explicit order if given.
 	 * <p>Must be called before any instantiation of application beans.
 	 */
+	// 注册拦截bean和创建bean的处理（查找所有BeanPostProcessor并汇总到beanFactory中），并没有实例化bean对象
 	protected void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+		// 查找所有BeanPostProcessor并汇总到beanFactory中
 		PostProcessorRegistrationDelegate.registerBeanPostProcessors(beanFactory, this);
 	}
 

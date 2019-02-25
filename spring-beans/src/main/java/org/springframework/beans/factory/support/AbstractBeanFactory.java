@@ -16,20 +16,18 @@
 
 package org.springframework.beans.factory.support;
 
+import java.beans.*;
+import java.security.*;
+import java.util.*;
+import java.util.concurrent.*;
+
 import org.springframework.beans.*;
 import org.springframework.beans.factory.*;
 import org.springframework.beans.factory.config.*;
-import org.springframework.core.DecoratingClassLoader;
-import org.springframework.core.NamedThreadLocal;
-import org.springframework.core.ResolvableType;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.lang.Nullable;
+import org.springframework.core.*;
+import org.springframework.core.convert.*;
+import org.springframework.lang.*;
 import org.springframework.util.*;
-
-import java.beans.PropertyEditor;
-import java.security.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract base class for {@link org.springframework.beans.factory.BeanFactory}
@@ -846,6 +844,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		return result;
 	}
 
+	// 通过硬编码的方式添加BeanPostProcessor
+	// 如：beanFactory.addBeanPostProcessor(new ServletContextAwareProcessor());
 	@Override
 	public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
 		Assert.notNull(beanPostProcessor, "BeanPostProcessor must not be null");
