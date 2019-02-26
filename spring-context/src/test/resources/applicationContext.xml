@@ -43,4 +43,7 @@
 			</map>
 		</property>
 	</bean>
+
+	<!-- 实现时间推送 -->
+	<bean class="mycase.event.MyEventListener" />
 </beans>

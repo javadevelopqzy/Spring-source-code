@@ -1105,10 +1105,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				// 获取目标的class
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
-					// 前置增强
+					// 前置增强，调用所有InstantiationAwareBeanPostProcessor的postProcessBeforeInstantiation方法
 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
 					if (bean != null) {
-						// 后置增强
+						// 后置增强，调用所有BeanPostProcessor的后置处理方法
 						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
 					}
 				}
