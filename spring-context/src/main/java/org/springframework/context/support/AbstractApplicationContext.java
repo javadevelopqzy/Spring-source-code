@@ -829,6 +829,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Uses DefaultLifecycleProcessor if none defined in the context.
 	 * @see org.springframework.context.support.DefaultLifecycleProcessor
 	 */
+	// 初始化LifecycleProcessor，如果有配置则使用配置的，没有配置使用DefaultLifecycleProcessor
 	protected void initLifecycleProcessor() {
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 		if (beanFactory.containsLocalBean(LIFECYCLE_PROCESSOR_BEAN_NAME)) {
@@ -839,6 +840,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			}
 		}
 		else {
+			// 注册DefaultLifecycleProcessor（默认的）
 			DefaultLifecycleProcessor defaultProcessor = new DefaultLifecycleProcessor();
 			defaultProcessor.setBeanFactory(beanFactory);
 			this.lifecycleProcessor = defaultProcessor;
@@ -895,8 +897,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Finish the initialization of this context's bean factory,
 	 * initializing all remaining singleton beans.
 	 */
+	// 初始化非懒加载的单例bean
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 		// Initialize conversion service for this context.
+		// 先初始化ConversionService的实例，Spring中使用此类进行属性类型转换
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&
 				beanFactory.isTypeMatch(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class)) {
 			beanFactory.setConversionService(
@@ -906,11 +910,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Register a default embedded value resolver if no bean post-processor
 		// (such as a PropertyPlaceholderConfigurer bean) registered any before:
 		// at this point, primarily for resolution in annotation attribute values.
+		// 如果没有内嵌的值解析类（如：PropertyPlaceholderConfigurer），则使用
 		if (!beanFactory.hasEmbeddedValueResolver()) {
 			beanFactory.addEmbeddedValueResolver(strVal -> getEnvironment().resolvePlaceholders(strVal));
 		}
 
 		// Initialize LoadTimeWeaverAware beans early to allow for registering their transformers early.
+		// 初始化LoadTimeWeaverAware
 		String[] weaverAwareNames = beanFactory.getBeanNamesForType(LoadTimeWeaverAware.class, false, false);
 		for (String weaverAwareName : weaverAwareNames) {
 			getBean(weaverAwareName);
@@ -920,9 +926,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.setTempClassLoader(null);
 
 		// Allow for caching all bean definition metadata, not expecting further changes.
+		// 冻结所有bean的操作，即停止所有的bean新增、修改等操作
 		beanFactory.freezeConfiguration();
 
 		// Instantiate all remaining (non-lazy-init) singletons.
+		// 初始化所有非延迟加载的单例，并调用实现SmartInitializingSingleton接口的bean的后置处理
 		beanFactory.preInstantiateSingletons();
 	}
 
@@ -931,20 +939,26 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * onRefresh() method and publishing the
 	 * {@link org.springframework.context.event.ContextRefreshedEvent}.
 	 */
+	// 完成刷新过程，通知LifecycleProcessor刷新，发出event通知
 	protected void finishRefresh() {
 		// Clear context-level resource caches (such as ASM metadata from scanning).
+		// 清除context-level资源缓存Map，如：ASM扫描的元数据等
 		clearResourceCaches();
 
 		// Initialize lifecycle processor for this context.
+		// 初始化LifecycleProcessor，如果有配置则使用配置的，没有配置使用DefaultLifecycleProcessor
 		initLifecycleProcessor();
 
 		// Propagate refresh to lifecycle processor first.
+		// 启动所有实现Lifecycle接口的bean（调用Lifecycle的start()方法）
 		getLifecycleProcessor().onRefresh();
 
 		// Publish the final event.
+		// 触发ContextRefreshedEvent事件，以便监听器处理
 		publishEvent(new ContextRefreshedEvent(this));
 
 		// Participate in LiveBeansView MBean, if active.
+		// 处理MBean
 		LiveBeansView.registerApplicationContext(this);
 	}
 

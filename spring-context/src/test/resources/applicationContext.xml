@@ -46,4 +46,15 @@
 
 	<!-- 实现时间推送 -->
 	<bean class="mycase.event.MyEventListener" />
+
+
+
+	<!-- 注册类型转换 -->
+	<bean class="org.springframework.context.support.ConversionServiceFactoryBean">
+		<property name="converters">
+			<set>
+				<bean class="mycase.property.convert.String2Date" />
+			</set>
+		</property>
+	</bean>
 </beans>
