@@ -293,10 +293,13 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * identified as one to proxy by the subclass.
 	 * @see #getAdvicesAndAdvisorsForBean
 	 */
+	// 实例化bean的后置处理
 	@Override
 	public Object postProcessAfterInitialization(@Nullable Object bean, String beanName) {
 		if (bean != null) {
+			// 获取bean缓存的key，如果bean有配置name，则是取name，没有name则取bean.getClass()对象
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
+			// 如果是代理对象，则封装此bean
 			if (!this.earlyProxyReferences.contains(cacheKey)) {
 				return wrapIfNecessary(bean, beanName, cacheKey);
 			}
@@ -316,6 +319,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @param beanName the bean name
 	 * @return the cache key for the given class and name
 	 */
+	// 获取bean缓存的key，如果bean有配置name，则是取name，没有name则取bean.getClass()对象
 	protected Object getCacheKey(Class<?> beanClass, @Nullable String beanName) {
 		if (StringUtils.hasLength(beanName)) {
 			return (FactoryBean.class.isAssignableFrom(beanClass) ?
@@ -334,21 +338,27 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @return a proxy wrapping the bean, or the raw bean instance as-is
 	 */
 	protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) {
+		// 如果已经处理过则不做处理
 		if (StringUtils.hasLength(beanName) && this.targetSourcedBeans.contains(beanName)) {
 			return bean;
 		}
+		// advisedBeans存的是false表示无需增强
 		if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {
 			return bean;
 		}
+		// bean是基础设施类或特殊指定的类，不需要代理
 		if (isInfrastructureClass(bean.getClass()) || shouldSkip(bean.getClass(), beanName)) {
 			this.advisedBeans.put(cacheKey, Boolean.FALSE);
 			return bean;
 		}
 
 		// Create proxy if we have advice.
+		// 获取增强器或增强方法
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
+		// 如果存在增强方法，则创建代理对象
 		if (specificInterceptors != DO_NOT_PROXY) {
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
+			// 创建代理类
 			Object proxy = createProxy(
 					bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
 			this.proxyTypes.put(cacheKey, proxy.getClass());
@@ -394,6 +404,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @return whether to skip the given bean
 	 * @see org.springframework.beans.factory.config.AutowireCapableBeanFactory#ORIGINAL_INSTANCE_SUFFIX
 	 */
+	// 判断是否是特殊指定的类
 	protected boolean shouldSkip(Class<?> beanClass, String beanName) {
 		return AutoProxyUtils.isOriginalInstance(beanName, beanClass);
 	}

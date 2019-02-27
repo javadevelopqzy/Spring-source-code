@@ -44,6 +44,7 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator#setCustomTargetSourceCreators
  * @see org.springframework.aop.framework.autoproxy.target.LazyInitTargetSourceCreator
  */
+// 实现AOP的核心接口，分别定义了以下接口：bean创建前置处理、bean初始化后置处理、装载bean属性的前置处理
 public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 
 	/**
@@ -68,7 +69,8 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	 * @see #postProcessAfterInstantiation
 	 * @see org.springframework.beans.factory.support.AbstractBeanDefinition#hasBeanClass
 	 */
-	// bean将要创建时要实现代理类，需要从这个方法实现，返回一个代理的object
+	// bean将要创建时的前置处理
+	// 要实现代理类，需要从这个方法实现，返回一个代理object
 	@Nullable
 	default Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
 		return null;
