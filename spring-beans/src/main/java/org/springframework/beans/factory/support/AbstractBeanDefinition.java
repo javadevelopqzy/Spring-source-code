@@ -16,22 +16,15 @@
 
 package org.springframework.beans.factory.support;
 
-import org.springframework.beans.BeanMetadataAttributeAccessor;
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConstructorArgumentValues;
-import org.springframework.core.io.DescriptiveResource;
-import org.springframework.core.io.Resource;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
-
-import java.lang.reflect.Constructor;
+import java.lang.reflect.*;
 import java.util.*;
-import java.util.function.Supplier;
+import java.util.function.*;
+
+import org.springframework.beans.*;
+import org.springframework.beans.factory.config.*;
+import org.springframework.core.io.*;
+import org.springframework.lang.*;
+import org.springframework.util.*;
 
 /**
  * Base class for concrete, full-fledged {@link BeanDefinition} classes,
@@ -902,6 +895,9 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 
 	/**
 	 * Return property values for this bean (never {@code null}).
+	 */
+	/**
+	 * 获取子标签：property的包装类
 	 */
 	@Override
 	public MutablePropertyValues getPropertyValues() {

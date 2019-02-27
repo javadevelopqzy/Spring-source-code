@@ -93,13 +93,15 @@ public abstract class AopConfigUtils {
 		return registerAspectJAnnotationAutoProxyCreatorIfNecessary(registry, null);
 	}
 
+	// 生成字节码增强类AnnotationAwareAspectJAutoProxyCreator的bean，并注册到beanFactory中
 	@Nullable
 	public static BeanDefinition registerAspectJAnnotationAutoProxyCreatorIfNecessary(
 			BeanDefinitionRegistry registry, @Nullable Object source) {
-
+		// 生成字节码增强类AnnotationAwareAspectJAutoProxyCreator的bean，并注册到beanFactory中
 		return registerOrEscalateApcAsRequired(AnnotationAwareAspectJAutoProxyCreator.class, registry, source);
 	}
 
+	// 设置字节码增强类proxyTargetClass属性=true（强制使用CGLIB代理）
 	public static void forceAutoProxyCreatorToUseClassProxying(BeanDefinitionRegistry registry) {
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition definition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
@@ -107,6 +109,7 @@ public abstract class AopConfigUtils {
 		}
 	}
 
+	// expose-proxy=true，表示每次获取代理类时放入一个ThreadLocal
 	public static void forceAutoProxyCreatorToExposeProxy(BeanDefinitionRegistry registry) {
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition definition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
@@ -114,17 +117,22 @@ public abstract class AopConfigUtils {
 		}
 	}
 
+	// 注册字节码增强bean
+	// 如果配置org.springframework.aop.config.internalAutoProxyCreator的bean但是与传入的不一致，则要根据优先级判断选哪个
+	// 没有配置，使用传入的cls
 	@Nullable
 	private static BeanDefinition registerOrEscalateApcAsRequired(
 			Class<?> cls, BeanDefinitionRegistry registry, @Nullable Object source) {
 
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 
+		// 如果已经配置了代理器，但是与传入的不一致，则要根据优先级判断选哪个
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition apcDefinition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
 			if (!cls.getName().equals(apcDefinition.getBeanClassName())) {
 				int currentPriority = findPriorityForClass(apcDefinition.getBeanClassName());
 				int requiredPriority = findPriorityForClass(cls);
+				// 配置的优先级低，则修改为传入的
 				if (currentPriority < requiredPriority) {
 					apcDefinition.setBeanClassName(cls.getName());
 				}
@@ -132,10 +140,14 @@ public abstract class AopConfigUtils {
 			return null;
 		}
 
+		// 使用传入的字节码增强类
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
 		beanDefinition.setSource(source);
+		// 添加排序属性
 		beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);
+		// 设置此bean为spring内部的
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		// 把bean注册到注册中心
 		registry.registerBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME, beanDefinition);
 		return beanDefinition;
 	}

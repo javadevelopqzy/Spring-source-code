@@ -5,7 +5,7 @@ import org.aspectj.lang.annotation.*;
 @Aspect
 public class AopClass {
 
-	@Pointcut("execution(* mycase.aop.AopTestBean.*(..))")
+	@Pointcut("execution(* mycase.aop.*.*(..))")
 	public void pointCut() {
 	}
 

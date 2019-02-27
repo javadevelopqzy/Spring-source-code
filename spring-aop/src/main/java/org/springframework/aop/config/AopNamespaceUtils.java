@@ -71,28 +71,40 @@ public abstract class AopNamespaceUtils {
 		registerComponentIfNecessary(beanDefinition, parserContext);
 	}
 
+	// 注册AnnotationAwareAspectJAutoProxyCreator
 	public static void registerAspectJAnnotationAutoProxyCreatorIfNecessary(
 			ParserContext parserContext, Element sourceElement) {
-
+		// 生成字节码增强类AnnotationAwareAspectJAutoProxyCreator的bean，并注册到beanFactory中
 		BeanDefinition beanDefinition = AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(
 				parserContext.getRegistry(), parserContext.extractSource(sourceElement));
+		// 解析<aop:aspectj-autoproxy>的属性expose-proxy和proxy-target-class
 		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);
+		// 触发XML组件加载完的事件，目前是空实现，可以自行实现
 		registerComponentIfNecessary(beanDefinition, parserContext);
 	}
 
+	// 解析<aop:aspectj-autoproxy>的属性expose-proxy和proxy-target-class
 	private static void useClassProxyingIfNecessary(BeanDefinitionRegistry registry, @Nullable Element sourceElement) {
 		if (sourceElement != null) {
+			// 获取proxy-target-class属性
 			boolean proxyTargetClass = Boolean.parseBoolean(sourceElement.getAttribute(PROXY_TARGET_CLASS_ATTRIBUTE));
+			// 如果proxy-target-class=true，设置字节码增强类属性proxyTargetClass=true
+			// proxyTargetClass表示使用什么代理方式，默认是false（类实现接口则JDK动态代理，未实现接口则CGLIB），true则强制使用CGLIB
 			if (proxyTargetClass) {
 				AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);
 			}
+			// 获取expose-proxy属性
 			boolean exposeProxy = Boolean.parseBoolean(sourceElement.getAttribute(EXPOSE_PROXY_ATTRIBUTE));
+			// 如果expose-proxy=true，表示每次获取代理类时放入一个ThreadLocal
+			// 在被代理的bean内部可以通过方法AopContext.currentProxy()获取到代理对象，实现调用内部的方法也进行前置后置处理
+			// 如：类mycase.aop.AopExposeProxyTestBean
 			if (exposeProxy) {
 				AopConfigUtils.forceAutoProxyCreatorToExposeProxy(registry);
 			}
 		}
 	}
 
+	// 触发XML组件加载完的事件，目前是空实现，可以自行实现
 	private static void registerComponentIfNecessary(@Nullable BeanDefinition beanDefinition, ParserContext parserContext) {
 		if (beanDefinition != null) {
 			parserContext.registerComponent(

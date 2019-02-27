@@ -14,6 +14,6 @@ public class ContextMain {
 //		bean3.getList().forEach(System.out::println);
 //		MyEvent event = new MyEvent("这是消息源对象", "msg对象");
 //		applicationContext.publishEvent(event);
-		applicationContext.getBean(AopTestBean.class).test();
+		applicationContext.getBean(AopExposeProxyTestBean.class).test();
 	}
 }
