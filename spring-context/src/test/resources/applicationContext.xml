@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
 	<bean name="bean1" class="mycase.cycle.Bean1">
 		<property name="bean2" ref="bean2"/>
@@ -57,4 +60,10 @@
 			</set>
 		</property>
 	</bean>
+
+	<!-- AOP相关的逻辑 -->
+	<aop:aspectj-autoproxy />
+
+	<bean class="mycase.aop.AopTestBean" />
+	<bean class="mycase.aop.AopClass" />
 </beans>
