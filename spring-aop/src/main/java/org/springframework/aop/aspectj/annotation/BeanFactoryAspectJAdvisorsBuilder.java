@@ -80,6 +80,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	 * @return the list of {@link org.springframework.aop.Advisor} beans
 	 * @see #isEligibleBean
 	 */
+	// 提取配置了@AspectJ注解的bean，返回这些bean的增强器
 	public List<Advisor> buildAspectJAdvisors() {
 		List<String> aspectNames = this.aspectBeanNames;
 
@@ -89,24 +90,33 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 				if (aspectNames == null) {
 					List<Advisor> advisors = new ArrayList<>();
 					aspectNames = new ArrayList<>();
+					// 读取所有bean的名称
 					String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 							this.beanFactory, Object.class, true, false);
 					for (String beanName : beanNames) {
+						// 跳过不合格的bean，默认返回true
 						if (!isEligibleBean(beanName)) {
 							continue;
 						}
 						// We must be careful not to instantiate beans eagerly as in this case they
 						// would be cached by the Spring container but would not have been weaved.
+						// 获取bean的Class类型
 						Class<?> beanType = this.beanFactory.getType(beanName);
 						if (beanType == null) {
 							continue;
 						}
+						// 判断是否存在@AspectJ注解
 						if (this.advisorFactory.isAspect(beanType)) {
+							// 缓存beanName
 							aspectNames.add(beanName);
+							// 创建Aspect元数据对象
 							AspectMetadata amd = new AspectMetadata(beanType, beanName);
+							// 如果是单例的
 							if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
+								// 创建Aspect元数据对象的包装类，内部包含beanFactory、beanName、元数据
 								MetadataAwareAspectInstanceFactory factory =
 										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+								// 解析@AspectJ注解的增强方法
 								List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
 								if (this.beanFactory.isSingleton(beanName)) {
 									this.advisorsCache.put(beanName, classAdvisors);
@@ -138,6 +148,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 		if (aspectNames.isEmpty()) {
 			return Collections.emptyList();
 		}
+		// 从缓存中获取返回值
 		List<Advisor> advisors = new ArrayList<>();
 		for (String aspectName : aspectNames) {
 			List<Advisor> cachedAdvisors = this.advisorsCache.get(aspectName);
@@ -157,6 +168,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	 * @param beanName the name of the aspect bean
 	 * @return whether the bean is eligible
 	 */
+	// 跳过不合格的bean，默认返回true
 	protected boolean isEligibleBean(String beanName) {
 		return true;
 	}

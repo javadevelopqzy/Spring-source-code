@@ -572,6 +572,7 @@ public abstract class ReflectionUtils {
 	 * @param mf the filter that determines the methods to apply the callback to
 	 * @throws IllegalStateException if introspection fails
 	 */
+	// 获取类的方法，可以传入方法过滤器进行过滤
 	public static void doWithMethods(Class<?> clazz, MethodCallback mc, @Nullable MethodFilter mf) {
 		// Keep backing up the inheritance hierarchy.
 		Method[] methods = getDeclaredMethods(clazz);

@@ -103,6 +103,7 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 	@Override
 	public void validate(Class<?> aspectClass) throws AopConfigException {
 		// If the parent has the annotation and isn't abstract it's an error
+		// 父类有@Aspect注解，并且不是抽象类报错
 		if (aspectClass.getSuperclass().getAnnotation(Aspect.class) != null &&
 				!Modifier.isAbstract(aspectClass.getSuperclass().getModifiers())) {
 			throw new AopConfigException("[" + aspectClass.getName() + "] cannot extend concrete aspect [" +
@@ -127,9 +128,12 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 	 * Find and return the first AspectJ annotation on the given method
 	 * (there <i>should</i> only be one anyway...).
 	 */
+	// 获取方法上的注解（@Pointcut, @Around, @Before, @After, @AfterReturning, @AfterThrowing等）
+	// 返回第一个
 	@SuppressWarnings("unchecked")
 	@Nullable
 	protected static AspectJAnnotation<?> findAspectJAnnotationOnMethod(Method method) {
+		// 获取方法的注解
 		for (Class<?> clazz : ASPECTJ_ANNOTATION_CLASSES) {
 			AspectJAnnotation<?> foundAnnotation = findAnnotation(method, (Class<Annotation>) clazz);
 			if (foundAnnotation != null) {
