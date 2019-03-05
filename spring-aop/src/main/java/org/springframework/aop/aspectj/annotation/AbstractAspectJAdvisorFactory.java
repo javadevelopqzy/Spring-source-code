@@ -75,11 +75,13 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 	 * is that aspects written in the code-style (AspectJ language) also have the annotation present
 	 * when compiled by ajc with the -1.5 flag, yet they cannot be consumed by Spring AOP.
 	 */
+	// 判断class是否有@Aspect注解，且没有被ajc编译
 	@Override
 	public boolean isAspect(Class<?> clazz) {
 		return (hasAspectAnnotation(clazz) && !compiledByAjc(clazz));
 	}
 
+	// 判断class是否有@Aspect注解
 	private boolean hasAspectAnnotation(Class<?> clazz) {
 		return (AnnotationUtils.findAnnotation(clazz, Aspect.class) != null);
 	}
@@ -88,6 +90,7 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 	 * We need to detect this as "code-style" AspectJ aspects should not be
 	 * interpreted by Spring AOP.
 	 */
+	// 判断class是否已经被ajc编译
 	private boolean compiledByAjc(Class<?> clazz) {
 		// The AJTypeSystem goes to great lengths to provide a uniform appearance between code-style and
 		// annotation-style aspects. Therefore there is no 'clean' way to tell them apart. Here we rely on

@@ -33,13 +33,15 @@ public class ProxyConfig implements Serializable {
 	/** use serialVersionUID from Spring 1.2 for interoperability. */
 	private static final long serialVersionUID = -8409359707199703185L;
 
-
+	// 表示使用CGLIB代理，此值在<aop:aspectj-autoproxy proxy-target-class="true">配置
 	private boolean proxyTargetClass = false;
 
+	// 表示代理是否会自动优化，只针对CGLIB代理有效，默认是false，即Advisor改变时，已经加载的Advice不会受影响
 	private boolean optimize = false;
 
 	boolean opaque = false;
 
+	// 表示是否暴露代理类，此值在<aop:aspectj-autoproxy expose-proxy="true">配置
 	boolean exposeProxy = false;
 
 	private boolean frozen = false;

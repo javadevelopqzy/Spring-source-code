@@ -30,6 +30,7 @@ import org.springframework.aop.AfterAdvice;
  * @author Rod Johnson
  * @since 2.0
  */
+// @Aspect后置处理的包装类
 @SuppressWarnings("serial")
 public class AspectJAfterAdvice extends AbstractAspectJAdvice
 		implements MethodInterceptor, AfterAdvice, Serializable {
@@ -40,13 +41,15 @@ public class AspectJAfterAdvice extends AbstractAspectJAdvice
 		super(aspectJBeforeAdviceMethod, pointcut, aif);
 	}
 
-
+	// 执行后置处理的逻辑
 	@Override
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		try {
+			// 先执行完方法的调用链
 			return mi.proceed();
 		}
 		finally {
+			// 之后执行后置处理方法
 			invokeAdviceMethod(getJoinPointMatch(), null, null);
 		}
 	}

@@ -108,6 +108,7 @@ public abstract class AutoProxyUtils {
 	 * @param targetClass the corresponding target class
 	 * @since 4.2.3
 	 */
+	// 暴露被代理的bean（给bean设置一个特殊属性）
 	static void exposeTargetClass(
 			ConfigurableListableBeanFactory beanFactory, @Nullable String beanName, Class<?> targetClass) {
 

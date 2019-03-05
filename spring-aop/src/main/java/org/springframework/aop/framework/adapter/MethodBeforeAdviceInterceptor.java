@@ -34,6 +34,7 @@ import org.springframework.util.Assert;
  * @see AfterReturningAdviceInterceptor
  * @see ThrowsAdviceInterceptor
  */
+// MethodBeforeAdvice包装类
 @SuppressWarnings("serial")
 public class MethodBeforeAdviceInterceptor implements MethodInterceptor, BeforeAdvice, Serializable {
 

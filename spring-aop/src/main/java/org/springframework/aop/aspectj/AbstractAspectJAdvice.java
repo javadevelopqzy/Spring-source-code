@@ -558,6 +558,7 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 	 * @param ex the exception thrown by the method execution (may be null)
 	 * @return the empty array if there are no arguments
 	 */
+	// 解析增强方法的参数
 	protected Object[] argBinding(JoinPoint jp, @Nullable JoinPointMatch jpMatch,
 			@Nullable Object returnValue, @Nullable Throwable ex) {
 
@@ -619,6 +620,7 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 	 * @return the invocation result
 	 * @throws Throwable in case of invocation failure
 	 */
+	// 执行AOP的前置处理逻辑，反射调用@Aspect注解类对应的方法
 	protected Object invokeAdviceMethod(
 			@Nullable JoinPointMatch jpMatch, @Nullable Object returnValue, @Nullable Throwable ex)
 			throws Throwable {
@@ -627,18 +629,21 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 	}
 
 	// As above, but in this case we are given the join point.
+	// 执行AOP的前置处理逻辑，反射调用@Aspect注解类对应的方法
 	protected Object invokeAdviceMethod(JoinPoint jp, @Nullable JoinPointMatch jpMatch,
 			@Nullable Object returnValue, @Nullable Throwable t) throws Throwable {
-
+		// 执行AOP的前置处理逻辑，反射调用对应的方法
 		return invokeAdviceMethodWithGivenArgs(argBinding(jp, jpMatch, returnValue, t));
 	}
 
+	// 执行AOP的前置处理逻辑，反射调用@Aspect注解类对应的方法
 	protected Object invokeAdviceMethodWithGivenArgs(Object[] args) throws Throwable {
 		Object[] actualArgs = args;
 		if (this.aspectJAdviceMethod.getParameterCount() == 0) {
 			actualArgs = null;
 		}
 		try {
+			// 反射调用@Aspect注解类对应的方法
 			ReflectionUtils.makeAccessible(this.aspectJAdviceMethod);
 			// TODO AopUtils.invokeJoinpointUsingReflection
 			return this.aspectJAdviceMethod.invoke(this.aspectInstanceFactory.getAspectInstance(), actualArgs);
