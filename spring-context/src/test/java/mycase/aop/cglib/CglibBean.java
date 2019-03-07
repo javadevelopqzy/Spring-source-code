@@ -1,6 +1,6 @@
-package mycase.aop;
+package mycase.aop.cglib;
 
-public class AopTestBean {
+public class CglibBean {
 
 	public void test() {
 		System.out.println("test");

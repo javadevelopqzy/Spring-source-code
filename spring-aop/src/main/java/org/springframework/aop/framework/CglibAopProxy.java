@@ -662,6 +662,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 	 * General purpose AOP callback. Used when the target is dynamic or when the
 	 * proxy is not frozen.
 	 */
+	// 拦截器链的包装类
 	private static class DynamicAdvisedInterceptor implements MethodInterceptor, Serializable {
 
 		private final AdvisedSupport advised;
@@ -678,6 +679,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 			Object target = null;
 			TargetSource targetSource = this.advised.getTargetSource();
 			try {
+				// 配置了暴露代理，则放入ThreadLocal中
 				if (this.advised.exposeProxy) {
 					// Make invocation available if necessary.
 					oldProxy = AopContext.setCurrentProxy(proxy);
@@ -691,7 +693,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 				Object retVal;
 				// Check whether we only have one InvokerInterceptor: that is,
 				// no real advice, but just reflective invocation of the target.
-				// 如果拦截器链已经执行完毕，则直接执行原方法
+				// 如果拦截器链已经执行完毕或拦截器链为空，则直接执行原方法
 				if (chain.isEmpty() && Modifier.isPublic(method.getModifiers())) {
 					// We can skip creating a MethodInvocation: just invoke the target directly.
 					// Note that the final invoker must be an InvokerInterceptor, so we know
@@ -760,9 +762,12 @@ class CglibAopProxy implements AopProxy, Serializable {
 		 */
 		@Override
 		protected Object invokeJoinpoint() throws Throwable {
+			// 如果不是Object中的公共方法，直接使用MethodProxy执行
+			// 使用cglib的fastClass机制，效率高于反射
 			if (this.publicMethod && getMethod().getDeclaringClass() != Object.class) {
 				return this.methodProxy.invoke(this.target, this.arguments);
 			}
+			// 否则使用父类执行，父类通过反射调用私有方法
 			else {
 				return super.invokeJoinpoint();
 			}

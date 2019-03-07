@@ -1,8 +1,8 @@
 package mycase;
 
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.*;
 
-import mycase.aop.*;
+import mycase.aop.jdk.*;
 
 public class ContextMain {
 
@@ -14,6 +14,6 @@ public class ContextMain {
 //		bean3.getList().forEach(System.out::println);
 //		MyEvent event = new MyEvent("这是消息源对象", "msg对象");
 //		applicationContext.publishEvent(event);
-		applicationContext.getBean(AopExposeProxyTestBean.class).test();
+		applicationContext.getBean(DynamicProxyinterface.class).test();
 	}
 }

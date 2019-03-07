@@ -83,12 +83,14 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	 * List of MethodInterceptor and InterceptorAndDynamicMethodMatcher
 	 * that need dynamic checks.
 	 */
+	// 所有的拦截器
 	protected final List<?> interceptorsAndDynamicMethodMatchers;
 
 	/**
 	 * Index from 0 of the current interceptor we're invoking.
 	 * -1 until we invoke: then the current interceptor.
 	 */
+	// 对循环过的拦截器进行计数
 	private int currentInterceptorIndex = -1;
 
 
@@ -155,19 +157,25 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	}
 
 
-	// 执行方法拦截器 ￥￥￥￥￥￥
+	// 执行方法拦截器
+	// 执行流程：（1）每次从interceptorsAndDynamicMethodMatchers集合取出拦截器执行，同时currentInterceptorIndex++
+	// （2）执行调用invoke(MethodInvocation)方法把this传入，在invoke(MethodInvocation)内部调用proceed()回到此方法
+	// （3）当所有拦截器都取完毕之后调用目标方法
 	@Override
 	@Nullable
 	public Object proceed() throws Throwable {
 		//	We start with an index of -1 and increment early.
-		// 所有方法执行完之后，执行目标方法
+		// 所有拦截器执行完之后，执行目标方法
+		// 相等说明已经把所有的拦截器都遍历完毕
 		if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
 			return invokeJoinpoint();
 		}
 
 		// 获取下一个需要执行的执行链
+		// currentInterceptorIndex++
 		Object interceptorOrInterceptionAdvice =
 				this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
+		// 判断是否是Spring内部的拦截器
 		if (interceptorOrInterceptionAdvice instanceof InterceptorAndDynamicMethodMatcher) {
 			// Evaluate dynamic method matcher here: static part will already have
 			// been evaluated and found to match.
@@ -200,7 +208,7 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	 * @return the return value of the joinpoint
 	 * @throws Throwable if invoking the joinpoint resulted in an exception
 	 */
-	// 所有方法执行完之后，执行目标方法
+	// 所有方法执行完之后，通过反射执行目标方法
 	@Nullable
 	protected Object invokeJoinpoint() throws Throwable {
 		return AopUtils.invokeJoinpointUsingReflection(this.target, this.method, this.arguments);

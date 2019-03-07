@@ -62,10 +62,10 @@
 	</bean>
 
 	<!-- AOP相关的逻辑 -->
-	<aop:aspectj-autoproxy expose-proxy="true">
-	</aop:aspectj-autoproxy>
+	<aop:aspectj-autoproxy expose-proxy="true"/>
 
-	<bean class="mycase.aop.AopTestBean" />
-	<bean class="mycase.aop.AopExposeProxyTestBean"/>
+	<bean class="mycase.aop.cglib.CglibBean" />
+	<bean class="mycase.aop.cglib.AopExposeProxyTestBean"/>
 	<bean class="mycase.aop.AopClass" />
+	<bean name="jdkDynamicProxy2" class="mycase.aop.jdk.JdkDynamicProxy" />
 </beans>
