@@ -33,6 +33,7 @@ import org.springframework.util.StringValueResolver;
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#getBeanExpressionResolver()
  * @see org.springframework.beans.factory.config.EmbeddedValueResolver
  */
+// bean属性的解析器获取，bean可以实现此接口获取StringValueResolver，StringValueResolver可以把bean属性配置的变量（${}形式）解析成实际的值
 public interface EmbeddedValueResolverAware extends Aware {
 
 	/**

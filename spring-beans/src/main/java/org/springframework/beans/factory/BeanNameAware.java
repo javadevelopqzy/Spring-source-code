@@ -33,6 +33,7 @@ package org.springframework.beans.factory;
  * @see BeanFactoryAware
  * @see InitializingBean
  */
+// bean的名称获取，bean可以实现此接口获取当前bean的名称
 public interface BeanNameAware extends Aware {
 
 	/**

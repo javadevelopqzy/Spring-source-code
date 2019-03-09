@@ -27,6 +27,7 @@ import org.springframework.core.env.Environment;
  * @since 3.1
  * @see org.springframework.core.env.EnvironmentCapable
  */
+// 环境信息的获取，Bean可以实现此接口获取到Environment对象
 public interface EnvironmentAware extends Aware {
 
 	/**

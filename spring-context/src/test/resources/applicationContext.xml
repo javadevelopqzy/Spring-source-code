@@ -68,4 +68,7 @@
 	<bean class="mycase.aop.cglib.AopExposeProxyTestBean"/>
 	<bean class="mycase.aop.AopClass" />
 	<bean name="jdkDynamicProxy2" class="mycase.aop.jdk.JdkDynamicProxy" />
+
+	<!-- bean生命周期 -->
+	<bean class="mycase.lifecycle.LifeCycleBean" />
 </beans>

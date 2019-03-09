@@ -59,6 +59,7 @@ import org.springframework.core.io.ResourceLoader;
  * @see org.springframework.core.io.support.PathMatchingResourcePatternResolver
  * @see org.springframework.context.support.ReloadableResourceBundleMessageSource
  */
+// ResourceLoader可以加载文件，bean可以实现此接口，获取到ResourceLoader用于加载文件
 public interface ResourceLoaderAware extends Aware {
 
 	/**

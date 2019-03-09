@@ -28,6 +28,7 @@ import org.springframework.beans.factory.Aware;
  * @since 1.1.1
  * @see ApplicationContextAware
  */
+// 事件发布对象的获取，bean可以实现此接口获取applicationEventPublisher进行自定义事件的推送
 public interface ApplicationEventPublisherAware extends Aware {
 
 	/**

@@ -56,6 +56,7 @@ import org.springframework.beans.factory.Aware;
  * @see org.springframework.context.support.ApplicationObjectSupport
  * @see org.springframework.beans.factory.BeanFactoryAware
  */
+// ApplicationContext的获取，bean可以实现此接口获取到ApplicationContext
 public interface ApplicationContextAware extends Aware {
 
 	/**

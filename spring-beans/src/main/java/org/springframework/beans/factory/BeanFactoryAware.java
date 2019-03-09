@@ -38,6 +38,7 @@ import org.springframework.beans.BeansException;
  * @see InitializingBean
  * @see org.springframework.context.ApplicationContextAware
  */
+// IOC容器的获取，bean可以实现此接口获取IOC容器
 public interface BeanFactoryAware extends Aware {
 
 	/**

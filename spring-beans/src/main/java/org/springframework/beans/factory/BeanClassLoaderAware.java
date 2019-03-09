@@ -35,6 +35,7 @@ package org.springframework.beans.factory;
  * @see BeanFactoryAware
  * @see InitializingBean
  */
+// beanClassLoader的获取，bean可以实现此接口获取加载当前bean的ClassLoader
 public interface BeanClassLoaderAware extends Aware {
 
 	/**

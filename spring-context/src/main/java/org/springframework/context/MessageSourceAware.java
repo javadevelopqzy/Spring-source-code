@@ -31,6 +31,7 @@ import org.springframework.beans.factory.Aware;
  * @since 1.1.1
  * @see ApplicationContextAware
  */
+// 消息源的获取，bean可以实现此接口处理国际化相关的配置
 public interface MessageSourceAware extends Aware {
 
 	/**
