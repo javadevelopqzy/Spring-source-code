@@ -51,6 +51,8 @@ import org.springframework.core.io.ResourceLoader;
  * @see org.springframework.context.ApplicationContext
  * @see org.springframework.context.ResourceLoaderAware
  */
+// 继承了ResourceLoader的接口，并且添加了对模糊路径的解析方法
+// 如：传入/WEB-INF/*-context.xml，可以解析所有匹配到的文件，并返回Resource数组
 public interface ResourcePatternResolver extends ResourceLoader {
 
 	/**

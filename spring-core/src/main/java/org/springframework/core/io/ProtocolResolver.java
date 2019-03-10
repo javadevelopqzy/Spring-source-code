@@ -29,6 +29,7 @@ import org.springframework.lang.Nullable;
  * @since 4.3
  * @see DefaultResourceLoader#addProtocolResolver
  */
+// 定义了自定义文件协议解析的方法，可以实现此接口解析自定义协议，在DefaultResourceLoader加载时会优先使用自定义的方式解析
 @FunctionalInterface
 public interface ProtocolResolver {
 

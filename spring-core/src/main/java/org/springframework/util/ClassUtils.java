@@ -175,6 +175,8 @@ public abstract class ClassUtils {
 	 * @see Thread#getContextClassLoader()
 	 * @see ClassLoader#getSystemClassLoader()
 	 */
+	// 获取当前线程的ClassLoader，如果是空的则获取加载当前类的classLoader
+	// 如果还是空，则获取bootstrapClassLoader
 	@Nullable
 	public static ClassLoader getDefaultClassLoader() {
 		ClassLoader cl = null;

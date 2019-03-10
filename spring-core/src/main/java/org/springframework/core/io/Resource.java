@@ -16,6 +16,8 @@
 
 package org.springframework.core.io;
 
+import org.springframework.lang.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,8 +25,6 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Interface for a resource descriptor that abstracts from the actual
@@ -49,6 +49,9 @@ import org.springframework.lang.Nullable;
  * @see ByteArrayResource
  * @see InputStreamResource
  */
+// Spring自定义的资源管理接口，所有被Spring加载的资源文件都会获得此接口便于资源管理
+// web环境下常用的实现是ClassPathResource和ClassPathContextResource
+// 如果路径是URL，如："file://"等有协议的开头则实现是FileUrlResource或UrlResource
 public interface Resource extends InputStreamSource {
 
 	/**

@@ -16,15 +16,11 @@
 
 package org.springframework.util;
 
+import org.springframework.lang.Nullable;
+
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
-
-import org.springframework.lang.Nullable;
+import java.net.*;
 
 /**
  * Utility methods for resolving resource locations to files in the
@@ -45,6 +41,7 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.core.io.UrlResource
  * @see org.springframework.core.io.ResourceLoader
  */
+// 解析文件的工具类
 public abstract class ResourceUtils {
 
 	/** Pseudo URL prefix for loading from the class path: "classpath:". */
@@ -101,6 +98,7 @@ public abstract class ResourceUtils {
 	 * @see #CLASSPATH_URL_PREFIX
 	 * @see java.net.URL
 	 */
+	// 判断路径是否是URL
 	public static boolean isUrl(@Nullable String resourceLocation) {
 		if (resourceLocation == null) {
 			return false;
@@ -126,6 +124,7 @@ public abstract class ResourceUtils {
 	 * @return a corresponding URL object
 	 * @throws FileNotFoundException if the resource cannot be resolved to a URL
 	 */
+	// 根据路径返回URL对象
 	public static URL getURL(String resourceLocation) throws FileNotFoundException {
 		Assert.notNull(resourceLocation, "Resource location must not be null");
 		if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
@@ -166,6 +165,7 @@ public abstract class ResourceUtils {
 	 * @throws FileNotFoundException if the resource cannot be resolved to
 	 * a file in the file system
 	 */
+	// 通过资源路径解析成File对象
 	public static File getFile(String resourceLocation) throws FileNotFoundException {
 		Assert.notNull(resourceLocation, "Resource location must not be null");
 		if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
@@ -197,6 +197,7 @@ public abstract class ResourceUtils {
 	 * @throws FileNotFoundException if the URL cannot be resolved to
 	 * a file in the file system
 	 */
+	// 把URL解析成File对象
 	public static File getFile(URL resourceUrl) throws FileNotFoundException {
 		return getFile(resourceUrl, "URL");
 	}
@@ -211,6 +212,7 @@ public abstract class ResourceUtils {
 	 * @throws FileNotFoundException if the URL cannot be resolved to
 	 * a file in the file system
 	 */
+	// 把URL解析成File对象
 	public static File getFile(URL resourceUrl, String description) throws FileNotFoundException {
 		Assert.notNull(resourceUrl, "Resource URL must not be null");
 		if (!URL_PROTOCOL_FILE.equals(resourceUrl.getProtocol())) {
@@ -236,6 +238,7 @@ public abstract class ResourceUtils {
 	 * a file in the file system
 	 * @since 2.5
 	 */
+	// 把URI解析成File对象
 	public static File getFile(URI resourceUri) throws FileNotFoundException {
 		return getFile(resourceUri, "URI");
 	}
@@ -251,6 +254,7 @@ public abstract class ResourceUtils {
 	 * a file in the file system
 	 * @since 2.5
 	 */
+	// 把URI解析成File对象
 	public static File getFile(URI resourceUri, String description) throws FileNotFoundException {
 		Assert.notNull(resourceUri, "Resource URI must not be null");
 		if (!URL_PROTOCOL_FILE.equals(resourceUri.getScheme())) {
@@ -305,6 +309,7 @@ public abstract class ResourceUtils {
 	 * @return the URL for the actual jar file
 	 * @throws MalformedURLException if no valid jar file URL could be extracted
 	 */
+	// 把jar包的URL解析成URL
 	public static URL extractJarFileURL(URL jarUrl) throws MalformedURLException {
 		String urlFile = jarUrl.getFile();
 		int separatorIndex = urlFile.indexOf(JAR_URL_SEPARATOR);

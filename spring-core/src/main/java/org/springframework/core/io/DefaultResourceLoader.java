@@ -16,6 +16,12 @@
 
 package org.springframework.core.io;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
@@ -23,12 +29,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ResourceUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * Default implementation of the {@link ResourceLoader} interface.
@@ -45,6 +45,8 @@ import org.springframework.util.StringUtils;
  * @see FileSystemResourceLoader
  * @see org.springframework.context.support.ClassPathXmlApplicationContext
  */
+// 默认的资源加载实现类，目前被用于ResourceEditor，也是AbstractApplicationContext的基础实现
+// 自定义协议的也在此实现
 public class DefaultResourceLoader implements ResourceLoader {
 
 	@Nullable
@@ -62,6 +64,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 	 * @see java.lang.Thread#getContextClassLoader()
 	 */
 	public DefaultResourceLoader() {
+		// 获取classLoader
 		this.classLoader = ClassUtils.getDefaultClassLoader();
 	}
 
@@ -81,6 +84,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 	 * <p>The default is that ClassLoader access will happen using the thread context
 	 * class loader at the time of this ResourceLoader's initialization.
 	 */
+	// 可以手动指定ClassLoader
 	public void setClassLoader(@Nullable ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
@@ -105,6 +109,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 	 * @since 4.3
 	 * @see #getProtocolResolvers()
 	 */
+	// 添加自定义协议解析类
 	public void addProtocolResolver(ProtocolResolver resolver) {
 		Assert.notNull(resolver, "ProtocolResolver must not be null");
 		this.protocolResolvers.add(resolver);
@@ -139,32 +144,39 @@ public class DefaultResourceLoader implements ResourceLoader {
 		this.resourceCaches.clear();
 	}
 
-
+	// 如果传入的资源是URL，则会返回UrlResource对象
 	@Override
 	public Resource getResource(String location) {
 		Assert.notNull(location, "Location must not be null");
 
+		// 如果配置了自定义协议，自定义协议解析
 		for (ProtocolResolver protocolResolver : this.protocolResolvers) {
+			// 自定义协议解析到对应的文件，直接返回
 			Resource resource = protocolResolver.resolve(location, this);
 			if (resource != null) {
 				return resource;
 			}
 		}
 
+		// 路径以"/"开头，使用特殊方法解析（web环境下返回ServletContextResource，否则返回ClassPathContextResource）
 		if (location.startsWith("/")) {
 			return getResourceByPath(location);
 		}
+		// 以"classpath:"开头，直接使用ClassPathResource解析
 		else if (location.startsWith(CLASSPATH_URL_PREFIX)) {
 			return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
 		}
+		// 否则尝试使用URL解析
 		else {
 			try {
 				// Try to parse the location as a URL...
+				// 如果是file://等URL路径，则匹配
 				URL url = new URL(location);
 				return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));
 			}
 			catch (MalformedURLException ex) {
 				// No URL -> resolve as resource path.
+				// 不是URL，使用特殊方法解析（web环境下返回ServletContextResource，否则返回ClassPathContextResource）
 				return getResourceByPath(location);
 			}
 		}
@@ -181,6 +193,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 	 * @see org.springframework.context.support.FileSystemXmlApplicationContext#getResourceByPath
 	 * @see org.springframework.web.context.support.XmlWebApplicationContext#getResourceByPath
 	 */
+	// 默认相对路径的Resource解析方法
 	protected Resource getResourceByPath(String path) {
 		return new ClassPathContextResource(path, getClassLoader());
 	}
