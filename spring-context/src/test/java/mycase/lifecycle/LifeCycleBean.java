@@ -85,6 +85,4 @@ public class LifeCycleBean implements BeanNameAware, BeanClassLoaderAware, BeanF
 	public void destroy() throws Exception {
 
 	}
-
-
 }
