@@ -31,6 +31,8 @@ import org.springframework.lang.Nullable;
  * @since 07.07.2003
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#setParentBeanFactory
  */
+// 表示BeanFactory是一个有继承关系的，即此BeanFactory还可以有父的BeanFactory
+// 仅提供两个方法，（1）获取parent。（2）判断bean是否属于此BeanFactory
 public interface HierarchicalBeanFactory extends BeanFactory {
 
 	/**

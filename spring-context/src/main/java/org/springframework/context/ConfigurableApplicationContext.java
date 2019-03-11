@@ -40,6 +40,10 @@ import org.springframework.lang.Nullable;
  * @author Chris Beams
  * @since 03.11.2003
  */
+// 继承了ApplicationContext，拥有几乎所有需要的基本信息只读接口
+// （1）提供应用信息设置方法（setId、setParent等）
+// （2）提供BeanFactoryPostProcessor注册、ApplicationListener注册方法、自定义资源协议（ProtocolResolver）注册方法
+// （3）提供应用的refresh、isActive、close等方法
 public interface ConfigurableApplicationContext extends ApplicationContext, Lifecycle, Closeable {
 
 	/**
@@ -91,6 +95,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * Set the unique id of this application context.
 	 * @since 3.0
 	 */
+	// 设置应用id
 	void setId(String id);
 
 	/**
@@ -101,6 +106,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * @param parent the parent context
 	 * @see org.springframework.web.context.ConfigurableWebApplicationContext
 	 */
+	// 设置application的parent
 	void setParent(@Nullable ApplicationContext parent);
 
 	/**
@@ -108,6 +114,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * @param environment the new environment
 	 * @since 3.1
 	 */
+	// 设置Environment
 	void setEnvironment(ConfigurableEnvironment environment);
 
 	/**
@@ -115,6 +122,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * form, allowing for further customization.
 	 * @since 3.1
 	 */
+	// 获取Environment，继承过来了，这里重复定义了
 	@Override
 	ConfigurableEnvironment getEnvironment();
 
@@ -124,6 +132,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * bean definitions get evaluated. To be invoked during context configuration.
 	 * @param postProcessor the factory processor to register
 	 */
+	// 硬编码添加BeanFactoryPostProcessor方法
 	void addBeanFactoryPostProcessor(BeanFactoryPostProcessor postProcessor);
 
 	/**
@@ -136,6 +145,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * @see org.springframework.context.event.ContextRefreshedEvent
 	 * @see org.springframework.context.event.ContextClosedEvent
 	 */
+	// 硬编码添加ApplicationListener方法
 	void addApplicationListener(ApplicationListener<?> listener);
 
 	/**
@@ -145,6 +155,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * resolution rules. It may therefore also override any default rules.
 	 * @since 4.3
 	 */
+	// 添加对于资源路径自定义协议的解析类
 	void addProtocolResolver(ProtocolResolver resolver);
 
 	/**
@@ -157,6 +168,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * @throws IllegalStateException if already initialized and multiple refresh
 	 * attempts are not supported
 	 */
+	// 加载配置文件的核心方法
 	void refresh() throws BeansException, IllegalStateException;
 
 	/**
@@ -167,6 +179,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * @see java.lang.Runtime#addShutdownHook
 	 * @see #close()
 	 */
+	// 注册JVM关闭的钩子，Spring内部调用close方法
 	void registerShutdownHook();
 
 	/**
@@ -188,6 +201,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * @see #close()
 	 * @see #getBeanFactory()
 	 */
+	// 判断应用是否被关闭
 	boolean isActive();
 
 	/**
@@ -209,6 +223,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * @see #close()
 	 * @see #addBeanFactoryPostProcessor
 	 */
+	// 返回内部持有的BeanFactory
 	ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException;
 
 }

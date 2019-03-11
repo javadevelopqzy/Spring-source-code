@@ -23,6 +23,8 @@ package org.springframework.context;
  * @author Juergen Hoeller
  * @since 3.0
  */
+// 生命周期接口，继承了Lifecycle
+// 添加了onRefresh和onClose方法，可以实现通知功能
 public interface LifecycleProcessor extends Lifecycle {
 
 	/**

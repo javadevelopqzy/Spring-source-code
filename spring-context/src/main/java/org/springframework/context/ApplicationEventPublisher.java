@@ -28,7 +28,8 @@ package org.springframework.context;
  * @see org.springframework.context.ApplicationEvent
  * @see org.springframework.context.event.EventPublicationInterceptor
  */
-// 事件发布的接口，实现此接口可以推送事件
+// 事件发布的接口
+// 该接口提供了事件发布的功能
 @FunctionalInterface
 public interface ApplicationEventPublisher {
 

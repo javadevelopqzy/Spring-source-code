@@ -55,6 +55,9 @@ import org.springframework.lang.Nullable;
  * @see HierarchicalBeanFactory
  * @see BeanFactoryUtils
  */
+// 继承了BeanFactory，BeanFactory只是提供了获取单个bean方法定义
+// 此接口提供了多个bean的获取
+// 如：获取所有bean的名称。获取所有BeanDefinition，获取bean的注解，根据类型获取所有的bean
 public interface ListableBeanFactory extends BeanFactory {
 
 	/**
@@ -75,6 +78,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * other means than bean definitions.
 	 * @return the number of beans defined in the factory
 	 */
+	// 获取BeanDefinition的个数
 	int getBeanDefinitionCount();
 
 	/**
@@ -85,6 +89,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * @return the names of all beans defined in this factory,
 	 * or an empty array if none defined
 	 */
+	// 获取所有BeanDefinition名称
 	String[] getBeanDefinitionNames();
 
 	/**
@@ -141,6 +146,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * @see FactoryBean#getObjectType
 	 * @see BeanFactoryUtils#beanNamesForTypeIncludingAncestors(ListableBeanFactory, Class)
 	 */
+	// 根据类型获取bean名称
 	String[] getBeanNamesForType(@Nullable Class<?> type);
 
 	/**
@@ -174,6 +180,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * @see FactoryBean#getObjectType
 	 * @see BeanFactoryUtils#beanNamesForTypeIncludingAncestors(ListableBeanFactory, Class, boolean, boolean)
 	 */
+	// 根据类型获取bean名称
 	String[] getBeanNamesForType(@Nullable Class<?> type, boolean includeNonSingletons, boolean allowEagerInit);
 
 	/**
@@ -204,6 +211,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * @see FactoryBean#getObjectType
 	 * @see BeanFactoryUtils#beansOfTypeIncludingAncestors(ListableBeanFactory, Class)
 	 */
+	// 根据类型获取bean对象
 	<T> Map<String, T> getBeansOfType(@Nullable Class<T> type) throws BeansException;
 
 	/**
@@ -272,6 +280,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * @throws NoSuchBeanDefinitionException if there is no bean with the given name
 	 * @since 3.0
 	 */
+	// 查找bean的注解
 	@Nullable
 	<A extends Annotation> A findAnnotationOnBean(String beanName, Class<A> annotationType)
 			throws NoSuchBeanDefinitionException;

@@ -47,6 +47,8 @@ package org.springframework.context;
  * @see org.springframework.jms.listener.AbstractMessageListenerContainer
  * @see org.springframework.scheduling.quartz.SchedulerFactoryBean
  */
+// 定义了生命周期的方法(start、stop、inRunning)
+// 典型的实现是：DefaultLifecycleProcessor
 public interface Lifecycle {
 
 	/**

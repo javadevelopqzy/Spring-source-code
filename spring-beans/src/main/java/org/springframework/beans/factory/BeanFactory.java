@@ -113,6 +113,7 @@ import org.springframework.lang.Nullable;
  * @see DisposableBean#destroy
  * @see org.springframework.beans.factory.support.RootBeanDefinition#getDestroyMethodName
  */
+// bean工厂接口，提供了bean的基本信息查询以及判断方法，但没有提供bean的注册以及删除方法
 public interface BeanFactory {
 
 	/**
@@ -284,6 +285,7 @@ public interface BeanFactory {
 	 * @see #getBean
 	 * @see #isSingleton
 	 */
+	// 判断是不是原型
 	boolean isPrototype(String name) throws NoSuchBeanDefinitionException;
 
 	/**
@@ -318,6 +320,7 @@ public interface BeanFactory {
 	 * @see #getBean
 	 * @see #getType
 	 */
+	// 判断bean的名称与指定类型是否匹配
 	boolean isTypeMatch(String name, Class<?> typeToMatch) throws NoSuchBeanDefinitionException;
 
 	/**
@@ -334,6 +337,7 @@ public interface BeanFactory {
 	 * @see #getBean
 	 * @see #isTypeMatch
 	 */
+	// 根据bean名称返回bean的类型
 	@Nullable
 	Class<?> getType(String name) throws NoSuchBeanDefinitionException;
 
@@ -348,6 +352,7 @@ public interface BeanFactory {
 	 * @return the aliases, or an empty array if none
 	 * @see #getBean
 	 */
+	// 获取bean的别名
 	String[] getAliases(String name);
 
 }

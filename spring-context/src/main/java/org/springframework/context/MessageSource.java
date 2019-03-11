@@ -37,6 +37,7 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.context.support.ResourceBundleMessageSource
  * @see org.springframework.context.support.ReloadableResourceBundleMessageSource
  */
+// 消息接口，提供把消息转换为不同语言的国际化方法
 public interface MessageSource {
 
 	/**

@@ -55,7 +55,12 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.BeanFactory
  * @see org.springframework.core.io.ResourceLoader
  */
-// beanFactory的扩展接口，包含IOC容器以及应用相关的API
+// （1）继承了EnvironmentCapable接口，拥有环境控制的方法
+// （2）继承了HierarchicalBeanFactory、ListableBeanFactory包含可继承的BeanFactory方法以及bean的基本信息获取方法
+// （3）继承了MessageSource包含了国际化的控制方法
+// （4）继承了ApplicationEventPublisher包含事件推送的方法
+// （5）继承了ResourcePatternResolver包含对资源的解析方法
+// （6）该接口在以上基础提供了，应用ID、应用名称、应用描述、以及应用继承(getParent)等方法
 public interface ApplicationContext extends EnvironmentCapable, ListableBeanFactory, HierarchicalBeanFactory,
 		MessageSource, ApplicationEventPublisher, ResourcePatternResolver {
 

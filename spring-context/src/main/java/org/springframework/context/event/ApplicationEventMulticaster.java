@@ -33,6 +33,7 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @author Stephane Nicoll
  */
+// 事件广播接口，提供监听器注册、删除、发送事件等方法
 public interface ApplicationEventMulticaster {
 
 	/**
