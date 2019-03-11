@@ -40,8 +40,13 @@ import org.springframework.util.ResourceUtils;
  * @author Juergen Hoeller
  * @since 3.0
  */
+// 继承了AbstractResource通过URL解析资源，实现从URL到File的转换
+// （1）是UrlResource和ClassPathResource的抽象父类
+// （2）添加了vfs的协议解析
 public abstract class AbstractFileResolvingResource extends AbstractResource {
 
+	// 实现通过HTTP查找网络资源
+	// 先查本地，再查询网络
 	@Override
 	public boolean exists() {
 		try {

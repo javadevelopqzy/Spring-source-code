@@ -40,6 +40,8 @@ import org.springframework.util.StringUtils;
  * @since 28.12.2003
  * @see java.net.URL
  */
+// 此类表示含有协议的资源文件，如:"file://"或"ftp://"等开头的资源，继承了AbstractFileResolvingResource
+// 实现从网络上加载Resource，即根据协议 + 路径 进行解析
 public class UrlResource extends AbstractFileResolvingResource {
 
 	/**

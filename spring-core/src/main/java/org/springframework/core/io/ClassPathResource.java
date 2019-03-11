@@ -41,6 +41,11 @@ import org.springframework.util.StringUtils;
  * @see ClassLoader#getResourceAsStream(String)
  * @see Class#getResourceAsStream(String)
  */
+// 继承了AbstractFileResolvingResource，表示这是相对于classpath的资源文件，父类实现了把URL转换为File
+// 此类实现在classpath下把路径转换为URL对象
+// 实现过程：（1）先判断是否有传入相对的class对象，如果有则根据传入class的路径 + path加载资源，如果没有找到返回null
+// （2）如果没有传入则判断是否有传入classLoader，有则在传入的classLoader加载的路径 + path加载资源，如果没有返回null
+// （3）如果class和classLoader都没有传入则从classpath + path加载资源
 public class ClassPathResource extends AbstractFileResolvingResource {
 
 	private final String path;

@@ -214,6 +214,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 			return getPath();
 		}
 
+		// 根据当前Resource的路径，创建另一个相对于当前Resource路径的资源Resource对象
 		@Override
 		public Resource createRelative(String relativePath) {
 			String pathToUse = StringUtils.applyRelativePath(getPath(), relativePath);

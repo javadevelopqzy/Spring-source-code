@@ -1,13 +1,10 @@
-package mycase.resource;
+package mycase.resource.impl;
 
-import org.springframework.core.io.AbstractResource;
-import org.springframework.util.ResourceUtils;
-import org.springframework.util.StringUtils;
+import java.io.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import org.jetbrains.annotations.*;
+import org.springframework.core.io.*;
+import org.springframework.util.*;
 
 public class AbstractResourceImpl extends AbstractResource {
 
@@ -17,27 +14,30 @@ public class AbstractResourceImpl extends AbstractResource {
 		this.path = path;
 	}
 
+	@NotNull
 	@Override
 	public String getDescription() {
 		return "这是自定义的描述信息";
 	}
 
-	// 子类需要实现
+	// 需要实现
+	@NotNull
 	@Override
 	public InputStream getInputStream() throws IOException {
 		File file = getFile();
 		return new FileInputStream(file);
 	}
 
-	// 父类是空实现
+	// 父类是空实现，需要覆盖
 	@Override
 	public String getFilename() {
 		return StringUtils.getFilename(path);
 	}
 
-	// 父类是空实现，需要手动实现
+	// 父类是空实现，需要覆盖
+	@NotNull
 	@Override
 	public File getFile() throws IOException {
-		return ResourceUtils.getFile(path);
+		return ResourceUtils.getFile(ClassLoader.getSystemResource(path));
 	}
 }
