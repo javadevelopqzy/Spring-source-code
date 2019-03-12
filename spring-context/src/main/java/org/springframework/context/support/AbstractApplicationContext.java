@@ -635,6 +635,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			finally {
 				// Reset common introspection caches in Spring's core, since we
 				// might not ever need metadata for singleton beans anymore...
+				// 清空公共缓存
 				resetCommonCaches();
 			}
 		}
@@ -960,7 +961,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Register a default embedded value resolver if no bean post-processor
 		// (such as a PropertyPlaceholderConfigurer bean) registered any before:
 		// at this point, primarily for resolution in annotation attribute values.
-		// 如果没有内嵌的值解析类（如：PropertyPlaceholderConfigurer），则使用
+		// 如果有内嵌的值解析类（如：PropertyPlaceholderConfigurer），则使用
 		if (!beanFactory.hasEmbeddedValueResolver()) {
 			beanFactory.addEmbeddedValueResolver(strVal -> getEnvironment().resolvePlaceholders(strVal));
 		}
@@ -1001,7 +1002,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		initLifecycleProcessor();
 
 		// Propagate refresh to lifecycle processor first.
-		// 启动所有实现Lifecycle接口的bean（调用Lifecycle的start()方法）
+		// 触发lifecycleProcessor的onRefresh方法
+		// 默认：启动所有实现Lifecycle接口的bean（调用Lifecycle的start()方法）
 		getLifecycleProcessor().onRefresh();
 
 		// Publish the final event.
@@ -1009,7 +1011,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		publishEvent(new ContextRefreshedEvent(this));
 
 		// Participate in LiveBeansView MBean, if active.
-		// 处理MBean
+		// 处理MBean ￥￥￥￥
 		LiveBeansView.registerApplicationContext(this);
 	}
 
@@ -1018,6 +1020,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * after an exception got thrown.
 	 * @param ex the exception that led to the cancellation
 	 */
+	// refresh发生了异常，标记active = false
 	protected void cancelRefresh(BeansException ex) {
 		this.active.set(false);
 	}
@@ -1032,6 +1035,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see ResolvableType#clearCache()
 	 * @see CachedIntrospectionResults#clearClassLoader(ClassLoader)
 	 */
+	// 清空公共缓存
 	protected void resetCommonCaches() {
 		ReflectionUtils.clearCache();
 		AnnotationUtils.clearCache();
@@ -1048,6 +1052,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #close()
 	 * @see #doClose()
 	 */
+	// 注册JVM的钩子
 	@Override
 	public void registerShutdownHook() {
 		if (this.shutdownHook == null) {
@@ -1083,6 +1088,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #doClose()
 	 * @see #registerShutdownHook()
 	 */
+	// 关闭application
 	@Override
 	public void close() {
 		synchronized (this.startupShutdownMonitor) {
@@ -1091,6 +1097,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			// We've already explicitly closed the context.
 			if (this.shutdownHook != null) {
 				try {
+					// 移除JVM钩子
 					Runtime.getRuntime().removeShutdownHook(this.shutdownHook);
 				}
 				catch (IllegalStateException ex) {
@@ -1109,16 +1116,20 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #close()
 	 * @see #registerShutdownHook()
 	 */
+	// 关闭application
+	// 卸载Mbean、发出close事件通知、销毁bean、关闭beanFactory等工作
 	protected void doClose() {
 		if (this.active.get() && this.closed.compareAndSet(false, true)) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Closing " + this);
 			}
 
+			// 卸载MBean
 			LiveBeansView.unregisterApplicationContext(this);
 
 			try {
 				// Publish shutdown event.
+				// 发出事件通知
 				publishEvent(new ContextClosedEvent(this));
 			}
 			catch (Throwable ex) {
@@ -1128,6 +1139,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			// Stop all Lifecycle beans, to avoid delays during individual destruction.
 			if (this.lifecycleProcessor != null) {
 				try {
+					// 触发lifecycleProcessor的onClose
 					this.lifecycleProcessor.onClose();
 				}
 				catch (Throwable ex) {
@@ -1136,12 +1148,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			}
 
 			// Destroy all cached singletons in the context's BeanFactory.
+			// 销毁bean
 			destroyBeans();
 
 			// Close the state of this context itself.
+			// 关闭BeanFactory，子类需要自己实现此方法
 			closeBeanFactory();
 
 			// Let subclasses do some final clean-up if they wish...
+			// 空实现，给子类扩展
 			onClose();
 
 			this.active.set(false);
@@ -1172,6 +1187,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * needs to execute while the BeanFactory is still active, override
 	 * the {@link #destroyBeans()} method instead.
 	 */
+	// 空实现，在close时调用给子类扩展
 	protected void onClose() {
 		// For subclasses: do nothing by default.
 	}
@@ -1190,6 +1206,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * of this context overall. May be overridden for more specific checks, or for a
 	 * no-op if {@link #getBeanFactory()} itself throws an exception in such a case.
 	 */
+	// 校验application是否处于active状态，不是则抛出异常
 	protected void assertBeanFactoryActive() {
 		if (!this.active.get()) {
 			if (this.closed.get()) {
@@ -1206,6 +1223,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	// Implementation of BeanFactory interface
 	//---------------------------------------------------------------------
 
+	/** 以下都是BeanFactory的实现，实际是委托内部的BeanFactory处理的，但是处理前会做是否active的校验 */
 	@Override
 	public Object getBean(String name) throws BeansException {
 		assertBeanFactoryActive();
@@ -1294,6 +1312,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	// Implementation of ListableBeanFactory interface
 	//---------------------------------------------------------------------
 
+	/** 以下都是ListableBeanFactory的实现，实际是委托内部的BeanFactory处理的，但是处理前会做是否active的校验 */
 	@Override
 	public boolean containsBeanDefinition(String beanName) {
 		return getBeanFactory().containsBeanDefinition(beanName);
@@ -1369,6 +1388,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	// Implementation of HierarchicalBeanFactory interface
 	//---------------------------------------------------------------------
 
+	/** HierarchicalBeanFactory的实现，委托内部的BeanFactory */
 	@Override
 	@Nullable
 	public BeanFactory getParentBeanFactory() {
@@ -1397,6 +1417,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	// Implementation of MessageSource interface
 	//---------------------------------------------------------------------
 
+	/** MessageSource的实现，委托内部的MessageSource对象执行 */
 	@Override
 	public String getMessage(String code, @Nullable Object[] args, @Nullable String defaultMessage, Locale locale) {
 		return getMessageSource().getMessage(code, args, defaultMessage, locale);
@@ -1440,6 +1461,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	// Implementation of ResourcePatternResolver interface
 	//---------------------------------------------------------------------
 
+	// ResourcePatternResolver的实现，委托内部resourcePatternResolver进行处理
 	@Override
 	public Resource[] getResources(String locationPattern) throws IOException {
 		return this.resourcePatternResolver.getResources(locationPattern);
@@ -1450,18 +1472,21 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	// Implementation of Lifecycle interface
 	//---------------------------------------------------------------------
 
+	// Lifecycle的实现，委托内部的LifecycleProcessor处理
 	@Override
 	public void start() {
 		getLifecycleProcessor().start();
 		publishEvent(new ContextStartedEvent(this));
 	}
 
+	// Lifecycle的实现，委托内部的LifecycleProcessor处理
 	@Override
 	public void stop() {
 		getLifecycleProcessor().stop();
 		publishEvent(new ContextStoppedEvent(this));
 	}
 
+	// Lifecycle的实现，委托内部的LifecycleProcessor处理
 	@Override
 	public boolean isRunning() {
 		return (this.lifecycleProcessor != null && this.lifecycleProcessor.isRunning());
@@ -1492,6 +1517,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * This method gets invoked by {@link #close()} after all other shutdown work.
 	 * <p>Should never throw an exception but rather log shutdown failures.
 	 */
+	// 关闭BeanFactory，子类需要自己实现此方法
 	protected abstract void closeBeanFactory();
 
 	/**
