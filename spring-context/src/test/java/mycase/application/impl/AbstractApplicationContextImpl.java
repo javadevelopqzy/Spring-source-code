@@ -1,11 +1,14 @@
 package mycase.application.impl;
 
+import java.io.*;
+
 import org.jetbrains.annotations.*;
 import org.springframework.beans.*;
 import org.springframework.beans.factory.config.*;
 import org.springframework.beans.factory.support.*;
 import org.springframework.beans.factory.xml.*;
 import org.springframework.context.support.*;
+import org.springframework.core.io.*;
 
 public class AbstractApplicationContextImpl extends AbstractApplicationContext {
 
@@ -24,7 +27,12 @@ public class AbstractApplicationContextImpl extends AbstractApplicationContext {
 	protected void refreshBeanFactory() throws BeansException, IllegalStateException {
 		beanFactory = new DefaultListableBeanFactory();
 		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
-		beanDefinitionReader.loadBeanDefinitions(path);
+		try {
+			Resource[] resource = getResources(path);
+			beanDefinitionReader.loadBeanDefinitions(resource);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
