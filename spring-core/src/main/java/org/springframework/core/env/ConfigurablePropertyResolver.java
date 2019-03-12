@@ -28,6 +28,8 @@ import org.springframework.lang.Nullable;
  * @author Chris Beams
  * @since 3.1
  */
+// 继承了PropertyResolver，拥有基础的属性解析方法
+// 此接口定义了，get、set类型转换器，配置解析表达式前缀、后缀、分隔符等方法
 public interface ConfigurablePropertyResolver extends PropertyResolver {
 
 	/**
@@ -42,6 +44,7 @@ public interface ConfigurablePropertyResolver extends PropertyResolver {
 	 * @see PropertyResolver#getProperty(String, Class)
 	 * @see org.springframework.core.convert.converter.ConverterRegistry#addConverter
 	 */
+	// 获取类型转换器，默认返回是DefaultConversionService
 	ConfigurableConversionService getConversionService();
 
 	/**
@@ -55,6 +58,7 @@ public interface ConfigurablePropertyResolver extends PropertyResolver {
 	 * @see #getConversionService()
 	 * @see org.springframework.core.convert.converter.ConverterRegistry#addConverter
 	 */
+	// 设置类型转换器
 	void setConversionService(ConfigurableConversionService conversionService);
 
 	/**

@@ -27,12 +27,14 @@ import org.springframework.lang.Nullable;
  * @see Environment
  * @see PropertySourcesPropertyResolver
  */
+// 属性解析器的接口，提供基础的属性解析方法(resolvePlaceholders)，以及属性获取方法(getProperty)
 public interface PropertyResolver {
 
 	/**
 	 * Return whether the given property key is available for resolution,
 	 * i.e. if the value for the given key is not {@code null}.
 	 */
+	// 判断特定的key是否可以解析
 	boolean containsProperty(String key);
 
 	/**
@@ -43,6 +45,7 @@ public interface PropertyResolver {
 	 * @see #getProperty(String, Class)
 	 * @see #getRequiredProperty(String)
 	 */
+	// 获取key对应的value
 	@Nullable
 	String getProperty(String key);
 
@@ -81,6 +84,7 @@ public interface PropertyResolver {
 	 * @throws IllegalStateException if the key cannot be resolved
 	 * @see #getRequiredProperty(String, Class)
 	 */
+	// 获取指定的value，获取不到则抛出异常
 	String getRequiredProperty(String key) throws IllegalStateException;
 
 	/**
@@ -100,6 +104,7 @@ public interface PropertyResolver {
 	 * @see #resolveRequiredPlaceholders
 	 * @see org.springframework.util.SystemPropertyUtils#resolvePlaceholders(String)
 	 */
+	// 解析表达式对应的value
 	String resolvePlaceholders(String text);
 
 	/**

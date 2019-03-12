@@ -69,6 +69,7 @@ import java.util.Map;
  * @see StandardEnvironment
  * @see org.springframework.context.ConfigurableApplicationContext#getEnvironment
  */
+// 定义了环境配置方法、setActiveProfiles、addActiveProfile等
 public interface ConfigurableEnvironment extends Environment, ConfigurablePropertyResolver {
 
 	/**
@@ -131,6 +132,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * to a property, {@code null} will be returned and an INFO-level log message will be
 	 * issued noting the exception.
 	 */
+	// 返回System.getProperties()
 	Map<String, Object> getSystemProperties();
 
 	/**
@@ -146,6 +148,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * to a property, {@code null} will be returned and an INFO-level log message will be
 	 * issued noting the exception.
 	 */
+	// 返回System.getenv()
 	Map<String, Object> getSystemEnvironment();
 
 	/**
@@ -166,6 +169,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * @since 3.1.2
 	 * @see org.springframework.context.support.AbstractApplicationContext#setParent
 	 */
+	// 合并Environment的信息
 	void merge(ConfigurableEnvironment parent);
 
 }

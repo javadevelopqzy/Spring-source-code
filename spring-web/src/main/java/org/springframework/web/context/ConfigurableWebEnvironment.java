@@ -32,6 +32,7 @@ import org.springframework.lang.Nullable;
  * @since 3.1.2
  * @see ConfigurableWebApplicationContext#getEnvironment()
  */
+// web环境下的Environment接口，实现是读取ServletContext和ServletConfig的init-param参数
 public interface ConfigurableWebEnvironment extends ConfigurableEnvironment {
 
 	/**

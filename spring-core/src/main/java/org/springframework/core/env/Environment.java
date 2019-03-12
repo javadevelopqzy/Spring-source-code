@@ -68,6 +68,7 @@ package org.springframework.core.env;
  * @see org.springframework.context.ConfigurableApplicationContext#setEnvironment
  * @see org.springframework.context.support.AbstractApplicationContext#createEnvironment
  */
+// 表示这是一个环境相关的接口，定义了环境获取的方法，getActiveProfiles
 public interface Environment extends PropertyResolver {
 
 	/**
