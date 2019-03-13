@@ -36,6 +36,7 @@ import org.springframework.beans.BeansException;
  * @param <T> the object type
  * @see FactoryBean
  */
+// 定义bean对象的工厂方法，实现类可以通过此接口实现bean的延迟获取
 @FunctionalInterface
 public interface ObjectFactory<T> {
 

@@ -45,7 +45,8 @@ import org.springframework.core.AliasRegistry;
  * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader
  * @see PropertiesBeanDefinitionReader
  */
-// 定义对bean的各种增删改操作，类似于bean的注册中心
+// 定义对BeanDefinition的增删改操作，类似于BeanDefinition的注册中心
+// 定义了获取BeanDefinition名称、获取BeanDefinition的总数等方法
 public interface BeanDefinitionRegistry extends AliasRegistry {
 
 	/**
@@ -60,6 +61,7 @@ public interface BeanDefinitionRegistry extends AliasRegistry {
 	 * @see RootBeanDefinition
 	 * @see ChildBeanDefinition
 	 */
+	// 根据bean名称和beanDefinition注册
 	void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
 			throws BeanDefinitionStoreException;
 
@@ -68,6 +70,7 @@ public interface BeanDefinitionRegistry extends AliasRegistry {
 	 * @param beanName the name of the bean instance to register
 	 * @throws NoSuchBeanDefinitionException if there is no such bean definition
 	 */
+	// 移除beanDefinition
 	void removeBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;
 
 	/**
@@ -76,6 +79,7 @@ public interface BeanDefinitionRegistry extends AliasRegistry {
 	 * @return the BeanDefinition for the given name (never {@code null})
 	 * @throws NoSuchBeanDefinitionException if there is no such bean definition
 	 */
+	// 获取指定的beanDefinition
 	BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;
 
 	/**
@@ -90,6 +94,7 @@ public interface BeanDefinitionRegistry extends AliasRegistry {
 	 * @return the names of all beans defined in this registry,
 	 * or an empty array if none defined
 	 */
+	// 获取所有注册的beanDefinition名称
 	String[] getBeanDefinitionNames();
 
 	/**
@@ -104,6 +109,7 @@ public interface BeanDefinitionRegistry extends AliasRegistry {
 	 * @param beanName the name to check
 	 * @return whether the given bean name is already in use
 	 */
+	// 判断beanDefinition是否已经在使用
 	boolean isBeanNameInUse(String beanName);
 
 }

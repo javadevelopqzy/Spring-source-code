@@ -32,6 +32,8 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.support.DefaultSingletonBeanRegistry
  * @see org.springframework.beans.factory.support.AbstractBeanFactory
  */
+// 单例bean的注册接口，定义了单例bean的注册以及获取方法
+// 还定义了contain、以及单例bean名称的获取方法
 public interface SingletonBeanRegistry {
 
 	/**
@@ -55,6 +57,7 @@ public interface SingletonBeanRegistry {
 	 * @see org.springframework.beans.factory.DisposableBean#destroy
 	 * @see org.springframework.beans.factory.support.BeanDefinitionRegistry#registerBeanDefinition
 	 */
+	// 注册单例bean，实现类需要控制并发问题
 	void registerSingleton(String beanName, Object singletonObject);
 
 	/**

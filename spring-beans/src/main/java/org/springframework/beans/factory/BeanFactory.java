@@ -113,7 +113,7 @@ import org.springframework.lang.Nullable;
  * @see DisposableBean#destroy
  * @see org.springframework.beans.factory.support.RootBeanDefinition#getDestroyMethodName
  */
-// bean工厂接口，提供了bean的基本信息查询以及判断方法，但没有提供bean的注册以及删除方法
+// bean工厂接口，提供了bean的获取以及基本信息判断方法，但没有提供bean的注册以及删除方法
 public interface BeanFactory {
 
 	/**

@@ -16,21 +16,14 @@
 
 package org.springframework.beans.factory.support;
 
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.TypeConverter;
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.BeanDefinitionStoreException;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.config.*;
-import org.springframework.lang.Nullable;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
-
-import java.lang.reflect.Array;
+import java.lang.reflect.*;
 import java.util.*;
+
+import org.springframework.beans.*;
+import org.springframework.beans.factory.*;
+import org.springframework.beans.factory.config.*;
+import org.springframework.lang.*;
+import org.springframework.util.*;
 
 /**
  * Helper class for use in bean factory implementations,
@@ -325,7 +318,7 @@ class BeanDefinitionValueResolver {
  			if (mbd.isSingleton()) {
 				actualInnerBeanName = adaptInnerBeanName(innerBeanName);
 			}
-			// 缓存两个bean的依赖关系
+			// 存储两个bean的依赖关系
 			this.beanFactory.registerContainedBean(actualInnerBeanName, this.beanName);
 			// Guarantee initialization of beans that the inner bean depends on.
 			// 如果bean有depend-on，先加载它依赖的bean
