@@ -56,7 +56,9 @@ import org.springframework.util.*;
  * @see org.springframework.beans.factory.DisposableBean
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory
  */
-// 单例bean注册接口：SingletonBeanRegistry的实现
+// 单例bean注册接口：SingletonBeanRegistry的实现，父类实现了对别名的添加、获取、移除
+// 实现了注册单例bean、获取单例bean、销毁单例bean
+// 实现了循环依赖的检查以及控制，单例bean和bean依赖关系的存储
 public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements SingletonBeanRegistry {
 
 	/** Cache of singleton objects: bean name to bean instance. */
@@ -328,7 +330,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		}
 	}
 
-	// 判断此bean是否已经注册完成
+	// 判断此bean是否已经注册完成，一般是在refresh时已经注册
 	@Override
 	public boolean containsSingleton(String beanName) {
 		return this.singletonObjects.containsKey(beanName);
@@ -407,7 +409,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @param beanName the name of the singleton that has been created
 	 * @see #isSingletonCurrentlyInCreation
 	 */
-	// 单例bean创建的后置处理，
+	// 单例bean创建的后置处理
 	// 判断是否需要检查，如果需要说明集合singletonsCurrentlyInCreation中存在此beanName，将其移除，表示已经创建完成
 	protected void afterSingletonCreation(String beanName) {
 		if (!this.inCreationCheckExclusions.contains(beanName) && !this.singletonsCurrentlyInCreation.remove(beanName)) {
