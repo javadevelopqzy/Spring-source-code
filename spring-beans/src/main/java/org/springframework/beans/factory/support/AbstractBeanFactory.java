@@ -62,44 +62,54 @@ import org.springframework.util.*;
  * @see AbstractAutowireCapableBeanFactory#createBean
  * @see DefaultListableBeanFactory#getBeanDefinition
  */
+// ConfigurableBeanFactory的实现，基本实现了Bean的初始化、获取、依赖管理
+//
 public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
 
 	/** Parent bean factory, for bean inheritance support. */
+	// 父parentBeanFactory，默认为空，可以通过set设置
 	@Nullable
 	private BeanFactory parentBeanFactory;
 
 	/** ClassLoader to resolve bean class names with, if necessary. */
+	// bean的classLoader，默认是当前线程的classLoader
 	@Nullable
 	private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
 
 	/** ClassLoader to temporarily resolve bean class names with, if necessary. */
+	// 临时classLoader，默认是空。￥￥￥￥（这里暂时不知道有啥用）
 	@Nullable
 	private ClassLoader tempClassLoader;
 
 	/** Whether to cache bean metadata or rather reobtain it for every access. */
+	// 设置是否缓存bean的元数据，默认是缓存
 	private boolean cacheBeanMetadata = true;
 
 	/** Resolution strategy for expressions in bean definition values. */
+	// SpEL的解析器，默认是空，可以set
 	@Nullable
 	private BeanExpressionResolver beanExpressionResolver;
 
 	/** Spring ConversionService to use instead of PropertyEditors. */
-	// Spring中代替内省PropertyEditors的类型转换的接口
+	// Spring中代替内省PropertyEditors的类型转换的接口，默认是null，可以set
 	@Nullable
 	private ConversionService conversionService;
 
 	/** Custom PropertyEditorRegistrars to apply to the beans of this factory. */
-	// 缓存自定义的PropertyEditorRegistrars（PropertyEditor的注册中心）
+	// 自定义的PropertyEditorRegistrars（PropertyEditor的注册中心） ￥￥￥￥（PropertyEditorRegistrar相关的关系）
 	private final Set<PropertyEditorRegistrar> propertyEditorRegistrars = new LinkedHashSet<>(4);
 
 	/** Custom PropertyEditors to apply to the beans of this factory. */
+	// 自定义的PropertyEditor
 	private final Map<Class<?>, Class<? extends PropertyEditor>> customEditors = new HashMap<>(4);
 
 	/** A custom TypeConverter to use, overriding the default PropertyEditor mechanism. */
+	// Spring中替代内省的类型转换器，默认是null ￥￥￥￥
 	@Nullable
 	private TypeConverter typeConverter;
 
 	/** String resolvers to apply e.g. to annotation attribute values. */
+	// 解析内嵌的属性的
 	private final List<StringValueResolver> embeddedValueResolvers = new LinkedList<>();
 
 	/** BeanPostProcessors to apply in createBean. */
@@ -115,6 +125,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	private boolean hasDestructionAwareBeanPostProcessors;
 
 	/** Map from scope identifier String to corresponding Scope. */
+	// ￥￥￥
 	private final Map<String, Scope> scopes = new LinkedHashMap<>(8);
 
 	/** Security context used when running with a SecurityManager. */
@@ -126,9 +137,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	private final Map<String, RootBeanDefinition> mergedBeanDefinitions = new ConcurrentHashMap<>(256);
 
 	/** Names of beans that have already been created at least once. */
+	// 存储至少被创建一次的bean
 	private final Set<String> alreadyCreated = Collections.newSetFromMap(new ConcurrentHashMap<>(256));
 
 	/** Names of beans that are currently in creation. */
+	// 当前正在创建的bean
 	private final ThreadLocal<Object> prototypesCurrentlyInCreation =
 			new NamedThreadLocal<>("Prototype beans currently in creation");
 
@@ -160,11 +173,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		return doGetBean(name, null, null, false);
 	}
 
+	// 根据名称获取对应类型的bean
 	@Override
 	public <T> T getBean(String name, Class<T> requiredType) throws BeansException {
 		return doGetBean(name, requiredType, null, false);
 	}
 
+	// 根据bean名称和参数获取对应的bean，如果bean已经存在直接取缓存，args没有用
 	@Override
 	public Object getBean(String name, Object... args) throws BeansException {
 		return doGetBean(name, null, args, false);
@@ -199,14 +214,14 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	// 查找bean，如果没有实例化则实例化
 	// name：bean的名称
 	// requiredType：bean的类型
-	// args：调用getBean传入的构造参数
+	// args：创建bean的明确参数（构造方法或工厂方法的参数）
 	// typeCheckOnly：是否仅仅做类型检查
 	@SuppressWarnings("unchecked")
 	protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
 			@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
 
-		// 转换bean名称，因为传入的name可能是alias，或者factoryBean
-		// 因此需要解析出bean真正名称
+		// 因为传入的name可能是alias，或者factoryBean的name
+		// 所以需要解析出bean真正名称，即把前面的&去掉，并且如果是别名还要找出真正的beanName
 		final String beanName = transformedBeanName(name);
 		Object bean;
 
@@ -215,6 +230,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// 为了解决循环依赖,spring每个bean都有它的objectFactory,在bean没创建好之前就把factory暴露出去
 		// 查询是否有缓存,如果有直接取缓存的bean
 		Object sharedInstance = getSingleton(beanName);
+		// 能获取到说明bean已经初始化
 		if (sharedInstance != null && args == null) {
 			if (logger.isTraceEnabled()) {
 				if (isSingletonCurrentlyInCreation(beanName)) {
@@ -225,7 +241,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
 				}
 			}
-			// 直接获取bean的实例,如果有实现BeanFactory,方法内部也处理了
+			// 有可能传入&开头的，需要返回FactoryBean类对象，而不是getObject返回的bean
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		}
 
@@ -1637,6 +1653,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	// beanInstance：按照名称获取的bean对象
 	// name：原始传入的bean名称，可能是&name，或者别名
 	// beanName：实际bean的名称
+	// mdb：合并的beanDefinition
 	protected Object getObjectForBeanInstance(
 			Object beanInstance, String name, String beanName, @Nullable RootBeanDefinition mbd) {
 
@@ -1654,12 +1671,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// Now we have the bean instance, which may be a normal bean or a FactoryBean.
 		// If it's a FactoryBean, we use it to create a bean instance, unless the
 		// caller actually wants a reference to the factory.
+		// ………………这里代码有点啰嗦
 		// 如果没实现FactoryBean，直接返回此对象
 		if (!(beanInstance instanceof FactoryBean) || BeanFactoryUtils.isFactoryDereference(name)) {
 			return beanInstance;
 		}
 
-		// 到这里了，说明是FactoryBean，并且要获取bean而不是factory
+		// 到这里bean已经实现了FactoryBean，且要获取factory产生的bean
 		Object object = null;
 		if (mbd == null) {
 			// 从缓存中获取
@@ -1676,6 +1694,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			}
 			// 判断是不是spring内部的bean
 			boolean synthetic = (mbd != null && mbd.isSynthetic());
+			// 通过getObject获取实际的bean
 			object = getObjectFromFactoryBean(factory, beanName, !synthetic);
 		}
 		return object;

@@ -4,11 +4,11 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 	    http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean name="fac" class="mycase.factory.FactoryBeanTest2"/>
+	<bean name="fac" class="mycase.factory.FactoryBeanXmlConfig"/>
 
-	<bean name="factory" factory-bean="fac" factory-method="getObject"/>
+	<bean name="actualBean1" factory-bean="fac" factory-method="getObject"/>
 
-	<bean class="mycase.factory.FactoryBeanTest">
-		<constructor-arg name="abc" value="123"/>
-	</bean>
+	<bean class="mycase.factory.FactoryBeanInterfaceImpl" />
+
+	<bean class="mycase.factory.processor.FactoryBeanProcessor"/>
 </beans>

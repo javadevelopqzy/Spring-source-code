@@ -1,8 +1,9 @@
 package mycase.factory;
 
-public class FactoryBeanTest2 {
+public class FactoryBeanXmlConfig {
 
 	public ActualBean getObject() {
 		return new ActualBean();
 	}
+
 }

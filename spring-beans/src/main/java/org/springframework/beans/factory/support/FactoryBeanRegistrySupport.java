@@ -124,7 +124,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 							beforeSingletonCreation(beanName);
 							try {
 								// 真正的工厂创建对象的后置处理逻辑，目前是空实现留给子类扩展
-								// 子类实现：执行BeanPostProcessor等
+								// 子类实现：执行BeanPostProcessor的后置处理
 								object = postProcessObjectFromFactoryBean(object, beanName);
 							}
 							catch (Throwable ex) {
@@ -167,7 +167,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 	 * @throws BeanCreationException if FactoryBean object creation failed
 	 * @see org.springframework.beans.factory.FactoryBean#getObject()
 	 */
-	// 从FactoryBean中获取实际的bean对象
+	// 从FactoryBean中，通过getObject方法获取实际的bean对象
 	private Object doGetObjectFromFactoryBean(final FactoryBean<?> factory, final String beanName)
 			throws BeanCreationException {
 

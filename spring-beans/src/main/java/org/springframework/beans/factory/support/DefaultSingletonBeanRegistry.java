@@ -181,7 +181,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		}
 	}
 
-	// 通过beanName获取配置的bean实例
+	// 通过beanName获取配置的bean实例，allowEarlyReference表示是否从临时工singletonFactories中获取
 	@Override
 	@Nullable
 	public Object getSingleton(String beanName) {
