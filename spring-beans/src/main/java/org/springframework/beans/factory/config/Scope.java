@@ -57,6 +57,7 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.web.context.request.RequestScope
  * @see org.springframework.web.context.request.SessionScope
  */
+// bean的scope自定义实现，需要实现此接口，然后注册到beanFactory中
 public interface Scope {
 
 	/**

@@ -1,4 +1,4 @@
-package mycase.factory;
+package mycase.factory_bean;
 
 import org.springframework.beans.factory.*;
 
@@ -6,7 +6,7 @@ public class FactoryBeanInterfaceImpl implements FactoryBean {
 
 	@Override
 	public Object getObject() {
-		return new ActualBean();
+		return new mycase.factory_bean.ActualBean();
 	}
 
 	@Override

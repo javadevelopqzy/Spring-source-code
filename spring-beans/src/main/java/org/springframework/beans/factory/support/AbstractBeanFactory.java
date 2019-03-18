@@ -125,7 +125,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	private boolean hasDestructionAwareBeanPostProcessors;
 
 	/** Map from scope identifier String to corresponding Scope. */
-	// ￥￥￥
+	// 存储自定的scope，应用程序可以实现Scope接口，通过此类的registerScope注册
 	private final Map<String, Scope> scopes = new LinkedHashMap<>(8);
 
 	/** Security context used when running with a SecurityManager. */
@@ -349,14 +349,17 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
 				}
 
-				// 不是single和property，按照指定的处理
+				// 不是single和property，说明有可能是自定的scope，按照指定的处理
 				else {
 					String scopeName = mbd.getScope();
+					// 取出自定义的scope
 					final Scope scope = this.scopes.get(scopeName);
+					// 没有scope报错
 					if (scope == null) {
 						throw new IllegalStateException("No Scope registered for scope name '" + scopeName + "'");
 					}
 					try {
+						// 使用自定的scope创建bean
 						Object scopedInstance = scope.get(beanName, () -> {
 							beforePrototypeCreation(beanName);
 							try {
@@ -909,13 +912,16 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		return this.hasDestructionAwareBeanPostProcessors;
 	}
 
+	// 注册自定义的bean的scope
 	@Override
 	public void registerScope(String scopeName, Scope scope) {
 		Assert.notNull(scopeName, "Scope identifier must not be null");
 		Assert.notNull(scope, "Scope must not be null");
+		// 不能与原来的scope冲突
 		if (SCOPE_SINGLETON.equals(scopeName) || SCOPE_PROTOTYPE.equals(scopeName)) {
 			throw new IllegalArgumentException("Cannot replace existing scopes 'singleton' and 'prototype'");
 		}
+		// 记录日志
 		Scope previous = this.scopes.put(scopeName, scope);
 		if (previous != null && previous != scope) {
 			if (logger.isDebugEnabled()) {

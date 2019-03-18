@@ -1,4 +1,4 @@
-package mycase.factory;
+package mycase.factory_bean;
 
 public class ActualBean {
 

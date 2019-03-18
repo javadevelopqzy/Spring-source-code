@@ -10,11 +10,11 @@
 	<bean name="bean2" class="mycase.cycle.Bean2">
 	</bean>
 
-	<bean name="fac" class="mycase.factory.FactoryBeanXmlConfig"/>
+	<bean name="fac" class="mycase.factory_bean.FactoryBeanXmlConfig"/>
 
 	<bean name="factory" factory-bean="fac" factory-method="getObject"/>
 
-	<bean class="mycase.factory.FactoryBeanInterfaceImpl">
+	<bean class="mycase.factory_bean.FactoryBeanInterfaceImpl">
 	</bean>
 
 	<bean name="containListBean" class="mycase.property.bean.ContainListBean">
