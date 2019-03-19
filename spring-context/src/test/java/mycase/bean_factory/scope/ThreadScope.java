@@ -2,28 +2,34 @@ package mycase.bean_factory.scope;
 
 import java.util.*;
 
+import org.jetbrains.annotations.*;
 import org.springframework.beans.factory.*;
 import org.springframework.beans.factory.config.*;
 
 public class ThreadScope implements Scope {
 
-	ThreadLocal<Map> current = new ThreadLocal<>();
+	private ThreadLocal<Map<String, Object>> current = new ThreadLocal<>();
 
-	ThreadScopeBean threadScopeBean;
-
+	@NotNull
 	@Override
-	public Object get(String name, ObjectFactory<?> objectFactory) {
-		Map map = current.get();
+	public Object get(@NotNull String name, @NotNull ObjectFactory<?> objectFactory) {
+		Map<String, Object> map = current.get();
+		System.out.println(Thread.currentThread().getName() + "获取bean，map=" + map);
+		Object bean;
 		if (map == null) {
-			current.set(map = new HashMap<>());
+			map = new HashMap<>();
+			bean = objectFactory.getObject();
+			map.put(name, bean);
+			current.set(map);
 		} else {
+			bean = map.get(name);
 		}
-		return threadScopeBean;
+		return bean;
 	}
 
 	@Override
 	public Object remove(String name) {
-		return null;
+		return current.get().remove(name);
 	}
 
 	@Override
