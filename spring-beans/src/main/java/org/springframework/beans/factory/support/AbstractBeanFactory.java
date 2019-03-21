@@ -16,18 +16,20 @@
 
 package org.springframework.beans.factory.support;
 
-import java.beans.*;
-import java.security.*;
-import java.util.*;
-import java.util.concurrent.*;
-
 import org.springframework.beans.*;
 import org.springframework.beans.factory.*;
 import org.springframework.beans.factory.config.*;
-import org.springframework.core.*;
-import org.springframework.core.convert.*;
-import org.springframework.lang.*;
+import org.springframework.core.DecoratingClassLoader;
+import org.springframework.core.NamedThreadLocal;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.lang.Nullable;
 import org.springframework.util.*;
+
+import java.beans.PropertyEditor;
+import java.security.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract base class for {@link org.springframework.beans.factory.BeanFactory}
@@ -245,26 +247,29 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		}
 
+		// 缓存中没有，则创建此bean
 		else {
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.h
-			// 判断scope=property的bean是否出现循环依赖
-			// 如果不是property，则跳过，property不允许出现循环依赖
+			// 判断此bean是否是正在创建的，scope=property的bean
+			// 如果是说明出现循环依赖
 			if (isPrototypeCurrentlyInCreation(beanName)) {
 				throw new BeanCurrentlyInCreationException(beanName);
 			}
 
 			// Check if bean definition exists in this factory.
-			// 父BeanFactory存在且当前factory不包含此bean，则从BeanFactory获取bean，有点类似于双亲委派
+			// 父BeanFactory不为空且当前factory不包含此bean的BeanDefinition，则从父BeanFactory创建bean，有点类似于双亲委派
 			BeanFactory parentBeanFactory = getParentBeanFactory();
 			if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
 				// Not found -> check parent.
-				// 如果父BeanFactory没找到，继续递归从父的BeanFactory查找
+				// 获取bean的实际名称
 				String nameToLookup = originalBeanName(name);
+				// 如果父BeanFactory是AbstractBeanFactory类型，直接从父找，因为当前的BeanFactory确实没有此bean的BeanDefinition
 				if (parentBeanFactory instanceof AbstractBeanFactory) {
 					return ((AbstractBeanFactory) parentBeanFactory).doGetBean(
 							nameToLookup, requiredType, args, typeCheckOnly);
 				}
+				// 父是BeanFactory类型，下面只能根据传入的参数调用BeanFactory的getBean方法获取
 				else if (args != null) {
 					// Delegation to parent with explicit args.
 					return (T) parentBeanFactory.getBean(nameToLookup, args);
@@ -287,7 +292,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				// 把从XML加载的GenericBeanDefinition转换为RootBeanDefinition
 				// 如果beanName是子bean，会把父bean属性合并到mbd
 				final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
-				// 检查bean是否是抽象的，如果是抽象的则报错
+				// 检查bean是否是抽象的，如果是抽象的无法实例化，报错
 				checkMergedBeanDefinition(mbd, beanName, args);
 
 				// Guarantee initialization of beans that the current bean depends on.
@@ -1047,8 +1052,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * (within the current thread).
 	 * @param beanName the name of the bean
 	 */
+	// 判断此bean是否是正在创建的，非单例的bean
+	// 如果是说明出现循环依赖
 	protected boolean isPrototypeCurrentlyInCreation(String beanName) {
 		Object curVal = this.prototypesCurrentlyInCreation.get();
+		// 从ThreadLocal中获取正在创建的、非单例的bean
+		// 如果正是当前bean，返回true
 		return (curVal != null &&
 				(curVal.equals(beanName) || (curVal instanceof Set && ((Set<?>) curVal).contains(beanName))));
 	}
@@ -1155,7 +1164,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @param name the user-specified name
 	 * @return the original bean name
 	 */
+	// 获取最原始的beanName
 	protected String originalBeanName(String name) {
+		// 如果是&开头
+		// 去掉前面的&，并且找到实际的beanName，再把&拼接上
 		String beanName = transformedBeanName(name);
 		if (name.startsWith(FACTORY_BEAN_PREFIX)) {
 			beanName = FACTORY_BEAN_PREFIX + beanName;
@@ -1367,6 +1379,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * recreating it on next access.
 	 * @param beanName the bean name to clear the merged definition for
 	 */
+	// 移除BeanDefinition
 	protected void clearMergedBeanDefinition(String beanName) {
 		this.mergedBeanDefinitions.remove(beanName);
 	}
@@ -1585,12 +1598,14 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * creation of the specified bean.
 	 * @param beanName the name of the bean
 	 */
+	// 把bean放入alreadyCreated集合，标记bean已经被创建
 	protected void markBeanAsCreated(String beanName) {
 		if (!this.alreadyCreated.contains(beanName)) {
 			synchronized (this.mergedBeanDefinitions) {
 				if (!this.alreadyCreated.contains(beanName)) {
 					// Let the bean definition get re-merged now that we're actually creating
 					// the bean... just in case some of its metadata changed in the meantime.
+					// 移除beanDefinition
 					clearMergedBeanDefinition(beanName);
 					this.alreadyCreated.add(beanName);
 				}
