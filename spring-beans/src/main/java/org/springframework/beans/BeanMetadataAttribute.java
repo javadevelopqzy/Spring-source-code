@@ -27,6 +27,7 @@ import org.springframework.util.ObjectUtils;
  * @author Juergen Hoeller
  * @since 2.5
  */
+// <meta>配置的封装类
 public class BeanMetadataAttribute implements BeanMetadataElement {
 
 	private final String name;

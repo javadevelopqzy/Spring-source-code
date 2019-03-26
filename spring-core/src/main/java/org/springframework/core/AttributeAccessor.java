@@ -25,6 +25,7 @@ import org.springframework.lang.Nullable;
  * @author Rob Harrop
  * @since 2.0
  */
+// 给BeanDefinition属性操作接口，定义了属性的增、删、改、获取的方法
 public interface AttributeAccessor {
 
 	/**
@@ -36,6 +37,7 @@ public interface AttributeAccessor {
 	 * @param name the unique attribute key
 	 * @param value the attribute value to be attached
 	 */
+	// 设置属性值
 	void setAttribute(String name, @Nullable Object value);
 
 	/**
@@ -61,6 +63,7 @@ public interface AttributeAccessor {
 	 * Otherwise return {@code false}.
 	 * @param name the unique attribute key
 	 */
+	// 是否包含
 	boolean hasAttribute(String name);
 
 	/**

@@ -27,6 +27,8 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 2.5
  */
+// 在AttributeAccessorSupport的基础上加上<meta>配置的操作（也是放到父类的map中）
+// 仅仅是实现BeanMetadataAttribute放到map中,key=BeanMetadataAttribute.getName()
 @SuppressWarnings("serial")
 public class BeanMetadataAttributeAccessor extends AttributeAccessorSupport implements BeanMetadataElement {
 

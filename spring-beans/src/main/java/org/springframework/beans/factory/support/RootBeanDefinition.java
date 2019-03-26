@@ -16,21 +16,15 @@
 
 package org.springframework.beans.factory.support;
 
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.config.ConstructorArgumentValues;
-import org.springframework.core.ResolvableType;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.function.*;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Supplier;
+import org.springframework.beans.*;
+import org.springframework.beans.factory.config.*;
+import org.springframework.core.*;
+import org.springframework.lang.*;
+import org.springframework.util.*;
 
 /**
  * A root bean definition represents the merged bean definition that backs
@@ -50,9 +44,13 @@ import java.util.function.Supplier;
  * @see GenericBeanDefinition
  * @see ChildBeanDefinition
  */
+// 此类用于合并BeanDefinition，所有BeanDefinition最终都会合并为此类的对象
+// 如：常用的GenericBeanDefinition，最终也会合并为RootBeanDefinition
+// 也可以通过编程式注册	RootBeanDefinition，但比较推荐使用GenericBeanDefinition
 @SuppressWarnings("serial")
 public class RootBeanDefinition extends AbstractBeanDefinition {
 
+	// 被装饰的BeanDefinition
 	@Nullable
 	private BeanDefinitionHolder decoratedDefinition;
 
@@ -66,7 +64,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	@Nullable
 	volatile ResolvableType targetType;
 
-	/** Package-visible field for caching the determined Class of a given bean definition. */
+	/** Package-visifield for caching the determined Class of a given bean definition. */
 	@Nullable
 	volatile Class<?> resolvedTargetType;
 
@@ -78,7 +76,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	final Object constructorArgumentLock = new Object();
 
 	/** Package-visible field for caching the resolved constructor or factory method. */
-	// 缓存创建此bean的构造函数或Factory方法，在第一次被实例化时缓存
+	// 创建此bean的构造函数或Factory方法，在第一次被实例化时缓存
 	@Nullable
 	Executable resolvedConstructorOrFactoryMethod;
 

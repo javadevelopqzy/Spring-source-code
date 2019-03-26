@@ -37,6 +37,8 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.support.RootBeanDefinition
  * @see org.springframework.beans.factory.support.ChildBeanDefinition
  */
+// Bean定义的接口，包含了bean的xml属性定义的所有操作方法
+// 如：parent、class、name、scope等常用属性
 public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
@@ -85,6 +87,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * Set the name of the parent definition of this bean definition, if any.
 	 */
+	// 设置parentName
 	void setParentName(@Nullable String parentName);
 
 	/**
@@ -164,6 +167,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * if the specified bean is not marked as an autowire candidate. As a consequence,
 	 * autowiring by name will nevertheless inject a bean if the name matches.
 	 */
+	// 设置autowire-candidate，此属性表示是否可用于自动装配，默认true，如果设置为false则表示此bean不能用于自定装配
 	void setAutowireCandidate(boolean autowireCandidate);
 
 	/**
@@ -176,6 +180,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * <p>If this value is {@code true} for exactly one bean among multiple
 	 * matching candidates, it will serve as a tie-breaker.
 	 */
+	// 设置primary属性，拥有此属性的bean会在被注入时优先
+	// 如：当UserController需要注入UserService时，找到两个UserService类型，则配置了primary的优先
 	void setPrimary(boolean primary);
 
 	/**
@@ -217,6 +223,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 * @return the ConstructorArgumentValues object (never {@code null})
 	 */
+	// 获取构造函数的参数
 	ConstructorArgumentValues getConstructorArgumentValues();
 
 	/**
@@ -232,6 +239,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 * @return the MutablePropertyValues object (never {@code null})
 	 */
+	// 获取<properties>标签的配置
 	MutablePropertyValues getPropertyValues();
 
 	/**

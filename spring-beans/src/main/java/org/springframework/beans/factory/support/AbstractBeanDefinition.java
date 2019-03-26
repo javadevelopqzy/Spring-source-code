@@ -43,6 +43,10 @@ import org.springframework.util.*;
  * @see RootBeanDefinition
  * @see ChildBeanDefinition
  */
+// BeanDefinition的基础抽象
+// bean基础的属性在此类几乎都定义好了
+// 定义了init-lazy，class，scope等基本配置属性的get、set方法
+// 实现了BeanDefinition覆盖，属性替换的方法，以及一些基本的设施
 @SuppressWarnings("serial")
 public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccessor
 		implements BeanDefinition, Cloneable {
@@ -125,63 +129,44 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 */
 	public static final String INFER_METHOD = "(inferred)";
 
+	// bean的class对象，可能是Class或者是Class.getName的字符串
 	@Nullable
 	private volatile Object beanClass;
 
-	/**
-	 * bean的作用范围
-	 */
+	// bean的作用范围
 	@Nullable
 	private String scope = SCOPE_DEFAULT;
 
-	/**
-	 * 是否是抽象的
-	 */
+	// 是否是抽象的
 	private boolean abstractFlag = false;
 
-	/**
-	 * 是否懒加载
-	 */
+	// 是否懒加载
 	private boolean lazyInit = false;
 
-	/**
-	 * 自动注入的模式
-	 */
+	// 自动注入的模式
 	private int autowireMode = AUTOWIRE_NO;
 
-	/**
-	 * 依赖检查标记，3.0之后已经弃用
-	 */
+	// 依赖检查标记，3.0之后已经弃用
 	private int dependencyCheck = DEPENDENCY_CHECK_NONE;
 
-	/**
-	 * 记录dependsOn，即加载此bean，需要先加载哪些bean
-	 */
+	// 记录dependsOn，即加载此bean，需要先加载哪些bean
 	@Nullable
 	private String[] dependsOn;
 
-	/**
-	 * bean标签的autowire-candidate属性，如果设为false表示该bean不能当做其他bean的注入对象，
-	 * 但是该bean的属性依然可以通过其他bean注入
-	 */
+	// bean标签的autowire-candidate属性，如果设为false表示该bean不能当做其他bean的注入对象，
+	// 但是该bean的属性依然可以通过其他bean注入
 	private boolean autowireCandidate = true;
 
-	/**
-	 * 当此bean被其他bean注入同时出现多个候选bean时，primary=true的bean会优先
-	 */
+	// 当此bean被其他bean注入同时出现多个候选bean时，primary=true的bean会优先
 	private boolean primary = false;
 
-	/**
-	 * 存储qualifier标签的记录
-	 */
+	// 存储qualifier标签的记录
 	private final Map<String, AutowireCandidateQualifier> qualifiers = new LinkedHashMap<>();
 
 	@Nullable
 	private Supplier<?> instanceSupplier;
 
-	/**
-	 * 是否允许访问非公开的构造器
-	 */
+	// 是否允许访问非公开的构造器
 	private boolean nonPublicAccessAllowed = true;
 
 	/**
@@ -201,49 +186,33 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	@Nullable
 	private String factoryMethodName;
 
-	/**
-	 * 子标签：constructor-arg的包装类
-	 */
+	// 子标签：constructor-arg的包装类
 	@Nullable
 	private ConstructorArgumentValues constructorArgumentValues;
 
-	/**
-	 * 子标签：property的包装类
-	 */
+	// 子标签：property的包装类
 	@Nullable
 	private MutablePropertyValues propertyValues;
 
-	/**
-	 * 子标签：replaced-method、lookup-method的包装类
-	 */
+	// 子标签：replaced-method、lookup-method的包装类
 	@Nullable
 	private MethodOverrides methodOverrides;
 
-	/**
-	 * init-method属性值
-	 */
+	// init-method属性值
 	@Nullable
 	private String initMethodName;
 
-	/**
-	 * destroy-method属性值
-	 */
+	// destroy-method属性值
 	@Nullable
 	private String destroyMethodName;
 
-	/**
-	 * 是否执行init-method
-	 */
+	// 是否执行init-method
 	private boolean enforceInitMethod = true;
 
-	/**
-	 * 是否执行destroy-method
-	 */
+	// 是否执行destroy-method
 	private boolean enforceDestroyMethod = true;
 
-	/**
-	 * 此bean是用户自定义的，还是spring内部的
-	 */
+	// 此bean是用户自定义的，还是spring内部的
 	private boolean synthetic = false;
 
 	/**
@@ -254,15 +223,11 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 */
 	private int role = BeanDefinition.ROLE_APPLICATION;
 
-	/**
-	 * description标签的描述信息
-	 */
+	// escription标签的描述信息
 	@Nullable
 	private String description;
 
-	/**
-	 * 定义这个bean的资源
-	 */
+	// 定义这个bean的资源
 	@Nullable
 	private Resource resource;
 
@@ -288,7 +253,9 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * bean definition.
 	 * @param original the original bean definition to copy from
 	 */
+	// 使用传入的BeanDefinition创建一个新的BeanDefinition，属性和传入一致
 	protected AbstractBeanDefinition(BeanDefinition original) {
+		// 这一步是进行：parent、class、scope、abstract、lazy-init、factory-bean、role、meta、property的复制
 		setParentName(original.getParentName());
 		setBeanClassName(original.getBeanClassName());
 		setScope(original.getScope());
@@ -300,6 +267,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 		setSource(original.getSource());
 		copyAttributesFrom(original);
 
+		// 如果是AbstractBeanDefinition进行属性赋值
 		if (original instanceof AbstractBeanDefinition) {
 			AbstractBeanDefinition originalAbd = (AbstractBeanDefinition) original;
 			if (originalAbd.hasBeanClass()) {
@@ -354,10 +322,13 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * in the given bean definition.
 	 * </ul>
 	 */
+	// 使用指定BeanDefinition覆盖当前BeanDefinition的值
 	public void overrideFrom(BeanDefinition other) {
+		// 覆盖BeanClassName
 		if (StringUtils.hasLength(other.getBeanClassName())) {
 			setBeanClassName(other.getBeanClassName());
 		}
+		// 覆盖scope
 		if (StringUtils.hasLength(other.getScope())) {
 			setScope(other.getScope());
 		}
@@ -371,6 +342,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 		}
 		setRole(other.getRole());
 		setSource(other.getSource());
+		// 覆盖属性值
 		copyAttributesFrom(other);
 
 		if (other instanceof AbstractBeanDefinition) {
@@ -418,6 +390,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * Apply the provided default values to this bean.
 	 * @param defaults the defaults to apply
 	 */
+	// 给当前BeanDefinition的LazyInit、AutowireMode、DependencyCheck、InitMethodName等属性设置默认值
 	public void applyDefaults(BeanDefinitionDefaults defaults) {
 		setLazyInit(defaults.isLazyInit());
 		setAutowireMode(defaults.getAutowireMode());
@@ -440,6 +413,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	/**
 	 * Return the current bean class name of this bean definition.
 	 */
+	// 获取Bean的Class类全名
 	@Override
 	@Nullable
 	public String getBeanClassName() {
@@ -465,6 +439,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * @throws IllegalStateException if the bean definition does not define a bean class,
 	 * or a specified bean class name has not been resolved into an actual Class
 	 */
+	// 获取bean的Class，如果beanClass为空报错
 	public Class<?> getBeanClass() throws IllegalStateException {
 		Object beanClassObject = this.beanClass;
 		if (beanClassObject == null) {
@@ -492,6 +467,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * @return the resolved bean class
 	 * @throws ClassNotFoundException if the class name could be resolved
 	 */
+	// 通过Class.forName加载bean的Class
 	@Nullable
 	public Class<?> resolveBeanClass(@Nullable ClassLoader classLoader) throws ClassNotFoundException {
 		String className = getBeanClassName();
@@ -615,7 +591,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * @see #AUTOWIRE_CONSTRUCTOR
 	 * @see #AUTOWIRE_BY_TYPE
 	 */
-	// 获取自动注入方式：（1）自动发现过时了。（2）通过构造函数注入。（3）通过类型注入
+	// 获取自动注入方式，有三种：（1）自动发现(过时了)。（2）通过构造函数注入。（3）通过类型注入
 	public int getResolvedAutowireMode() {
 		if (this.autowireMode == AUTOWIRE_AUTODETECT) {
 			// Work out whether to apply setter autowiring or constructor autowiring.
@@ -661,6 +637,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * constructor arguments. This property should just be necessary for other kinds
 	 * of dependencies like statics (*ugh*) or database preparation on startup.
 	 */
+	// 设置dependsOn配置属性
 	@Override
 	public void setDependsOn(@Nullable String... dependsOn) {
 		this.dependsOn = dependsOn;
@@ -684,6 +661,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * @see #AUTOWIRE_BY_TYPE
 	 * @see #AUTOWIRE_BY_NAME
 	 */
+	// 设置autowireCandidate配置属性
 	@Override
 	public void setAutowireCandidate(boolean autowireCandidate) {
 		this.autowireCandidate = autowireCandidate;
@@ -751,6 +729,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * Copy the qualifiers from the supplied AbstractBeanDefinition to this bean definition.
 	 * @param source the AbstractBeanDefinition to copy from
 	 */
+	// 追加所有的qualifier配置
 	public void copyQualifiersFrom(AbstractBeanDefinition source) {
 		Assert.notNull(source, "Source must not be null");
 		this.qualifiers.putAll(source.qualifiers);
@@ -790,6 +769,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * members as far as they have been annotated. This setting applies to
 	 * externalized metadata in this bean definition only.
 	 */
+	// 设置是否允许访问非公开的构造方法
 	public void setNonPublicAccessAllowed(boolean nonPublicAccessAllowed) {
 		this.nonPublicAccessAllowed = nonPublicAccessAllowed;
 	}
@@ -863,6 +843,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	/**
 	 * Specify constructor argument values for this bean.
 	 */
+	// 设置<constructor-arg>配置
 	public void setConstructorArgumentValues(ConstructorArgumentValues constructorArgumentValues) {
 		this.constructorArgumentValues = constructorArgumentValues;
 	}
@@ -896,9 +877,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	/**
 	 * Return property values for this bean (never {@code null}).
 	 */
-	/**
-	 * 获取子标签：property的包装类
-	 */
+	// 获取子标签：property的包装类
 	@Override
 	public MutablePropertyValues getPropertyValues() {
 		if (this.propertyValues == null) {
@@ -939,6 +918,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * Return if there are method overrides defined for this bean.
 	 * @since 5.0.2
 	 */
+	// 是否配置了方法覆盖
 	public boolean hasMethodOverrides() {
 		return (this.methodOverrides != null && !this.methodOverrides.isEmpty());
 	}
@@ -1140,16 +1120,17 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * Checks for existence of a method with the specified name.
 	 * @throws BeanDefinitionValidationException in case of validation failure
 	 */
-	// 验证及准备处理方法重写：<replace-method>、<lookup-method>等
+	// 验证及准备处理方法重写的配置：<replace-method>、<lookup-method>等
 	public void prepareMethodOverrides() throws BeanDefinitionValidationException {
 		// Check that lookup methods exists.
 		// 判断是否存在
 		if (hasMethodOverrides()) {
+			// 获取所有的覆盖方法
 			Set<MethodOverride> overrides = getMethodOverrides().getOverrides();
 			synchronized (overrides) {
 				// 遍历所有需要覆盖的方法
 				for (MethodOverride mo : overrides) {
-					// 方法的校验和参数标记
+					// 校验方法是否存在，如果只有一个则做标记
 					prepareMethodOverride(mo);
 				}
 			}
@@ -1163,11 +1144,11 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * @param mo the MethodOverride object to validate
 	 * @throws BeanDefinitionValidationException in case of validation failure
 	 */
-	// 方法的校验和参数标记
+	// 校验方法是否存在，如果只有一个则做标记
 	protected void prepareMethodOverride(MethodOverride mo) throws BeanDefinitionValidationException {
 		// 获取方法的个数
 		int count = ClassUtils.getMethodCountForName(getBeanClass(), mo.getMethodName());
-		// 方法个数为0，报错
+		// 要覆盖的方法不存在，报错
 		if (count == 0) {
 			throw new BeanDefinitionValidationException(
 					"Invalid method override: no method with name '" + mo.getMethodName() +
@@ -1186,6 +1167,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * Delegates to {@link #cloneBeanDefinition()}.
 	 * @see Object#clone()
 	 */
+	// 调用clone
 	@Override
 	public Object clone() {
 		return cloneBeanDefinition();
@@ -1196,6 +1178,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * To be implemented by concrete subclasses.
 	 * @return the cloned bean definition object
 	 */
+	// 复制方法，需要子类实现
 	public abstract AbstractBeanDefinition cloneBeanDefinition();
 
 	@Override

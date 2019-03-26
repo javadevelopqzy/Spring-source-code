@@ -16,20 +16,18 @@
 
 package org.springframework.beans.factory.support;
 
+import java.beans.*;
+import java.security.*;
+import java.util.*;
+import java.util.concurrent.*;
+
 import org.springframework.beans.*;
 import org.springframework.beans.factory.*;
 import org.springframework.beans.factory.config.*;
-import org.springframework.core.DecoratingClassLoader;
-import org.springframework.core.NamedThreadLocal;
-import org.springframework.core.ResolvableType;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.lang.Nullable;
+import org.springframework.core.*;
+import org.springframework.core.convert.*;
+import org.springframework.lang.*;
 import org.springframework.util.*;
-
-import java.beans.PropertyEditor;
-import java.security.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract base class for {@link org.springframework.beans.factory.BeanFactory}
@@ -1252,6 +1250,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		if (mbd != null) {
 			return mbd;
 		}
+		// 合并BeanDefinition
 		return getMergedBeanDefinition(beanName, getBeanDefinition(beanName));
 	}
 
@@ -1263,7 +1262,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @return a (potentially merged) RootBeanDefinition for the given bean
 	 * @throws BeanDefinitionStoreException in case of an invalid bean definition
 	 */
-	// 获取合并后的RootBeanDefinition，
+	// 获取合并后的RootBeanDefinition
 	protected RootBeanDefinition getMergedBeanDefinition(String beanName, BeanDefinition bd)
 			throws BeanDefinitionStoreException {
 
@@ -1282,6 +1281,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 */
 	// 合并BeanDefinition，返回合并后的RootBeanDefinition。
 	// 合并方式：重新new一个RootBeanDefinition，并且把原来的属性赋值给它
+	// ￥￥￥￥￥
 	protected RootBeanDefinition getMergedBeanDefinition(
 			String beanName, BeanDefinition bd, @Nullable BeanDefinition containingBd)
 			throws BeanDefinitionStoreException {
@@ -1290,11 +1290,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			RootBeanDefinition mbd = null;
 
 			// Check with full lock now in order to enforce the same merged instance.
+			// 从缓存中获取，如果已经合并过不会再合并
 			if (containingBd == null) {
 				mbd = this.mergedBeanDefinitions.get(beanName);
 			}
 
 			if (mbd == null) {
+				// 如果没有配置parent，直接合并为RootBeanDefinition
 				if (bd.getParentName() == null) {
 					// Use copy of given root bean definition.
 					if (bd instanceof RootBeanDefinition) {

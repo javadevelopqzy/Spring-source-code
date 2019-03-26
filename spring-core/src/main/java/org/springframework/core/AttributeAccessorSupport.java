@@ -34,6 +34,8 @@ import org.springframework.util.StringUtils;
  * @author Juergen Hoeller
  * @since 2.0
  */
+// AttributeAccessor的基础实现，把属性的key和value封装到map中，实现了对map的增删改
+// 方法都是简单的map操作
 @SuppressWarnings("serial")
 public abstract class AttributeAccessorSupport implements AttributeAccessor, Serializable {
 

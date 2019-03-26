@@ -16,11 +16,10 @@
 
 package org.springframework.beans;
 
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
+import java.io.*;
 
-import java.io.Serializable;
+import org.springframework.lang.*;
+import org.springframework.util.*;
 
 /**
  * Object to hold information and value for an individual bean property.
@@ -39,7 +38,7 @@ import java.io.Serializable;
  * @see PropertyValues
  * @see BeanWrapper
  */
-// bean的property属性，每一个此类对象对应bean注入的一个property
+// bean的<property>属性的封装类，每一个此类对象对应bean的一个property
 @SuppressWarnings("serial")
 public class PropertyValue extends BeanMetadataAttributeAccessor implements Serializable {
 

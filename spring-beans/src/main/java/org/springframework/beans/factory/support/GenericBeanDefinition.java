@@ -36,6 +36,9 @@ import org.springframework.lang.Nullable;
  * @see RootBeanDefinition
  * @see ChildBeanDefinition
  */
+// 标准的BeanDefinition，在AbstractBeanDefinition的基础上添加了parent的配置
+// XML加载的bean基本都是加载为此类的对象
+// 可以配置parentName指定其parent的属性
 @SuppressWarnings("serial")
 public class GenericBeanDefinition extends AbstractBeanDefinition {
 

@@ -35,6 +35,7 @@ import org.springframework.util.ObjectUtils;
  * @author Sam Brannen
  * @since 1.1
  */
+// 方法配置覆盖的抽象，此类只是实现了BeanMetadataElement、以及添加方法名的属性
 public abstract class MethodOverride implements BeanMetadataElement {
 
 	private final String methodName;
