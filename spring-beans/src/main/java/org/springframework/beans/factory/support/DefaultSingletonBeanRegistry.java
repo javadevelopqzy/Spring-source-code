@@ -111,11 +111,11 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	private final Map<String, Set<String>> containedBeanMap = new ConcurrentHashMap<>(16);
 
 	/** Map between dependent bean names: bean name to Set of dependent bean names. */
-	// 当存在包含关系时，再添加包含关系会存在此集合，表示依赖关系 ￥￥￥￥￥
+	// 被依赖bean的集合，如：A依赖B，A依赖C，则此集合存 B -> [A]，C -> [A]
 	private final Map<String, Set<String>> dependentBeanMap = new ConcurrentHashMap<>(64);
 
 	/** Map between depending bean names: bean name to Set of bean names for the bean's dependencies. */
-	// 当bean依赖多个相同的bean时，存入此集合 ￥￥￥￥￥
+	// 依赖bean的集合，如：A依赖B，A依赖C，则此集合存 A -> [B,C]
 	private final Map<String, Set<String>> dependenciesForBeanMap = new ConcurrentHashMap<>(64);
 
 	// 注册单例bean
@@ -233,7 +233,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * with, if necessary
 	 * @return the registered singleton object
 	 */
-	// 根据传入的ObjectFactory创建单例的Bean，并注册到容器中
+	// 创建单例的Bean，并注册到容器中
+	// （1）做创建bean的校验，并且标记bean在创建中
+	// （2）调用singletonFactory.getObject创建bean，把bean注册到singletonObjects集合中
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 		Assert.notNull(beanName, "Bean name must not be null");
 		// 加锁
@@ -290,9 +292,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					// 需要，说明集合singletonsCurrentlyInCreation中存在此beanName，将其移除，表示已经创建完成
 					afterSingletonCreation(beanName);
 				}
-				// newSingleton=true，说明创建成功，把bean注册到容器中
+				// newSingleton=true，说明是新创建的bean，把bean注册到容器中
 				if (newSingleton) {
-					// 注册
+					// 注册单例bean
 					addSingleton(beanName, singletonObject);
 				}
 			}

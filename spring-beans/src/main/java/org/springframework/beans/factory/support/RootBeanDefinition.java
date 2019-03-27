@@ -65,6 +65,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	volatile ResolvableType targetType;
 
 	/** Package-visifield for caching the determined Class of a given bean definition. */
+	// bean的实际class
 	@Nullable
 	volatile Class<?> resolvedTargetType;
 
