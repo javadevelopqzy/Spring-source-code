@@ -59,6 +59,12 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.config.ConfigurableListableBeanFactory
  * @see org.springframework.context.ApplicationContext#getAutowireCapableBeanFactory()
  */
+// 继承自BeanFactory，在此基础上增加自动注入的方法定义
+// （1）定义了根据类型、注入模式、创建bean的方法
+// （2）定义了bean属性装载和注入的方法
+// （3）定义了BeanPostProcessors的前置和后置处理方法
+// （4）定义了bean依赖属性的解析方法
+// （5）定义了initializeBean和destroyBean的方法
 public interface AutowireCapableBeanFactory extends BeanFactory {
 
 	/**
@@ -136,6 +142,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @return the new bean instance
 	 * @throws BeansException if instantiation or wiring failed
 	 */
+	// 根据Class创建指定类型的bean对象
 	<T> T createBean(Class<T> beanClass) throws BeansException;
 
 	/**
@@ -148,6 +155,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @param existingBean the existing bean instance
 	 * @throws BeansException if wiring failed
 	 */
+	// 装载一个可用于自动注入的bean
 	void autowireBean(Object existingBean) throws BeansException;
 
 	/**
@@ -167,6 +175,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @throws BeansException if the initialization failed
 	 * @see #initializeBean
 	 */
+	// 给existingBean配置一个beanName的依赖
 	Object configureBean(Object existingBean, String beanName) throws BeansException;
 
 
@@ -191,6 +200,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @see #AUTOWIRE_BY_TYPE
 	 * @see #AUTOWIRE_CONSTRUCTOR
 	 */
+	// 根据类型和指定模式创建一个bean
 	Object createBean(Class<?> beanClass, int autowireMode, boolean dependencyCheck) throws BeansException;
 
 	/**
@@ -219,6 +229,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @see #applyBeanPostProcessorsBeforeInitialization
 	 * @see #applyBeanPostProcessorsAfterInitialization
 	 */
+	// 根据指定的模式实例化一个新的bean
 	Object autowire(Class<?> beanClass, int autowireMode, boolean dependencyCheck) throws BeansException;
 
 	/**
@@ -239,6 +250,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @see #AUTOWIRE_BY_TYPE
 	 * @see #AUTOWIRE_NO
 	 */
+	// 自动装配bean的属性
 	void autowireBeanProperties(Object existingBean, int autowireMode, boolean dependencyCheck)
 			throws BeansException;
 
@@ -264,6 +276,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @throws BeansException if applying the property values failed
 	 * @see #autowireBeanProperties
 	 */
+	// 把beanName的属性值装载到existingBean中
 	void applyBeanPropertyValues(Object existingBean, String beanName) throws BeansException;
 
 	/**
@@ -283,6 +296,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @throws BeansException if the initialization failed
 	 * @see #ORIGINAL_INSTANCE_SUFFIX
 	 */
+	// 处理InitializeBean的逻辑
 	Object initializeBean(Object existingBean, String beanName) throws BeansException;
 
 	/**
@@ -298,6 +312,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @see BeanPostProcessor#postProcessBeforeInitialization
 	 * @see #ORIGINAL_INSTANCE_SUFFIX
 	 */
+	// BeanPostProcessor的前置处理方法
 	Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
 			throws BeansException;
 
@@ -314,6 +329,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @see BeanPostProcessor#postProcessAfterInitialization
 	 * @see #ORIGINAL_INSTANCE_SUFFIX
 	 */
+	// BeanPostProcessor的后置处理方法
 	Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
 			throws BeansException;
 
@@ -325,6 +341,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * and logged instead of propagated to the caller of this method.
 	 * @param existingBean the bean instance to destroy
 	 */
+	// 销毁指定bean
 	void destroyBean(Object existingBean);
 
 
@@ -359,6 +376,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @since 2.5
 	 * @see #resolveDependency(DependencyDescriptor, String, Set, TypeConverter)
 	 */
+	// 解析出bean的依赖bean
 	@Nullable
 	Object resolveDependency(DependencyDescriptor descriptor, @Nullable String requestingBeanName) throws BeansException;
 
@@ -376,6 +394,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @since 2.5
 	 * @see DependencyDescriptor
 	 */
+	// 解析出bean的依赖bean
 	@Nullable
 	Object resolveDependency(DependencyDescriptor descriptor, @Nullable String requestingBeanName,
 			@Nullable Set<String> autowiredBeanNames, @Nullable TypeConverter typeConverter) throws BeansException;

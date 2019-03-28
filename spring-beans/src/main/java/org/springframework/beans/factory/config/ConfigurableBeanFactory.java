@@ -52,10 +52,10 @@ import org.springframework.util.StringValueResolver;
 // 继承了SingletonBeanRegistry，拥有单例bean的注册、获取方法
 // BeanFactory配置的基本设施
 // 定义了如下方法：
-// （1）提供应用信息设置方法（BeanClassLoader的get和set、setParent等）
+// （1）提供Factory信息设置方法（BeanClassLoader的get和set、setParent等）
 // （2）属性解析器（ConversionService、PropertyEditorRegistrar、TypeConverter）的注册、获取
 // （3）SpEL属性值的解析
-// （4）类型转换器的设置
+// （4）类型转换器（ConversionService）的设置
 // （5）BeanPostProcessor的注册
 // （6）SpEL变量的别名解析、注册
 // （7）bean的依赖关系获取（依赖指定bean的bean，指定bean依赖的bean）
