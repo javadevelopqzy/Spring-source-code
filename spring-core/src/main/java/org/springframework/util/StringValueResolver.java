@@ -28,6 +28,7 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.config.BeanDefinitionVisitor#BeanDefinitionVisitor(StringValueResolver)
  * @see org.springframework.beans.factory.config.PropertyPlaceholderConfigurer
  */
+// 占位符解析接口，如：实现此接口可以解析自定义的字符串，如：name=${aaa}，可以通过此接口解析aaa
 @FunctionalInterface
 public interface StringValueResolver {
 

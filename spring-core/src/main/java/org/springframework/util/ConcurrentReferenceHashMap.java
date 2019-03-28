@@ -59,6 +59,7 @@ import org.springframework.lang.Nullable;
  * @param <K> the key type
  * @param <V> the value type
  */
+// Spring实现的ConcurrentMap、使用SoftReference或WeakReference实现    ￥￥￥￥￥￥ 内部原理需要深入学习
 public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> {
 
 	private static final int DEFAULT_INITIAL_CAPACITY = 16;
