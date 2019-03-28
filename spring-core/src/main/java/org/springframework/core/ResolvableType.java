@@ -79,6 +79,8 @@ import org.springframework.util.StringUtils;
  * @see #forInstance(Object)
  * @see ResolvableTypeProvider
  */
+// java.lang.reflect.Type的封装类
+// 提供类型的元数据信息（父类、泛型等）的获取方法
 @SuppressWarnings("serial")
 public class ResolvableType implements Serializable {
 
@@ -120,15 +122,19 @@ public class ResolvableType implements Serializable {
 	@Nullable
 	private final Integer hash;
 
+	// 具体的类型
 	@Nullable
 	private Class<?> resolved;
 
+	// 具体类型的父类型
 	@Nullable
 	private volatile ResolvableType superType;
 
+	// 具体类型实现的接口
 	@Nullable
 	private volatile ResolvableType[] interfaces;
 
+	// 具体类型指定的泛型
 	@Nullable
 	private volatile ResolvableType[] generics;
 
@@ -205,11 +211,14 @@ public class ResolvableType implements Serializable {
 	 * Return the underlying Java {@link Class} being managed, if available;
 	 * otherwise {@code null}.
 	 */
+	// 返回原始的Class类型，如果没有返回null
 	@Nullable
 	public Class<?> getRawClass() {
+		// 如果已经有明确的类型，直接返回
 		if (this.type == this.resolved) {
 			return this.resolved;
 		}
+		// 获取原始的类型
 		Type rawType = this.type;
 		if (rawType instanceof ParameterizedType) {
 			rawType = ((ParameterizedType) rawType).getRawType();
@@ -247,6 +256,7 @@ public class ResolvableType implements Serializable {
 	 * @since 4.2
 	 * @see #isAssignableFrom(Class)
 	 */
+	// 判断指定对象是否是当前类型的实例
 	public boolean isInstance(@Nullable Object obj) {
 		return (obj != null && isAssignableFrom(obj.getClass()));
 	}
@@ -421,6 +431,7 @@ public class ResolvableType implements Serializable {
 	 * @see #as(Class)
 	 * @see #asCollection()
 	 */
+	// 转换为map类型，如果没有实现Map则会返回null
 	public ResolvableType asMap() {
 		return as(Map.class);
 	}
@@ -461,6 +472,8 @@ public class ResolvableType implements Serializable {
 	 * <p>Note: The resulting {@link ResolvableType} instance may not be {@link Serializable}.
 	 * @see #getInterfaces()
 	 */
+	// 获取类型的父类型
+	// 如：HashMap.class的父类是AbstractMap
 	public ResolvableType getSuperType() {
 		Class<?> resolved = resolve();
 		if (resolved == null || resolved.getGenericSuperclass() == null) {
@@ -656,6 +669,8 @@ public class ResolvableType implements Serializable {
 	 * @see #resolveGeneric(int...)
 	 * @see #resolveGenerics()
 	 */
+	// 获取类型的泛型，indexes表示第几个
+	// 如：Map<String, Integer>，传入1，返回java.lang.Integer
 	public ResolvableType getGeneric(@Nullable int... indexes) {
 		ResolvableType[] generics = getGenerics();
 		if (indexes == null || indexes.length == 0) {
@@ -685,6 +700,7 @@ public class ResolvableType implements Serializable {
 	 * @see #resolveGeneric(int...)
 	 * @see #resolveGenerics()
 	 */
+	// 获取类型的所有泛型，如：Map<String, Integer>，返回[java.lang.String, java.lang.Integer]
 	public ResolvableType[] getGenerics() {
 		if (this == NONE) {
 			return EMPTY_TYPES_ARRAY;
@@ -984,6 +1000,7 @@ public class ResolvableType implements Serializable {
 	 * @see #forClass(Class, Class)
 	 * @see #forClassWithGenerics(Class, Class...)
 	 */
+	// 构造方法，通过class构造此类的对象
 	public static ResolvableType forClass(@Nullable Class<?> clazz) {
 		return new ResolvableType(clazz);
 	}
