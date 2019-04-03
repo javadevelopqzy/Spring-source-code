@@ -16,22 +16,16 @@
 
 package org.springframework.beans.factory.support;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeanInstantiationException;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.cglib.core.ClassGenerator;
-import org.springframework.cglib.core.DefaultGeneratorStrategy;
-import org.springframework.cglib.core.SpringNamingPolicy;
-import org.springframework.cglib.proxy.*;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
+import java.lang.reflect.*;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
+import org.apache.commons.logging.*;
+import org.springframework.beans.*;
+import org.springframework.beans.factory.*;
+import org.springframework.beans.factory.config.*;
+import org.springframework.cglib.core.*;
+import org.springframework.cglib.proxy.*;
+import org.springframework.lang.*;
+import org.springframework.util.*;
 
 /**
  * Default object instantiation strategy for use in BeanFactories.
@@ -44,6 +38,9 @@ import java.lang.reflect.Method;
  * @author Sam Brannen
  * @since 1.1
  */
+// 实例化bean的策略
+// （1）如果是常规的bean，直接调用父类根据构造函数实例化bean
+// （2）如果是配置了<lookup-method>、<replace-method>的bean则使用CGLIB创建bean的代理对象
 public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationStrategy {
 
 	/**
@@ -71,6 +68,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		return instantiateWithMethodInjection(bd, beanName, owner, null);
 	}
 
+	// 生成CGlib代理类
 	@Override
 	protected Object instantiateWithMethodInjection(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner,
 			@Nullable Constructor<?> ctor, Object... args) {
@@ -84,6 +82,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 	 * An inner class created for historical reasons to avoid external CGLIB dependency
 	 * in Spring versions earlier than 3.2.
 	 */
+	// 代理对象的创建类
 	private static class CglibSubclassCreator {
 
 		private static final Class<?>[] CALLBACK_TYPES = new Class<?>[]
@@ -107,12 +106,16 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		 * Ignored if the {@code ctor} parameter is {@code null}.
 		 * @return new instance of the dynamically generated subclass
 		 */
+		// 创建代理对象
 		public Object instantiate(@Nullable Constructor<?> ctor, Object... args) {
+			// 根据原class，创建经过CGLIB代理的class
 			Class<?> subclass = createEnhancedSubclass(this.beanDefinition);
+			// 实例化bean的代理对象，没有指定构造函数，则查找构造函数
 			Object instance;
 			if (ctor == null) {
 				instance = BeanUtils.instantiateClass(subclass);
 			}
+			// 有传入构造函数，则通过闯入构造函数实例化
 			else {
 				try {
 					Constructor<?> enhancedSubclassConstructor = subclass.getConstructor(ctor.getParameterTypes());
@@ -126,6 +129,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 			// SPR-10785: set callbacks directly on the instance instead of in the
 			// enhanced class (via the Enhancer) in order to avoid memory leaks.
 			Factory factory = (Factory) instance;
+			// 设置方法覆盖和替换的回调（实现方法覆盖的核心逻辑）
 			factory.setCallbacks(new Callback[] {NoOp.INSTANCE,
 					new LookupOverrideMethodInterceptor(this.beanDefinition, this.owner),
 					new ReplaceOverrideMethodInterceptor(this.beanDefinition, this.owner)});
@@ -136,10 +140,14 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		 * Create an enhanced subclass of the bean class for the provided bean
 		 * definition, using CGLIB.
 		 */
+		// 根据原class，创建经过CGLIB代理的class
 		private Class<?> createEnhancedSubclass(RootBeanDefinition beanDefinition) {
+			// CGLIB的增强类
 			Enhancer enhancer = new Enhancer();
+			// 设置父类为原class
 			enhancer.setSuperclass(beanDefinition.getBeanClass());
 			enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
+			// 指定classLoader
 			if (this.owner instanceof ConfigurableBeanFactory) {
 				ClassLoader cl = ((ConfigurableBeanFactory) this.owner).getBeanClassLoader();
 				enhancer.setStrategy(new ClassLoaderAwareGeneratorStrategy(cl));
@@ -239,6 +247,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 			super(beanDefinition);
 		}
 
+		// 判断是方法覆盖还是替换的过滤类
 		@Override
 		public int accept(Method method) {
 			MethodOverride methodOverride = getBeanDefinition().getMethodOverrides().getOverride(method);
@@ -273,6 +282,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 			this.owner = owner;
 		}
 
+		// 实现方法覆盖，通过获取指定bean，调用指定的覆盖方法
 		@Override
 		public Object intercept(Object obj, Method method, Object[] args, MethodProxy mp) throws Throwable {
 			// Cast is safe, as CallbackFilter filters are used selectively.
@@ -304,6 +314,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 			this.owner = owner;
 		}
 
+		// 实现方法替换，获取指定的bean调用指定的方法
 		@Override
 		public Object intercept(Object obj, Method method, Object[] args, MethodProxy mp) throws Throwable {
 			ReplaceOverride ro = (ReplaceOverride) getBeanDefinition().getMethodOverrides().getOverride(method);

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	    http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean class="mycase.bean_factory.processor.property.InstantiationAwareBeanPostProcessorImpl" />
+
+	<bean name="propertyBean" class="mycase.bean_factory.processor.property.PropertyBean" />
+
+	<bean class="mycase.bean_factory.processor.property.OriginalBean">
+		<property name="propertyBean" ref="propertyBean" />
+	</bean>
+</beans>

@@ -56,7 +56,7 @@ public interface BeanPostProcessor {
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
 	 */
-	// 实例化bean的前置处理
+	// 实例化bean的前置处理，如果返回null则别的BeanPostProcessor不会继续调用
 	@Nullable
 	default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		return bean;

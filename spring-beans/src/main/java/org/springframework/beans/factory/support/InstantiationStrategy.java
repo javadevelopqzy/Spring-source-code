@@ -33,6 +33,8 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 1.1
  */
+// bean对象实例化的接口
+// 定义了三个方法：（1）常规实例化bean。（2）根据构造函数实例化bean。（3）根据工厂方法实例化bean
 public interface InstantiationStrategy {
 
 	/**

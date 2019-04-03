@@ -64,7 +64,7 @@ import org.springframework.lang.Nullable;
 // （2）定义了bean属性装载和注入的方法
 // （3）定义了BeanPostProcessors的前置和后置处理方法
 // （4）定义了bean依赖属性的解析方法
-// （5）定义了initializeBean和destroyBean的方法
+// （5）定义了initializeBean和destroyBean的处理方法
 public interface AutowireCapableBeanFactory extends BeanFactory {
 
 	/**
@@ -376,7 +376,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @since 2.5
 	 * @see #resolveDependency(DependencyDescriptor, String, Set, TypeConverter)
 	 */
-	// 解析出bean的依赖bean
+	// 根据依赖类型返回具体依赖的bean
 	@Nullable
 	Object resolveDependency(DependencyDescriptor descriptor, @Nullable String requestingBeanName) throws BeansException;
 

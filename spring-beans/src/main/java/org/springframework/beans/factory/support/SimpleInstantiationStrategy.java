@@ -16,20 +16,14 @@
 
 package org.springframework.beans.factory.support;
 
-import org.springframework.beans.BeanInstantiationException;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.lang.Nullable;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
+import java.lang.reflect.*;
+import java.security.*;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedExceptionAction;
+import org.springframework.beans.*;
+import org.springframework.beans.factory.*;
+import org.springframework.beans.factory.config.*;
+import org.springframework.lang.*;
+import org.springframework.util.*;
 
 /**
  * Simple object instantiation strategy for use in a BeanFactory.
@@ -41,6 +35,9 @@ import java.security.PrivilegedExceptionAction;
  * @author Juergen Hoeller
  * @since 1.1
  */
+// 实例化bean接口的基本实现
+// （1）实现了使用反射实例化bean对象
+// （2）给子类预留代理方法，子类需要覆盖该方法实现创建代理bean
 public class SimpleInstantiationStrategy implements InstantiationStrategy {
 
 	private static final ThreadLocal<Method> currentlyInvokedFactoryMethod = new ThreadLocal<>();
@@ -64,11 +61,13 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 		if (!bd.hasMethodOverrides()) {
 			Constructor<?> constructorToUse;
 			synchronized (bd.constructorArgumentLock) {
-				// 判断是否有缓存
+				// 判断是否已经实例化过
+				// 实例化时bd.resolvedConstructorOrFactoryMethod不为空
 				constructorToUse = (Constructor<?>) bd.resolvedConstructorOrFactoryMethod;
 				if (constructorToUse == null) {
-					// 没有缓存获取bean的Class
+					// 获取bean的Class
 					final Class<?> clazz = bd.getBeanClass();
+					// 如果是接口，无法实例化，报错
 					if (clazz.isInterface()) {
 						throw new BeanInstantiationException(clazz, "Specified class is an interface");
 					}
@@ -88,10 +87,10 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					}
 				}
 			}
-			// 实例化对象
+			// 通过构造函数实例化对象
 			return BeanUtils.instantiateClass(constructorToUse);
 		}
-		// 有覆盖方法，使用cglib生成代理类，代理配置的覆盖方法
+		// 有覆盖方法，需要使用cglib生成代理bean
 		else {
 			// Must generate CGLIB subclass.
 			return instantiateWithMethodInjection(bd, beanName, owner);
@@ -104,14 +103,17 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 	 * the Method Injection specified in the given RootBeanDefinition.
 	 * Instantiation should use a no-arg constructor.
 	 */
+	// 需要子类实现，需要生成代理bean
 	protected Object instantiateWithMethodInjection(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner) {
 		throw new UnsupportedOperationException("Method Injection not supported in SimpleInstantiationStrategy");
 	}
 
+	// 通过指定的构造函数实例化bean
 	@Override
 	public Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner,
 			final Constructor<?> ctor, Object... args) {
 
+		// 没有方法覆盖直接实例化
 		if (!bd.hasMethodOverrides()) {
 			if (System.getSecurityManager() != null) {
 				// use own privileged to change accessibility (when security is on)
@@ -122,6 +124,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 			}
 			return BeanUtils.instantiateClass(ctor, args);
 		}
+		// 有覆盖方法，需要使用cglib生成代理bean
 		else {
 			return instantiateWithMethodInjection(bd, beanName, owner, ctor, args);
 		}
@@ -133,12 +136,14 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 	 * the Method Injection specified in the given RootBeanDefinition.
 	 * Instantiation should use the given constructor and parameters.
 	 */
+	// 提供给子类覆盖，实现方法覆盖
 	protected Object instantiateWithMethodInjection(RootBeanDefinition bd, @Nullable String beanName,
 			BeanFactory owner, @Nullable Constructor<?> ctor, Object... args) {
 
 		throw new UnsupportedOperationException("Method Injection not supported in SimpleInstantiationStrategy");
 	}
 
+	// 反射调用工厂方法创建bean
 	@Override
 	public Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner,
 			@Nullable Object factoryBean, final Method factoryMethod, Object... args) {
