@@ -44,7 +44,7 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator#setCustomTargetSourceCreators
  * @see org.springframework.aop.framework.autoproxy.target.LazyInitTargetSourceCreator
  */
-// 实现AOP的核心接口，分别定义了以下接口：bean创建前置处理、bean初始化后置处理、装载bean属性的前置处理
+// 实现AOP的核心接口，分别定义了以下接口：bean实例化前置处理、bean实例化后置处理、装载bean属性的前置处理
 public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 
 	/**

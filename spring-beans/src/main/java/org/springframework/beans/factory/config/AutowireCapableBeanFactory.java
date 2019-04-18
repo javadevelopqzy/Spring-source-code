@@ -276,7 +276,7 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @throws BeansException if applying the property values failed
 	 * @see #autowireBeanProperties
 	 */
-	// 把beanName的属性值装载到existingBean中
+	// 把beanName对应的bean属性值装载到existingBean中
 	void applyBeanPropertyValues(Object existingBean, String beanName) throws BeansException;
 
 	/**

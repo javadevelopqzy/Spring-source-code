@@ -16,21 +16,19 @@
 
 package org.springframework.beans.factory.support;
 
-import org.apache.commons.logging.Log;
+import java.beans.*;
+import java.lang.reflect.*;
+import java.security.*;
+import java.util.*;
+
+import org.apache.commons.logging.*;
 import org.springframework.beans.*;
 import org.springframework.beans.factory.*;
-import org.springframework.beans.factory.config.ConstructorArgumentValues;
-import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
-import org.springframework.beans.factory.config.DependencyDescriptor;
+import org.springframework.beans.factory.config.*;
+import org.springframework.beans.factory.config.ConstructorArgumentValues.*;
 import org.springframework.core.*;
-import org.springframework.lang.Nullable;
+import org.springframework.lang.*;
 import org.springframework.util.*;
-
-import java.beans.ConstructorProperties;
-import java.lang.reflect.*;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.*;
 
 /**
  * Delegate for resolving constructors and factory methods.
@@ -46,6 +44,9 @@ import java.util.*;
  * @see #instantiateUsingFactoryMethod
  * @see AbstractAutowireCapableBeanFactory
  */
+// 实例化bean的实现类，实现了
+// （1）根据构造函数实例化bean
+// （2）根据工厂方法实例化bean
 class ConstructorResolver {
 
 	private static final Object[] EMPTY_ARGS = new Object[0];
@@ -82,7 +83,7 @@ class ConstructorResolver {
 	 * or {@code null} if none (-> use constructor argument values from bean definition)
 	 * @return a BeanWrapper for the new instance
 	 */
-	// 使用构造函数自动注入
+	// 使用构造函数创建bean
 	// explicitArgs是通过getBean方法获取bean时传入的参数，如：getBean(User.class, "aaa")，
 	// 如果参数和构造函数正好匹配spring会通过参数先构造此bean
 	public BeanWrapper autowireConstructor(String beanName, RootBeanDefinition mbd,
@@ -374,16 +375,19 @@ class ConstructorResolver {
 	 * method, or {@code null} if none (-> use constructor argument values from bean definition)
 	 * @return a BeanWrapper for the new instance
 	 */
+	// 使用工厂方法创建指定的bean
 	public BeanWrapper instantiateUsingFactoryMethod(
 			String beanName, RootBeanDefinition mbd, @Nullable Object[] explicitArgs) {
 
 		BeanWrapperImpl bw = new BeanWrapperImpl();
+		// 初始化类型转换器
 		this.beanFactory.initBeanWrapper(bw);
 
 		Object factoryBean;
 		Class<?> factoryClass;
 		boolean isStatic;
 
+		// 获取工厂bean，如果有配置
 		String factoryBeanName = mbd.getFactoryBeanName();
 		if (factoryBeanName != null) {
 			if (factoryBeanName.equals(beanName)) {
@@ -397,6 +401,7 @@ class ConstructorResolver {
 			factoryClass = factoryBean.getClass();
 			isStatic = false;
 		}
+		// 没有配置工厂bean，说明是静态的工厂方法
 		else {
 			// It's a static factory method on the bean class.
 			if (!mbd.hasBeanClass()) {
@@ -606,6 +611,7 @@ class ConstructorResolver {
 		return bw;
 	}
 
+	// 反射调用工厂方法创建bean
 	private Object instantiate(
 			String beanName, RootBeanDefinition mbd, Object factoryBean, Method factoryMethod, Object[] args) {
 
