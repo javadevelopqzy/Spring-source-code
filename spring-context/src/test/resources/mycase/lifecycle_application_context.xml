@@ -6,4 +6,5 @@
 
 	<!-- bean生命周期 -->
 	<bean class="mycase.lifecycle.LifeCycleBean" />
+	<bean class="mycase.lifecycle.LifeCycleImpl" />
 </beans>
