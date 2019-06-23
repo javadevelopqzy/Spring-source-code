@@ -668,7 +668,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		wac.setParent(parent);
 		// 读取XmlWebApplicationContext的配置
 		// 如果有配置contextConfigLocation，则使用配置的，否则使用默认的
-		// 默认读取/WEB-INF/{namespace}.xml文件
+		// 默认读取/WEB-INF/{namespace}.xml文件（Spring MVC的配置）
 		String configLocation = getContextConfigLocation();
 		if (configLocation != null) {
 			wac.setConfigLocation(configLocation);

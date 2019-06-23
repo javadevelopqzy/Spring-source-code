@@ -66,12 +66,7 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 	private MessageSourceAccessor messageSourceAccessor;
 
 
-	/**
-	 * ApplicationContextAware接口的实现方法，通过此方法控制ApplicationContext初始化
-	 *
-	 * @param context
-	 * @throws BeansException
-	 */
+	// ApplicationContextAware接口的实现方法，通过此方法控制ApplicationContext初始化
 	@Override
 	public final void setApplicationContext(@Nullable ApplicationContext context) throws BeansException {
 		if (context == null && !isContextRequired()) {
