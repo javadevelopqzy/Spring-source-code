@@ -32,6 +32,9 @@ import org.springframework.util.StringUtils;
  * @author Chris Beams
  * @since 2.5
  */
+// 继承AbstractPropertyLoadingBeanDefinitionParser，在父类基础上提供了
+// （1）解析property文件具体的bean：PropertyPlaceholderConfigurer
+// （2）在doParse加入解析value-separator、trim-values、null-value等属性的逻辑
 class PropertyPlaceholderBeanDefinitionParser extends AbstractPropertyLoadingBeanDefinitionParser {
 
 	private static final String SYSTEM_PROPERTIES_MODE_ATTRIBUTE = "system-properties-mode";

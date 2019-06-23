@@ -48,6 +48,9 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @since 2.0
  */
+// XML节点的解析父类
+// （1）提供了基础的解析框架
+// （2）提供了实现了id、name两个元素的解析
 public abstract class AbstractBeanDefinitionParser implements BeanDefinitionParser {
 
 	/** Constant for the "id" attribute. */
@@ -56,11 +59,12 @@ public abstract class AbstractBeanDefinitionParser implements BeanDefinitionPars
 	/** Constant for the "name" attribute. */
 	public static final String NAME_ATTRIBUTE = "name";
 
-
 	@Override
 	@Nullable
 	public final BeanDefinition parse(Element element, ParserContext parserContext) {
+		// 子类需要实现此方法，返回解析出来的BeanDefinition
 		AbstractBeanDefinition definition = parseInternal(element, parserContext);
+		// 解析id和name
 		if (definition != null && !parserContext.isNested()) {
 			try {
 				String id = resolveId(element, definition, parserContext);
@@ -106,6 +110,7 @@ public abstract class AbstractBeanDefinitionParser implements BeanDefinitionPars
 	 * @throws BeanDefinitionStoreException if no unique name could be generated
 	 * for the given bean definition
 	 */
+	// 解析元素的XML的节点id属性
 	protected String resolveId(Element element, AbstractBeanDefinition definition, ParserContext parserContext)
 			throws BeanDefinitionStoreException {
 
