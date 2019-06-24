@@ -85,6 +85,10 @@ import org.springframework.util.ClassUtils;
  * @see ScannedGenericBeanDefinition
  * @see CandidateComponentsIndex
  */
+// Spring扫描包的基类，实现了基于classpath下的扫描包逻辑，并把扫描到的bean装载到set集合中
+// （1）实现基于环境的判断Environment
+// （2）实现了，include和exclude，分别由includeFilters和excludeFilters处理，可以实现TypeFilter接口并添加到其中一个集合
+// （3）有默认的includeFilters实现，即扫描@Component和@Named注解
 public class ClassPathScanningCandidateComponentProvider implements EnvironmentCapable, ResourceLoaderAware {
 
 	static final String DEFAULT_RESOURCE_PATTERN = "**/*.class";
@@ -202,6 +206,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * JSR-330's {@link javax.inject.Named} annotations, if available.
 	 *
 	 */
+	// 注册默认的includeFilters，即@Component和@Named的Filter
 	@SuppressWarnings("unchecked")
 	protected void registerDefaultFilters() {
 		this.includeFilters.add(new AnnotationTypeFilter(Component.class));
@@ -308,6 +313,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * @param basePackage the package to check for annotated classes
 	 * @return a corresponding Set of autodetected bean definitions
 	 */
+	// 根据基础包扫描所有的类，如果符合include的条件，则实例化为BeanDefinition集合
 	public Set<BeanDefinition> findCandidateComponents(String basePackage) {
 		if (this.componentsIndex != null && indexSupportsIncludeFilters()) {
 			return addCandidateComponentsFromIndex(this.componentsIndex, basePackage);

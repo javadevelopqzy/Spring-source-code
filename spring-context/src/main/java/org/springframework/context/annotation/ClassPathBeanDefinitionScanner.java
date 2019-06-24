@@ -60,6 +60,11 @@ import org.springframework.util.PatternMatchUtils;
  * @see org.springframework.stereotype.Service
  * @see org.springframework.stereotype.Controller
  */
+// 扫描包的实现类
+// （1）内部解析@Scope委托给scopeMetadataResolver
+// （2）实现了多个基础包的扫描，并把扫描到的bean注册到容器中
+// （3）注册几个处理@Resource等注解的BeanPostProcessor
+// （4）根据命名策略给bean命名，可以自定义bean的命名策略
 public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateComponentProvider {
 
 	private final BeanDefinitionRegistry registry;
@@ -247,12 +252,15 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * @param basePackages the packages to check for annotated classes
 	 * @return number of beans registered
 	 */
+	// 扫描包，并返回注册成功的bean个数
 	public int scan(String... basePackages) {
 		int beanCountAtScanStart = this.registry.getBeanDefinitionCount();
 
+		// 进行扫描
 		doScan(basePackages);
 
 		// Register annotation config processors, if necessary.
+		// 默认注册处理@Configurable、@Autowired、@Inject、@Resource、@Value等注解的BeanPostProcessor
 		if (this.includeAnnotationConfig) {
 			AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
 		}
@@ -271,23 +279,32 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	protected Set<BeanDefinitionHolder> doScan(String... basePackages) {
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
+		// 遍历所有的基础包
 		for (String basePackage : basePackages) {
+			// 扫描，正常情况下是BeanDefinition实现是ScannedGenericBeanDefinition
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
 			for (BeanDefinition candidate : candidates) {
+				// 设置scope
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
 				candidate.setScope(scopeMetadata.getScopeName());
+				// 根据命名策略生成bean名称
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
+				// 设置lazyInit、autowireMode等属性的默认值
 				if (candidate instanceof AbstractBeanDefinition) {
 					postProcessBeanDefinition((AbstractBeanDefinition) candidate, beanName);
 				}
+				// 处理@Lazy、@Primary等额外的注解
 				if (candidate instanceof AnnotatedBeanDefinition) {
 					AnnotationConfigUtils.processCommonDefinitionAnnotations((AnnotatedBeanDefinition) candidate);
 				}
+				// 检查bean是否有冲突，如果有冲突，报错！
 				if (checkCandidate(beanName, candidate)) {
 					BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(candidate, beanName);
+					// 设置scope
 					definitionHolder =
 							AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 					beanDefinitions.add(definitionHolder);
+					// 注册到容器中
 					registerBeanDefinition(definitionHolder, this.registry);
 				}
 			}
@@ -302,6 +319,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * @param beanName the generated bean name for the given bean
 	 */
 	protected void postProcessBeanDefinition(AbstractBeanDefinition beanDefinition, String beanName) {
+		// 给当前BeanDefinition的LazyInit、AutowireMode、DependencyCheck、InitMethodName等属性设置默认值
 		beanDefinition.applyDefaults(this.beanDefinitionDefaults);
 		if (this.autowireCandidatePatterns != null) {
 			beanDefinition.setAutowireCandidate(PatternMatchUtils.simpleMatch(this.autowireCandidatePatterns, beanName));
