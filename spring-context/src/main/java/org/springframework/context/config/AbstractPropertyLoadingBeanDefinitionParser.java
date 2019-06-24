@@ -32,6 +32,8 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @since 2.5.2
  */
+// <context:property-XX>节点的解析基类，父类已经实现id、name属性的解析逻辑，此类在此上实现如下功能：
+// （1）实现了doParse，解析特有的location、properties-ref、file-encoding、order等属性
 abstract class AbstractPropertyLoadingBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
 
 	@Override

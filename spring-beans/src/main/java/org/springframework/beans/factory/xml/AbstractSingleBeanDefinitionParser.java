@@ -45,6 +45,10 @@ import org.springframework.lang.Nullable;
  * @see #getBeanClassName
  * @see #doParse
  */
+// 把节点解析为单例bean的抽象解析类，在AbstractBeanDefinitionParser类完成的解析id、name的基础上加入如下实现：
+// （1）	实现了parseInternal方法
+// （2） 解析parent属性和class属性（这两个方法需要子类实现）
+// （3） 构建了BeanDefinitionBuilder的实例，子类可使用其API，在doParse中完成beanDefinition的创建
 public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
 	/**
