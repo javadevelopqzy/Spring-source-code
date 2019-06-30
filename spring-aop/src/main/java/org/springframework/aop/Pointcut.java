@@ -30,6 +30,7 @@ package org.springframework.aop;
  * @see org.springframework.aop.support.ClassFilters
  * @see org.springframework.aop.support.MethodMatchers
  */
+// Spring对AOP的抽象，表示这是一个切点，根据类和方法确定一个pointcut
 public interface Pointcut {
 
 	/**
