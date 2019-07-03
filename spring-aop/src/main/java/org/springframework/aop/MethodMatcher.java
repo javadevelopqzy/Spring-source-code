@@ -69,6 +69,9 @@ public interface MethodMatcher {
 	 * {@link #matches(java.lang.reflect.Method, Class, Object[])} method
 	 * is required if static matching passed
 	 */
+	// 如果此方法返回false，则三个参数的matches方法不会被调用
+	// 因为静态的代理是无状态的直接执行就行了。
+	// 如果返回true，则每次代理下面方法都调用，要根据传入参数做对应的代理处理
 	boolean isRuntime();
 
 	/**
