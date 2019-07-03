@@ -141,6 +141,10 @@ import org.springframework.util.StringValueResolver;
  */
 @SuppressWarnings("serial")
 // 处理@Resource、@PostConstruct、@PreDestroy的逻辑
+// 处理方式：
+// （1）先通过MergedBeanDefinitionPostProcessor接口的处理方法，扫描bean及bean父类的属性或方法是否有@Resource注解，有则创建包装类保存到当前类的map中
+// （2）把（1）中扫描到的属性或方法注册到BeanDefinition中
+// （3）
 public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBeanPostProcessor
 		implements InstantiationAwareBeanPostProcessor, BeanFactoryAware, Serializable {
 
@@ -296,7 +300,9 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
 		super.postProcessMergedBeanDefinition(beanDefinition, beanType, beanName);
+		// 查找class中有@Resource、@EJB、@WebServiceRef注解的方法或者属性，创建对应依赖注入的对象包装类InjectionMetadata，并缓存到map中
 		InjectionMetadata metadata = findResourceMetadata(beanName, beanType, null);
+		// 把需要注入的属性注册到RootBeanDefinition的externallyManagedConfigMembers集合中
 		metadata.checkConfigMembers(beanDefinition);
 	}
 
@@ -335,12 +341,15 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		return postProcessProperties(pvs, bean, beanName);
 	}
 
-
+	// 查找class中有@Resource、@EJB、@WebServiceRef注解的方法或者属性
+	// 创建对应依赖注入的对象包装类InjectionMetadata，并缓存到当前类的map中
 	private InjectionMetadata findResourceMetadata(String beanName, final Class<?> clazz, @Nullable PropertyValues pvs) {
 		// Fall back to class name as cache key, for backwards compatibility with custom callers.
 		String cacheKey = (StringUtils.hasLength(beanName) ? beanName : clazz.getName());
 		// Quick check on the concurrent map first, with minimal locking.
+		// 先从缓存中获取，没有则创建
 		InjectionMetadata metadata = this.injectionMetadataCache.get(cacheKey);
+		// 相当于判断metadata == null
 		if (InjectionMetadata.needsRefresh(metadata, clazz)) {
 			synchronized (this.injectionMetadataCache) {
 				metadata = this.injectionMetadataCache.get(cacheKey);
@@ -348,6 +357,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 					if (metadata != null) {
 						metadata.clear(pvs);
 					}
+					// 查找class中有@Resource、@EJB、@WebServiceRef注解的方法或者属性，并创建对应依赖注入的对象包装类InjectionMetadata
 					metadata = buildResourceMetadata(clazz);
 					this.injectionMetadataCache.put(cacheKey, metadata);
 				}
@@ -356,13 +366,14 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		return metadata;
 	}
 
+	// 查找class中有@Resource、@EJB、@WebServiceRef注解的方法或者属性，并创建对应依赖注入的对象包装类InjectionMetadata
 	private InjectionMetadata buildResourceMetadata(final Class<?> clazz) {
 		List<InjectionMetadata.InjectedElement> elements = new ArrayList<>();
 		Class<?> targetClass = clazz;
 
 		do {
 			final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
-
+			// 查找当前类的所有属性，有@Resource、@EJB、@WebServiceRef注解的则加入到currElements集合中
 			ReflectionUtils.doWithLocalFields(targetClass, field -> {
 				if (webServiceRefClass != null && field.isAnnotationPresent(webServiceRefClass)) {
 					if (Modifier.isStatic(field.getModifiers())) {
@@ -386,6 +397,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 				}
 			});
 
+			// 查找当前类的所有方法，有@Resource、@EJB、@WebServiceRef注解的则加入到currElements集合中
 			ReflectionUtils.doWithLocalMethods(targetClass, method -> {
 				Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 				if (!BridgeMethodResolver.isVisibilityBridgeMethodPair(method, bridgedMethod)) {
@@ -428,9 +440,11 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 				}
 			});
 
+			// 合并到集合elements中，个人感觉这里没什么必要，每次合并还要数组copy
 			elements.addAll(0, currElements);
 			targetClass = targetClass.getSuperclass();
 		}
+		// 往上检查父类的属性和方法
 		while (targetClass != null && targetClass != Object.class);
 
 		return new InjectionMetadata(clazz, elements);
@@ -601,6 +615,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 			String resourceName = resource.name();
 			Class<?> resourceType = resource.type();
 			this.isDefaultName = !StringUtils.hasLength(resourceName);
+			// 获取属性名resourceName
 			if (this.isDefaultName) {
 				resourceName = this.member.getName();
 				if (this.member instanceof Method && resourceName.startsWith("set") && resourceName.length() > 3) {

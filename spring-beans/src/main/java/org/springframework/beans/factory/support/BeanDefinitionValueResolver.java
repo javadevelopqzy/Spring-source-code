@@ -39,7 +39,7 @@ import org.springframework.util.*;
  * @see AbstractAutowireCapableBeanFactory
  */
 // BeanDefinition的属性解析类
-// beanFactory会在解析每个beanDefinition的property时创建一个此类，用于解析property，￥￥并设置到bean对象中￥￥
+// beanFactory会在解析每个beanDefinition的property时创建一个此类对象，用于解析property，￥￥并设置到bean对象中￥￥
 class BeanDefinitionValueResolver {
 
 	// 加载BeanDefinition的beanFactory

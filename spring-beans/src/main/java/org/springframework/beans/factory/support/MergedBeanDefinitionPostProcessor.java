@@ -35,6 +35,9 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  * @since 2.5
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#getMergedBeanDefinition
  */
+// BeanDefinition合并RootBeanDefinition的后置处理
+// 注意：此时bean实例化，但属性还没有装载，后续会根据RootBeanDefinition装载bean的属性
+// 因此这里可以给RootBeanDefinition添加额外的属性，比如带有@Resource注解的属性就是在这里处理的
 public interface MergedBeanDefinitionPostProcessor extends BeanPostProcessor {
 
 	/**
@@ -44,6 +47,7 @@ public interface MergedBeanDefinitionPostProcessor extends BeanPostProcessor {
 	 * @param beanName the name of the bean
 	 * @see AbstractAutowireCapableBeanFactory#applyMergedBeanDefinitionPostProcessors
 	 */
+	// bean实例化后，装载属性的前置处理，可以给bean对象设置额外的属性
 	void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName);
 
 	/**

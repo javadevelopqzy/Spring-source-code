@@ -585,7 +585,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see #autowireConstructor
 	 */
 	// 基础创建bean的逻辑，传入实际的bean名称，BeanDefinition和构造所需要的参数
-	//
 	protected Object doCreateBean(final String beanName, final RootBeanDefinition mbd, final @Nullable Object[] args)
 			throws BeanCreationException {
 
@@ -614,6 +613,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Allow post-processors to modify the merged bean definition.
 		// 处理MergedBeanDefinitionPostProcessor的调用
 		synchronized (mbd.postProcessingLock) {
+			// 如果之前已经处理过则不会重复处理
 			if (!mbd.postProcessed) {
 				try {
 					// bean合并处理，Autowire注解使用此方法做预解析

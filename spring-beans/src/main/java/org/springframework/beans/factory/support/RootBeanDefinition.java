@@ -98,6 +98,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	final Object postProcessingLock = new Object();
 
 	/** Package-visible field that indicates MergedBeanDefinitionPostProcessor having been applied. */
+	// 标记是否已经经过MergedBeanDefinitionPostProcessor的处理
 	boolean postProcessed = false;
 
 	/** Package-visible field that indicates a before-instantiation post-processor having kicked in. */
@@ -105,12 +106,15 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	@Nullable
 	volatile Boolean beforeInstantiationResolved;
 
+	// 保存配置了@Resource、@Ejb、@WebServiceRef注解的属性或方法
 	@Nullable
 	private Set<Member> externallyManagedConfigMembers;
 
+	// 保存@PostConstruct的方法名，如果是私有方法则保存类名+方法名
 	@Nullable
 	private Set<String> externallyManagedInitMethods;
 
+	// 保存@PreDestroy的方法名，如果是私有方法则保存类名+方法名
 	@Nullable
 	private Set<String> externallyManagedDestroyMethods;
 

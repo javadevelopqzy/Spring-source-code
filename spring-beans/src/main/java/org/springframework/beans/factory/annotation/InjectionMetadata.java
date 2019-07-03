@@ -45,6 +45,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Juergen Hoeller
  * @since 2.5
  */
+// 依赖注入的元数据对象，内部存class和他需要注入的Elements的包装类
 public class InjectionMetadata {
 
 	private static final Log logger = LogFactory.getLog(InjectionMetadata.class);
@@ -53,6 +54,7 @@ public class InjectionMetadata {
 
 	private final Collection<InjectedElement> injectedElements;
 
+	// 这里保存的是已经注册到BeanDefinition的属性
 	@Nullable
 	private volatile Set<InjectedElement> checkedElements;
 
@@ -62,11 +64,12 @@ public class InjectionMetadata {
 		this.injectedElements = elements;
 	}
 
-
+	// 把需要注入的属性注册到RootBeanDefinition的externallyManagedConfigMembers集合中
 	public void checkConfigMembers(RootBeanDefinition beanDefinition) {
 		Set<InjectedElement> checkedElements = new LinkedHashSet<>(this.injectedElements.size());
 		for (InjectedElement element : this.injectedElements) {
 			Member member = element.getMember();
+			// 没有注册过，则注册进去
 			if (!beanDefinition.isExternallyManagedConfigMember(member)) {
 				beanDefinition.registerExternallyManagedConfigMember(member);
 				checkedElements.add(element);

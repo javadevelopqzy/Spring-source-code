@@ -708,6 +708,7 @@ public abstract class ReflectionUtils {
 	 * @since 4.2
 	 * @see #doWithFields
 	 */
+	// 解析class的declare属性，并根据传入的函数做处理
 	public static void doWithLocalFields(Class<?> clazz, FieldCallback fc) {
 		for (Field field : getDeclaredFields(clazz)) {
 			try {

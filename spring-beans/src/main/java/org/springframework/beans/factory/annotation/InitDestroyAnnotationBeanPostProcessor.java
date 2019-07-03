@@ -73,6 +73,7 @@ import org.springframework.util.ReflectionUtils;
  * @see #setInitAnnotationType
  * @see #setDestroyAnnotationType
  */
+// 处理@PostConstruct和@PreDestroy注解的逻辑
 @SuppressWarnings("serial")
 public class InitDestroyAnnotationBeanPostProcessor
 		implements DestructionAwareBeanPostProcessor, MergedBeanDefinitionPostProcessor, PriorityOrdered, Serializable {
@@ -125,6 +126,7 @@ public class InitDestroyAnnotationBeanPostProcessor
 
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
+		// 处理bean的lifeCycle方法
 		LifecycleMetadata metadata = findLifecycleMetadata(beanType);
 		metadata.checkConfigMembers(beanDefinition);
 	}
@@ -174,7 +176,8 @@ public class InitDestroyAnnotationBeanPostProcessor
 		return findLifecycleMetadata(bean.getClass()).hasDestroyMethods();
 	}
 
-
+	// 从缓存中获取bean的@PostConstruct和@PreDestroy注解的方法的包装类，如果没有缓存则
+	// 扫描bean中@PostConstruct和@PreDestroy注解的方法，并创建对应的包装类
 	private LifecycleMetadata findLifecycleMetadata(Class<?> clazz) {
 		if (this.lifecycleMetadataCache == null) {
 			// Happens after deserialization, during destruction...
@@ -195,6 +198,7 @@ public class InitDestroyAnnotationBeanPostProcessor
 		return metadata;
 	}
 
+	// 扫描bean中@PostConstruct和@PreDestroy注解的方法，并创建对应的包装类
 	private LifecycleMetadata buildLifecycleMetadata(final Class<?> clazz) {
 		List<LifecycleElement> initMethods = new ArrayList<>();
 		List<LifecycleElement> destroyMethods = new ArrayList<>();
@@ -268,6 +272,7 @@ public class InitDestroyAnnotationBeanPostProcessor
 			this.destroyMethods = destroyMethods;
 		}
 
+		// 把@PostConstruct和@PreDestroy注解的方法注册到当前bean的beanDefinition中
 		public void checkConfigMembers(RootBeanDefinition beanDefinition) {
 			Set<LifecycleElement> checkedInitMethods = new LinkedHashSet<>(this.initMethods.size());
 			for (LifecycleElement element : this.initMethods) {
