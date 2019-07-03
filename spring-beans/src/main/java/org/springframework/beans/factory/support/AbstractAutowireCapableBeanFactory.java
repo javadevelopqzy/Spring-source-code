@@ -1911,7 +1911,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
-			// 对实现InitializingBean接口的处理
+			// 对实现InitializingBean接口或init-method方法的处理
 			invokeInitMethods(beanName, wrappedBean, mbd);
 		}
 		catch (Throwable ex) {

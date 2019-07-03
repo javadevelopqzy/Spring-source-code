@@ -40,7 +40,7 @@ import org.springframework.lang.Nullable;
  * @see ConfigurableBeanFactory#addBeanPostProcessor
  * @see BeanFactoryPostProcessor
  */
-// 代理的标记接口，实现此接口的bean可以轻易代理功能
+// bean装载完属性的处理接口，前置处理和后置处理只隔着init-method和几个Aware接口的set
 public interface BeanPostProcessor {
 
 	/**
@@ -56,7 +56,8 @@ public interface BeanPostProcessor {
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
 	 */
-	// 实例化bean的前置处理，如果返回null则别的BeanPostProcessor不会继续调用
+	// 实例化bean并且已经装载完属性、并且init-method未执行的后置处理
+	// 如果返回null则别的BeanPostProcessor不会继续调用
 	@Nullable
 	default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		return bean;
@@ -83,7 +84,10 @@ public interface BeanPostProcessor {
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
 	 * @see org.springframework.beans.factory.FactoryBean
 	 */
-	// 实例化bean的后置处理
+	// 实例化bean的后置处理，三种情况会执行此方法
+	// （1）当bean被代理时，也会在代理类产生后调用此方法
+	// （2）当bean工厂方法创建时，创建bean后马上会调
+	// （3）正常创建bean，与before方法只隔了init-method调用几个Aware接口的逻辑
 	@Nullable
 	default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		return bean;

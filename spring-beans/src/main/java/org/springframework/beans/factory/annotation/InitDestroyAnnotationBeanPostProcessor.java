@@ -74,6 +74,11 @@ import org.springframework.util.ReflectionUtils;
  * @see #setDestroyAnnotationType
  */
 // 处理@PostConstruct和@PreDestroy注解的逻辑
+// 处理方式：
+// （1）先通过MergedBeanDefinitionPostProcessor接口的处理方法，扫描@PostConstruct和@PreDestroy注解方法，有则创建包装类保存到当前类的map中
+// （2）把（1）中扫描到的属性或方法注册到BeanDefinition中
+// （3）在DestructionAwareBeanPostProcessor接口实现中调用@PreDestroy注解的方法
+// （4）在BeanPostProcessor接口的前置处理调用@PreDestroy注解的方法
 @SuppressWarnings("serial")
 public class InitDestroyAnnotationBeanPostProcessor
 		implements DestructionAwareBeanPostProcessor, MergedBeanDefinitionPostProcessor, PriorityOrdered, Serializable {
@@ -90,7 +95,6 @@ public class InitDestroyAnnotationBeanPostProcessor
 
 	@Nullable
 	private final transient Map<Class<?>, LifecycleMetadata> lifecycleMetadataCache = new ConcurrentHashMap<>(256);
-
 
 	/**
 	 * Specify the init annotation to check for, indicating initialization
@@ -123,11 +127,12 @@ public class InitDestroyAnnotationBeanPostProcessor
 		return this.order;
 	}
 
-
+	// @PostConstruct和@PreDestroy注解的方法
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
-		// 处理bean的lifeCycle方法
+		// 创建@PostConstruct和@PreDestroy注解的包装类LifecycleMetadata
 		LifecycleMetadata metadata = findLifecycleMetadata(beanType);
+		// 把@PostConstruct和@PreDestroy注解的方法注册到当前bean的beanDefinition中
 		metadata.checkConfigMembers(beanDefinition);
 	}
 
@@ -151,10 +156,12 @@ public class InitDestroyAnnotationBeanPostProcessor
 		return bean;
 	}
 
+	// 调用bean的@PreDestroy方法
 	@Override
 	public void postProcessBeforeDestruction(Object bean, String beanName) throws BeansException {
 		LifecycleMetadata metadata = findLifecycleMetadata(bean.getClass());
 		try {
+			// 调用bean的@PreDestroy方法
 			metadata.invokeDestroyMethods(bean, beanName);
 		}
 		catch (InvocationTargetException ex) {
@@ -176,8 +183,8 @@ public class InitDestroyAnnotationBeanPostProcessor
 		return findLifecycleMetadata(bean.getClass()).hasDestroyMethods();
 	}
 
-	// 从缓存中获取bean的@PostConstruct和@PreDestroy注解的方法的包装类，如果没有缓存则
-	// 扫描bean中@PostConstruct和@PreDestroy注解的方法，并创建对应的包装类
+	// 从缓存中获取bean的@PostConstruct和@PreDestroy注解的方法的包装类LifecycleMetadata，如果没有缓存则
+	// 扫描bean中@PostConstruct和@PreDestroy注解的方法，并创建对应的包装类LifecycleMetadata
 	private LifecycleMetadata findLifecycleMetadata(Class<?> clazz) {
 		if (this.lifecycleMetadataCache == null) {
 			// Happens after deserialization, during destruction...

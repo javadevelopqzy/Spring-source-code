@@ -27,6 +27,7 @@ import org.springframework.beans.BeansException;
  * @author Juergen Hoeller
  * @since 1.0.1
  */
+// Bean的声明周期接口，每个bean被销毁的前置处理
 public interface DestructionAwareBeanPostProcessor extends BeanPostProcessor {
 
 	/**
@@ -41,6 +42,7 @@ public interface DestructionAwareBeanPostProcessor extends BeanPostProcessor {
 	 * @see org.springframework.beans.factory.DisposableBean#destroy()
 	 * @see org.springframework.beans.factory.support.AbstractBeanDefinition#setDestroyMethodName(String)
 	 */
+	// 调用DisposeBean的前置处理方法
 	void postProcessBeforeDestruction(Object bean, String beanName) throws BeansException;
 
 	/**

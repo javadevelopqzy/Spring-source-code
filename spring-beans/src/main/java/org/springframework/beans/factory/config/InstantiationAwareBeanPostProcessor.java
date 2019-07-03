@@ -44,7 +44,11 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator#setCustomTargetSourceCreators
  * @see org.springframework.aop.framework.autoproxy.target.LazyInitTargetSourceCreator
  */
-// 实现AOP的核心接口，分别定义了以下接口：bean实例化前置处理、bean实例化后置处理、装载bean属性的前置处理
+// 实现AOP的核心接口
+// 分别定义了以下接口：
+// （1）bean实例化前置处理，可以返回一个代理对象跳过bean的实例化
+// （2）bean实例化后置处理
+// （3）装载bean属性的前置处理
 public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 
 	/**
@@ -69,7 +73,7 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	 * @see #postProcessAfterInstantiation
 	 * @see org.springframework.beans.factory.support.AbstractBeanDefinition#hasBeanClass
 	 */
-	// bean将要创建时的前置处理
+	// bean将要实例化时的前置处理
 	// 要实现代理类，需要从这个方法实现，返回一个代理object
 	@Nullable
 	default Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
@@ -91,7 +95,9 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 * @see #postProcessBeforeInstantiation
 	 */
-	// 在bean已经实例化完毕调用此方法，可以根据bean自行设置属性，如果不需要spring进行属性注入返回false，否则返回true
+	// 这方法目前没有实现，只是提供一个可以自己注入属性的机制，postProcessProperties方法基本够用了
+	// 在bean已经实例化完成，装载属性的前置处理，可以根据bean自行设置属性
+	// 返回false可以跳过Spring的属性装载，返回true则正常处理
 	default boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
 		return true;
 	}
@@ -114,7 +120,8 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	 * @since 5.1
 	 * @see #postProcessPropertyValues
 	 */
-	// 给bean属性赋值的前置处理，如果对属性值进行处理则实现此方法
+	// 给bean装载属性的前置处理，如果对属性值进行处理则实现此方法
+	// 典型的应用：@Resource的Processor通过反射给bean注入依赖的bean
 	// PropertyValues是所有属性值和属性名的包装类
 	@Nullable
 	default PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName)

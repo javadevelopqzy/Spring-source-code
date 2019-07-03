@@ -16,18 +16,20 @@
 
 package org.springframework.beans.factory.support;
 
-import java.beans.*;
-import java.security.*;
-import java.util.*;
-import java.util.concurrent.*;
-
 import org.springframework.beans.*;
 import org.springframework.beans.factory.*;
 import org.springframework.beans.factory.config.*;
-import org.springframework.core.*;
-import org.springframework.core.convert.*;
-import org.springframework.lang.*;
+import org.springframework.core.DecoratingClassLoader;
+import org.springframework.core.NamedThreadLocal;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.lang.Nullable;
 import org.springframework.util.*;
+
+import java.beans.PropertyEditor;
+import java.security.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract base class for {@link org.springframework.beans.factory.BeanFactory}
@@ -1881,7 +1883,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @see #containsBean
 	 * @see org.springframework.beans.factory.ListableBeanFactory#containsBeanDefinition
 	 */
-	// 由子类实现，根据beanName判断是否包含
+	// 由子类实现，当前容器是否包含beanName的BeanDefinition
 	protected abstract boolean containsBeanDefinition(String beanName);
 
 	/**

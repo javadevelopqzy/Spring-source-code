@@ -226,7 +226,8 @@ public class PropertyPlaceholderConfigurer extends PlaceholderConfigurerSupport 
 
 		// 属性值替换的类
 		StringValueResolver valueResolver = new PlaceholderResolvingStringValueResolver(props);
-		// 给所有依赖配置文件的bean注入配置的属性
+		// 给所有依赖配置文件的bean注入配置的属性值
+		// 如：属性值配置为${name}，则此方法解析出实际的值替换掉${name}
 		doProcessProperties(beanFactoryToProcess, valueResolver);
 	}
 
