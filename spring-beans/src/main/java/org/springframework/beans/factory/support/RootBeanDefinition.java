@@ -110,11 +110,11 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	@Nullable
 	private Set<Member> externallyManagedConfigMembers;
 
-	// 保存@PostConstruct的方法名，如果是私有方法则保存类名+方法名
+	// 保存@PostConstruct的方法名，如果这里有值则不会执行init-method或InitializeBean了，如果是私有方法则保存类名+方法名
 	@Nullable
 	private Set<String> externallyManagedInitMethods;
 
-	// 保存@PreDestroy的方法名，如果是私有方法则保存类名+方法名
+	// 保存@PreDestroy的方法名，如果这里有值则不会执行destroy-method或DisposeBean了，如果是私有方法则保存类名+方法名
 	@Nullable
 	private Set<String> externallyManagedDestroyMethods;
 

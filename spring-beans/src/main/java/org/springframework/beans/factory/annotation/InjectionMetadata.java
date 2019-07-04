@@ -81,6 +81,7 @@ public class InjectionMetadata {
 		this.checkedElements = checkedElements;
 	}
 
+	// 遍历所有的@Resource的属性，直接通过反射设置到bean中
 	public void inject(Object target, @Nullable String beanName, @Nullable PropertyValues pvs) throws Throwable {
 		Collection<InjectedElement> checkedElements = this.checkedElements;
 		Collection<InjectedElement> elementsToIterate =

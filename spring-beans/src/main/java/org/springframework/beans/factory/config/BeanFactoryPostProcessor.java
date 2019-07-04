@@ -45,7 +45,6 @@ import org.springframework.beans.BeansException;
 // 基于容器级别的PostProcessor，可以将会修改整个容器的bean，如果有两个容器，如：SpringMVC+Spring，此接口是容器隔离的
 // 在加载完BeanDefinition，bean对象未实例化前调用此接口
 // 此接口典型的应用：PlaceholderConfigurerSupport读取.properties的配置文件，使配置文件的属性可以应用于application.xml中
-// Spring容器对任何实现此接口的bean，都会在加载完BeanDefinition，bean对象未实例化前调用
 @FunctionalInterface
 public interface BeanFactoryPostProcessor {
 
