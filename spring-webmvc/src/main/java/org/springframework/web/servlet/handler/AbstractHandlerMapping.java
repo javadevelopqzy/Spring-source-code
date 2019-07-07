@@ -68,9 +68,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	@Nullable
 	private Object defaultHandler;
 
-	/**
-	 * URL解析工具类
-	 */
+	// URL解析工具类
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
 	/**

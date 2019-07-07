@@ -46,6 +46,7 @@ import org.springframework.util.Assert;
  * @author Juergen Hoeller
  * @see org.springframework.web.context.support.WebApplicationObjectSupport
  */
+// 初始化context的类，内部有applicationContext属性，并通过ApplicationContextAware实现初始化
 public abstract class ApplicationObjectSupport implements ApplicationContextAware {
 
 	/**
@@ -93,53 +94,62 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 	}
 
 	/**
-	 * 子类可重写此方法
-	 *
+	 * Determine whether this application object needs to run in an ApplicationContext.
+	 * <p>Default is "false". Can be overridden to enforce running in a context
+	 * (i.e. to throw IllegalStateException on accessors if outside a context).
 	 * @see #getApplicationContext
 	 * @see #getMessageSourceAccessor
 	 */
+	// 子类可重写此方法，是否需要初始化context
 	protected boolean isContextRequired() {
 		return false;
 	}
 
 	/**
-	 * 注入context的类型
-	 *
+	 * Determine the context class that any context passed to
+	 * {@code setApplicationContext} must be an instance of.
+	 * Can be overridden in subclasses.
 	 * @see #setApplicationContext
 	 */
+	// 表示注入的Context是类型
 	protected Class<?> requiredContextClass() {
 		return ApplicationContext.class;
 	}
 
 	/**
-	 * 父类的初始化方法，即在调用setApplicationContext()方法之后如果传入的context为空，则调用此方法自行初始化
-	 *
+	 * Subclasses can override this for custom initialization behavior.
+	 * Gets called by {@code setApplicationContext} after setting the context instance.
+	 * <p>Note: Does </i>not</i> get called on reinitialization of the context
+	 * but rather just on first initialization of this object's context reference.
+	 * <p>The default implementation calls the overloaded {@link #initApplicationContext()}
+	 * method without ApplicationContext reference.
 	 * @param context the containing ApplicationContext
 	 * @throws ApplicationContextException in case of initialization errors
-	 * @throws BeansException              if thrown by ApplicationContext methods
+	 * @throws BeansException if thrown by ApplicationContext methods
 	 * @see #setApplicationContext
 	 */
+	// 初始化context，通过ApplicationContextAware传入ApplicationContext
 	protected void initApplicationContext(ApplicationContext context) throws BeansException {
 		initApplicationContext();
 	}
 
 	/**
-	 * 提供给子类重写的方法
+	 * Subclasses can override this for custom initialization behavior.
+	 * <p>The default implementation is empty. Called by
 	 * {@link #initApplicationContext(org.springframework.context.ApplicationContext)}.
-	 *
 	 * @throws ApplicationContextException in case of initialization errors
-	 * @throws BeansException              if thrown by ApplicationContext methods
+	 * @throws BeansException if thrown by ApplicationContext methods
 	 * @see #setApplicationContext
 	 */
+	// 初始化context的处理，提供给子类重写的方法
 	protected void initApplicationContext() throws BeansException {
 	}
 
-
 	/**
-	 * 获取ApplicationContext方法，子类通过此方法获取ApplicationContext对象
-	 *
+	 * Return the ApplicationContext that this object is associated with.
 	 * @throws IllegalStateException if not running in an ApplicationContext
 	 */
+	// 获取ApplicationContext方法，子类通过此方法获取ApplicationContext对象
 	@Nullable
 	public final ApplicationContext getApplicationContext() throws IllegalStateException {
 		if (this.applicationContext == null && isContextRequired()) {

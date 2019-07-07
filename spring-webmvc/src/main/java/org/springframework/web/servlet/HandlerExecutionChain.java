@@ -16,17 +16,16 @@
 
 package org.springframework.web.servlet;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Handler execution chain, consisting of handler object and any handler interceptors.
@@ -36,21 +35,21 @@ import org.springframework.util.ObjectUtils;
  * @see HandlerInterceptor
  * @since 20.06.2003
  */
+// handler和拦截器的包装类，此类由RequestMapping创建，并且传递到RequestAdapter执行handler
+// handler可能是一个实现Controller的bean，也可能是HandlerMethod
 public class HandlerExecutionChain {
 
 	private static final Log logger = LogFactory.getLog(HandlerExecutionChain.class);
-	/**
-	 * BeanNameUrlHandlerMapping返回是bean的名称
-	 * RequestMappingHandlerMapping返回的是HandlerMethod对象（包装了Method类）
-	 */
+
+	// BeanNameUrlHandlerMapping返回是bean的名称
+	// RequestMappingHandlerMapping返回的是HandlerMethod对象（包装了Method类）
 	private final Object handler;
 
-	/**
-	 * 存储所有的拦截器HandlerInterceptor对象
-	 */
+	// 存储所有的拦截器HandlerInterceptor对象
 	@Nullable
 	private HandlerInterceptor[] interceptors;
 
+	// 所有的拦截器集合，为了便于操作所以多加了一个集合类
 	@Nullable
 	private List<HandlerInterceptor> interceptorList;
 
@@ -121,6 +120,7 @@ public class HandlerExecutionChain {
 	 *
 	 * @return the array of HandlerInterceptors instances (may be {@code null})
 	 */
+	// 获取所有拦截器，如果interceptors是空，则初始化一下
 	@Nullable
 	public HandlerInterceptor[] getInterceptors() {
 		if (this.interceptors == null && this.interceptorList != null) {
@@ -137,14 +137,13 @@ public class HandlerExecutionChain {
 	 * next interceptor or the handler itself. Else, DispatcherServlet assumes
 	 * that this interceptor has already dealt with the response itself.
 	 */
-	/**
-	 * 当HandlerMapping获取到对应的handler之后调用此方法，逐个执行拦截器的preHandle方法
-	 */
+	// 逐个执行拦截器的preHandle方法，当HandlerMapping返回handler之后，adapter执行之前调用此方法
 	boolean applyPreHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		HandlerInterceptor[] interceptors = getInterceptors();
 		if (!ObjectUtils.isEmpty(interceptors)) {
 			for (int i = 0; i < interceptors.length; i++) {
 				HandlerInterceptor interceptor = interceptors[i];
+				// 其中一个拦截器返回false就不会往下执行了
 				if (!interceptor.preHandle(request, response, this.handler)) {
 					triggerAfterCompletion(request, response, null);
 					return false;
@@ -158,6 +157,7 @@ public class HandlerExecutionChain {
 	/**
 	 * Apply postHandle methods of registered interceptors.
 	 */
+	// 执行拦截器的postHandle，
 	void applyPostHandle(HttpServletRequest request, HttpServletResponse response, @Nullable ModelAndView mv)
 			throws Exception {
 
@@ -175,9 +175,7 @@ public class HandlerExecutionChain {
 	 * Will just invoke afterCompletion for all interceptors whose preHandle invocation
 	 * has successfully completed and returned true.
 	 */
-	/**
-	 * handler处理完执行此方法，处理成功返回true的拦截器afterCompletion方法
-	 */
+	// handler处理完执行此方法，处理返回true的拦截器的afterCompletion方法
 	void triggerAfterCompletion(HttpServletRequest request, HttpServletResponse response, @Nullable Exception ex)
 			throws Exception {
 

@@ -16,9 +16,9 @@
 
 package org.springframework.web.servlet;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.lang.Nullable;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Interface to be implemented by objects that define a mapping between
@@ -53,6 +53,7 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping
  * @see org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
  */
+// 作用：实现了请求和应用程序处理请求对象的映射
 public interface HandlerMapping {
 
 	/**
@@ -64,9 +65,7 @@ public interface HandlerMapping {
 	 * typically support it, but handlers should not necessarily expect
 	 * this request attribute to be present in all scenarios.
 	 */
-	/**
-	 * request作用域的key值，存储请求URI
-	 */
+	// request作用域的key值，存储请求URI
 	String PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE = HandlerMapping.class.getName() + ".pathWithinHandlerMapping";
 
 	/**
@@ -77,10 +76,8 @@ public interface HandlerMapping {
 	 * typically support it, but handlers should not necessarily expect
 	 * this request attribute to be present in all scenarios.
 	 */
-	/**
-	 * request作用域的key值，存储请求URI完全匹配的key
-	 * 如：URI="/test/a"，完全匹配"/test/a"
-	 */
+	// request作用域的key值，存储请求URI完全匹配的key
+	// 如：URI="/test/a"，完全匹配"/test/a"
 	String BEST_MATCHING_PATTERN_ATTRIBUTE = HandlerMapping.class.getName() + ".bestMatchingPattern";
 
 	/**
@@ -89,9 +86,7 @@ public interface HandlerMapping {
 	 * <p>Note: This attribute is not required to be supported by all
 	 * HandlerMapping implementations.
 	 */
-	/**
-	 * request作用域的key值，存储请求是否检查类型级别映射
-	 */
+	// request作用域的key值，存储请求是否检查类型级别映射
 	String INTROSPECT_TYPE_LEVEL_MAPPING = HandlerMapping.class.getName() + ".introspectTypeLevelMapping";
 
 	/**
@@ -102,9 +97,7 @@ public interface HandlerMapping {
 	 * typically support it, but handlers should not necessarily expect
 	 * this request attribute to be present in all scenarios.
 	 */
-	/**
-	 * request作用域的key值，存储请求URL参数的Map
-	 */
+	// request作用域的key值，存储请求URL参数的Map
 	String URI_TEMPLATE_VARIABLES_ATTRIBUTE = HandlerMapping.class.getName() + ".uriTemplateVariables";
 
 	/**
@@ -115,9 +108,7 @@ public interface HandlerMapping {
 	 * HandlerMapping implementations and may also not be present depending on
 	 * whether the HandlerMapping is configured to keep matrix variable content
 	 */
-	/**
-	 * request作用域的key值，存储请求URL对应的MultiValueMap
-	 */
+	// request作用域的key值，存储请求URL对应的MultiValueMap
 	String MATRIX_VARIABLES_ATTRIBUTE = HandlerMapping.class.getName() + ".matrixVariables";
 
 	/**
@@ -127,9 +118,7 @@ public interface HandlerMapping {
 	 * HandlerMapping implementations. Handlers should not necessarily expect
 	 * this request attribute to be present in all scenarios.
 	 */
-	/**
-	 * request作用域的key值，存储请求URL对应的媒体类型
-	 */
+	// request作用域的key值，存储请求URL对应的媒体类型
 	String PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE = HandlerMapping.class.getName() + ".producibleMediaTypes";
 
 	/**
@@ -147,12 +136,7 @@ public interface HandlerMapping {
 	 * any interceptors, or {@code null} if no mapping found
 	 * @throws Exception if there is an internal error
 	 */
-	/**
-	 * 根据request请求对象，返回一个HandlerExecutionChain对象，HandlerExecutionChain是一个处理程序类
-	 * @param request
-	 * @return
-	 * @throws Exception
-	 */
+	// 根据request请求对象，返回一个HandlerExecutionChain对象，HandlerExecutionChain是一个处理程序类
 	@Nullable
 	HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception;
 

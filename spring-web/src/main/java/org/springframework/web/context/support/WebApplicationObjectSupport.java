@@ -16,9 +16,6 @@
 
 package org.springframework.web.context.support;
 
-import java.io.File;
-import javax.servlet.ServletContext;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.lang.Nullable;
@@ -26,6 +23,9 @@ import org.springframework.util.Assert;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.ServletContext;
+import java.io.File;
 
 /**
  * Convenient superclass for application objects running in a {@link WebApplicationContext}.
@@ -40,6 +40,8 @@ import org.springframework.web.util.WebUtils;
  * @since 28.08.2003
  * @see SpringBeanAutowiringSupport
  */
+// WebContext的支持类，继承父类的context初始化逻辑，并持有context属性
+// 内部持有servletContext属性，并通过ServletContextAware实现了初始化逻辑
 public abstract class WebApplicationObjectSupport extends ApplicationObjectSupport implements ServletContextAware {
 
 	@Nullable
@@ -104,6 +106,7 @@ public abstract class WebApplicationObjectSupport extends ApplicationObjectSuppo
 	 * @throws IllegalStateException if not running in a WebApplicationContext
 	 * @see #getApplicationContext()
 	 */
+	// 获取WebApplicationContext，使用父类的context强转
 	@Nullable
 	protected final WebApplicationContext getWebApplicationContext() throws IllegalStateException {
 		ApplicationContext ctx = getApplicationContext();
